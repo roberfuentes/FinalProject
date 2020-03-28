@@ -9,4 +9,9 @@
     <string name="forgot_password">Forgot password?</string>
     <string name="register_account">Register account</string>
 
+    <string name="sign_up">SIGN UP</string>
+    <string name="sign_up_with_email">Sign up with email</string>
+    <string name="sign_up_with_google">Sign up with Google</string>
+
+
 </resources>
