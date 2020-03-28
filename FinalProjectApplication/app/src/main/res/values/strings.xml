@@ -1,3 +1,12 @@
 <resources>
     <string name="app_name">Final Project Application</string>
+
+    <!--Login and Register-->
+    <string name="email">Email</string>
+    <string name="password">Password</string>
+    <string name="login">LOGIN</string>
+
+    <string name="forgot_password">Forgot password?</string>
+    <string name="register_account">Register account</string>
+
 </resources>
