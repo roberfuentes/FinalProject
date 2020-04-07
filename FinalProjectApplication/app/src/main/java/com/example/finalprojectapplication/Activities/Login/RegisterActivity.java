@@ -14,18 +14,28 @@ import android.widget.Toast;
 import com.example.finalprojectapplication.Activities.Main.MainActivity;
 import com.example.finalprojectapplication.R;
 import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.firestore.DocumentReference;
+import com.google.firebase.firestore.FirebaseFirestore;
+
+import java.util.HashMap;
+import java.util.Map;
 
 public class RegisterActivity extends AppCompatActivity
 {
 
-    private String TAG = "RegisterActivity";
+    private static final String TAG = "RegisterActivity";
+    private static final String KEY_NAME = "name";
 
-    private FirebaseAuth mAuth;
+    private FirebaseAuth fAuth;
+    private FirebaseFirestore fStore;
 
-    EditText mEmail, mPassword, mPasswordRepeat;
+
+    EditText mName, mEmail, mPassword, mPasswordRepeat;
     Button mBtnSignUp;
 
     @Override
@@ -34,8 +44,10 @@ public class RegisterActivity extends AppCompatActivity
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_register);
 
-        mAuth = FirebaseAuth.getInstance();
+        fAuth = FirebaseAuth.getInstance();
+        fStore = FirebaseFirestore.getInstance();
 
+        mName = findViewById(R.id.etName);
         mEmail = findViewById(R.id.etEmail);
         mPassword = findViewById(R.id.etPassword);
         mPasswordRepeat = findViewById(R.id.etPasswordRepeat);
@@ -55,36 +67,52 @@ public class RegisterActivity extends AppCompatActivity
     }
 
 
-
-    private boolean checkFields(String email, String password, String passwordRepeat){
-        if(!email.equals("") && !password.equals("") && !passwordRepeat.equals("")){
-            if(password.equals(passwordRepeat)){
+    private boolean checkFields(String name, String email, String password, String passwordRepeat)
+    {
+        if (!name.equals("") && !email.equals("") && !password.equals("") && !passwordRepeat.equals(""))
+        {
+            if (password.equals(passwordRepeat) && password.length() >= 6)
+                {
                 return true;
-            }else{
-                Toast.makeText(RegisterActivity.this,"Check if passwords are the same", Toast.LENGTH_SHORT);
+            } else
+            {
+                if (password.equals(passwordRepeat))
+                {
+                    Toast.makeText(RegisterActivity.this, "Check if passwords are the same", Toast.LENGTH_SHORT);
+                } else
+                {
+                    Toast.makeText(RegisterActivity.this, "Check if passwords are the same", Toast.LENGTH_SHORT);
+                }
             }
-        }else{
-            Toast.makeText(RegisterActivity.this,"Fields can't be empty", Toast.LENGTH_SHORT);
+        } else
+        {
+            Toast.makeText(RegisterActivity.this, "Fields can't be empty", Toast.LENGTH_SHORT);
         }
         return false;
     }
 
-    private void registerAccount(){
+    private void registerAccount()
+    {
+        final String name = mName.getText().toString();
         String email = mEmail.getText().toString();
         String password = mPassword.getText().toString();
         String passwordRepeat = mPasswordRepeat.getText().toString();
 
-        if(checkFields(email, password, passwordRepeat)){
-            mAuth.createUserWithEmailAndPassword(email, password).addOnCompleteListener(RegisterActivity.this, new OnCompleteListener<AuthResult>()
+        if (checkFields(name, email, password, passwordRepeat))
+        {
+            fAuth.createUserWithEmailAndPassword(email, password).addOnCompleteListener(RegisterActivity.this, new OnCompleteListener<AuthResult>()
             {
                 @Override
                 public void onComplete(@NonNull Task<AuthResult> task)
                 {
-                    if(task.isSuccessful()){
+                    if (task.isSuccessful())
+                    {
                         Toast.makeText(RegisterActivity.this, "Succesful!", Toast.LENGTH_SHORT).show();
 
+                        saveUserInCloud(name);
                         goToMainActivity();
-                    }else{
+                    } else
+                    {
                         Log.w(TAG, "createUserWithEmailAddress:failure", task.getException());
                         Toast.makeText(RegisterActivity.this, "Authentication failed", Toast.LENGTH_LONG).show();
 
@@ -94,9 +122,40 @@ public class RegisterActivity extends AppCompatActivity
         }
     }
 
-    private void goToMainActivity(){
+    private void goToMainActivity()
+    {
         Intent intent = new Intent(RegisterActivity.this, MainActivity.class);
         startActivity(intent);
+    }
+
+    private void saveUserInCloud(String name)
+    {
+        String userID = fAuth.getCurrentUser().getUid();
+        DocumentReference db = fStore.collection("users").document(userID);
+        Map<String, Object> user = new HashMap<>();
+        user.put(KEY_NAME, name);
+        System.out.println("There we go");
+
+        db.set(user).addOnSuccessListener(new OnSuccessListener<Void>()
+        {
+            @Override
+            public void onSuccess(Void aVoid)
+            {
+                Log.i(TAG, "Added succesfully!");
+                Toast.makeText(RegisterActivity.this, "Added", Toast.LENGTH_SHORT).show();
+
+            }
+        }).addOnFailureListener(new OnFailureListener()
+        {
+            @Override
+            public void onFailure(@NonNull Exception e)
+            {
+                Toast.makeText(RegisterActivity.this, "NOT ADDED", Toast.LENGTH_SHORT).show();
+
+                Log.w(TAG, "User data hasn't been added!");
+            }
+        });
+
     }
 
 }

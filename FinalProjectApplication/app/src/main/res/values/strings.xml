@@ -2,6 +2,7 @@
     <string name="app_name">Final Project Application</string>
 
     <!--Login and Register-->
+    <string name="name">Name</string>
     <string name="email">Email</string>
     <string name="password">Password</string>
     <string name="login">LOGIN</string>
@@ -12,6 +13,9 @@
     <string name="sign_up">SIGN UP</string>
     <string name="sign_up_with_email">Sign up with email</string>
     <string name="sign_up_with_google">Sign up with Google</string>
+
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
 
 
 </resources>

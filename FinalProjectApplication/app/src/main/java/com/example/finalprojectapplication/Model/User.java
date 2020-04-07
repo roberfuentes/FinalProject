@@ -3,11 +3,14 @@ package com.example.finalprojectapplication.Model;
 import android.os.Parcel;
 import android.os.Parcelable;
 
-public class User implements Parcelable
+public class User
 {
 
     String name;
 
+    public User(){
+
+    }
     public User(String name){
         this.name = name;
     }
@@ -24,7 +27,7 @@ public class User implements Parcelable
 
     //Parcelling part
 
-    public User(Parcel in){
+    /*public User(Parcel in){
         this.name = in.readString();
     }
     @Override
@@ -46,7 +49,7 @@ public class User implements Parcelable
         public User[] newArray(int size){
             return new User[size];
         }
-    };
+    };*/
 
     @Override
     public String toString()
