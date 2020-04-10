@@ -1,0 +1,56 @@
+package com.example.finalprojectapplication.Components;
+
+
+import android.app.Dialog;
+import android.content.Context;
+import android.view.View;
+import android.widget.Button;
+import android.widget.ImageView;
+
+import com.example.finalprojectapplication.R;
+
+public class UploadDialog
+{
+
+    public UploadDialog(Context context){
+        final Dialog dialog = new Dialog(context);
+        dialog.setContentView(R.layout.custom_dialog_upload);
+        dialog.setTitle("Upload your file");
+
+        Button uploadButton = dialog.findViewById(R.id.uploadButton);
+        Button cancelButton = dialog.findViewById(R.id.cancelButton);
+
+        ImageView imageUpload = dialog.findViewById(R.id.imageToUpload);
+
+        imageUpload.setOnClickListener(new View.OnClickListener()
+        {
+            @Override
+            public void onClick(View v)
+            {
+                System.out.println("Image working");
+            }
+        });
+
+        uploadButton.setOnClickListener(new View.OnClickListener()
+        {
+            @Override
+            public void onClick(View v)
+            {
+                System.out.println("upload working");
+            }
+        });
+
+        cancelButton.setOnClickListener(new View.OnClickListener()
+        {
+            @Override
+            public void onClick(View v)
+            {
+                System.out.println("Cnacel working");
+                dialog.dismiss();
+            }
+        });
+
+        dialog.show();
+    }
+
+}

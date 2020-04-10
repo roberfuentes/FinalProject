@@ -3,7 +3,9 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".Fragments.ListFragment">
+    tools:context=".Fragments.HomeFragment"
+    
+    >
 
 
     <androidx.recyclerview.widget.RecyclerView
@@ -15,7 +17,13 @@
         android:layout_marginStart="1dp"
         android:layout_marginTop="2dp" />
 
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="hola"/>
+
     <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:id="@+id/uploadButton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
@@ -24,6 +32,7 @@
         android:layout_marginBottom="40dp"
         android:src="@drawable/ic_upload_outlined"
         android:backgroundTint="@color/colorWhite"
-
         />
+
+
 </RelativeLayout>

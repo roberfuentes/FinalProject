@@ -1,6 +1,6 @@
 package com.example.finalprojectapplication.Activities.Main;
 
-import androidx.annotation.Nullable;
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
@@ -10,18 +10,15 @@ import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
-import android.widget.TextView;
-import android.widget.Toast;
+import android.widget.FrameLayout;
 
 import com.example.finalprojectapplication.Activities.Login.LoginActivity;
-import com.example.finalprojectapplication.Fragments.ListFragment;
+import com.example.finalprojectapplication.Fragments.ChatFragment;
+import com.example.finalprojectapplication.Fragments.HomeFragment;
+import com.example.finalprojectapplication.Fragments.ProfileFragment;
 import com.example.finalprojectapplication.R;
+import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.firestore.DocumentReference;
-import com.google.firebase.firestore.DocumentSnapshot;
-import com.google.firebase.firestore.EventListener;
-import com.google.firebase.firestore.FirebaseFirestore;
-import com.google.firebase.firestore.FirebaseFirestoreException;
 
 public class MainActivity extends AppCompatActivity
 {
@@ -29,8 +26,16 @@ public class MainActivity extends AppCompatActivity
     /*FirebaseAuth fAuth;
     FirebaseFirestore fStore;
     String userID;*/
-    final Fragment listFragment = new ListFragment();
+    final Fragment homeFragment= new HomeFragment();
+    final Fragment chatFragment = new ChatFragment();
+    final Fragment profileFragment = new ProfileFragment();
     final FragmentManager fm = getSupportFragmentManager();
+
+    Fragment selectedFragment = null;
+
+    BottomNavigationView bottomNavigationView;
+
+
 
     //TextView txtId;
 
@@ -41,11 +46,14 @@ public class MainActivity extends AppCompatActivity
         setContentView(R.layout.activity_main);
 
 
-        fm.beginTransaction().add(R.id.fragment_container, listFragment).commit();
+        bottomNavigationView = findViewById(R.id.bottomNavigationView);
+        bottomNavigationView.setOnNavigationItemSelectedListener(bottomNavSelect);
 
 
-
-
+        fm.beginTransaction().add(R.id.fragment_container, homeFragment).commit();
+        fm.beginTransaction().add(R.id.fragment_container, chatFragment).hide(chatFragment).commit();
+        fm.beginTransaction().add(R.id.fragment_container, profileFragment).hide(profileFragment).commit();
+        selectedFragment = homeFragment;
 
 
 
@@ -74,6 +82,30 @@ public class MainActivity extends AppCompatActivity
 
         }*/
     }
+
+    private BottomNavigationView.OnNavigationItemSelectedListener bottomNavSelect = new BottomNavigationView.OnNavigationItemSelectedListener()
+    {
+        @Override
+        public boolean onNavigationItemSelected(@NonNull MenuItem menuItem)
+        {
+            switch (menuItem.getItemId()){
+                case R.id.nav_home:
+                    fm.beginTransaction().hide(selectedFragment).show(homeFragment).commit();
+                    selectedFragment = homeFragment;
+                    return true;
+                case R.id.nav_chat:
+                    fm.beginTransaction().hide(selectedFragment).show(chatFragment).commit();
+                    selectedFragment = chatFragment;
+                    return true;
+                case R.id.nav_profile:
+                    fm.beginTransaction().hide(selectedFragment).show(profileFragment).commit();
+                    selectedFragment = profileFragment;
+                    return true;
+                default:
+                    return false;
+            }
+        }
+    };
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu)

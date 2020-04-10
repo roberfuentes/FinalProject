@@ -1,6 +1,7 @@
 package com.example.finalprojectapplication.Fragments;
 
 
+import android.content.DialogInterface;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
@@ -9,15 +10,19 @@ import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
+import com.example.finalprojectapplication.Components.UploadDialog;
 import com.example.finalprojectapplication.Model.User;
 import com.example.finalprojectapplication.R;
 import com.firebase.ui.firestore.FirestoreRecyclerAdapter;
 import com.firebase.ui.firestore.FirestoreRecyclerOptions;
+import com.google.android.material.dialog.MaterialAlertDialogBuilder;
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.Query;
@@ -25,8 +30,12 @@ import com.google.firebase.firestore.Query;
 /**
  * A simple {@link Fragment} subclass.
  */
-public class ListFragment extends Fragment
+public class HomeFragment extends Fragment
 {
+
+    private static final String TAG = "HomeFragment";
+
+
     //Firebase
     private FirebaseAuth fAuth;
     private FirebaseFirestore fStore;
@@ -37,9 +46,11 @@ public class ListFragment extends Fragment
     private RecyclerView recyclerView;
     private View view;
 
-    public ListFragment()
-    {
+    FloatingActionButton uploadButton;
 
+    public HomeFragment()
+    {
+        setRetainInstance(true);
     }
 
 
@@ -47,7 +58,8 @@ public class ListFragment extends Fragment
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState)
     {
-        View v = inflater.inflate(R.layout.fragment_list, container, false);
+        System.out.println("OnCreateView");
+        View v = inflater.inflate(R.layout.fragment_home, container, false);
         return v;
     }
 
@@ -55,26 +67,47 @@ public class ListFragment extends Fragment
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState)
     {
         this.view = view;
+
+        //setup view and data
         setupRecyclerView();
         setupFirebase();
         loadData();
+
+        //setup Components and listeners
+        setComponents();
+        setListeners();
+
     }
 
-    @Override
+    /*@Override
     public void onCreate(Bundle savedInstanceState)
     {
         super.onCreate(savedInstanceState);
+    }*/
+
+    public void setComponents(){
+        uploadButton = view.findViewById(R.id.uploadButton);
 
 
     }
 
+    public void setListeners(){
+        uploadButton.setOnClickListener(new View.OnClickListener()
+        {
+            @Override
+            public void onClick(View v)
+            {
+                new UploadDialog(getContext());
+
+            }
+        });
+    }
 
 
 
     public void setupRecyclerView(){
         //Recycler
         recyclerView = view.findViewById(R.id.recyclerView);
-
     }
 
     private void setupFirebase(){
@@ -84,10 +117,9 @@ public class ListFragment extends Fragment
     }
 
 
-
     public void loadData(){
 
-        System.out.println("El uid es este:" + userID);
+        Log.i(TAG, "This is the current UID" + userID);
 
         //Query
         Query query = fStore.collection("users");
@@ -112,14 +144,12 @@ public class ListFragment extends Fragment
             @Override
             protected void onBindViewHolder(@NonNull UserViewHolder holder, int position, @NonNull User model)
             {
-                System.out.println("view holder 2");
-                System.out.println("Works name: " + model.getName());
                 holder.listName.setText(model.getName());
 
             }
         };
 
-        recyclerView.setHasFixedSize(true);
+        //recyclerView.setHasFixedSize(true);
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
         recyclerView.setAdapter(adapter);
 
@@ -127,7 +157,6 @@ public class ListFragment extends Fragment
 
 
     }
-
 
     private class UserViewHolder extends RecyclerView.ViewHolder{
 
@@ -156,10 +185,10 @@ public class ListFragment extends Fragment
         adapter.stopListening();
     }
 
-    /*@Override
+    @Override
     public void onResume()
     {
         super.onResume();
-        System.out.println("On resume");
-    }*/
+        adapter.startListening();
+    }
 }
