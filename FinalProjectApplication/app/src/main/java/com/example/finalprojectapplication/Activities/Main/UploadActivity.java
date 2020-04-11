@@ -69,23 +69,9 @@ public class UploadActivity extends AppCompatActivity
         mFileName = findViewById(R.id.fileName);
 
 
-        mImageUpload.setOnClickListener(new View.OnClickListener()
-        {
-            @Override
-            public void onClick(View v)
-            {
-                openFileChooser();
-            }
-        });
+        setupComponents();
+        setupListeners();
 
-        mUploadButton.setOnClickListener(new View.OnClickListener()
-        {
-            @Override
-            public void onClick(View v)
-            {
-                uploadImage();
-            }
-        });
 
     }
 
@@ -102,7 +88,7 @@ public class UploadActivity extends AppCompatActivity
     {
         if (mImageUri != null && mImageUpload.getDrawable() != null)
         {
-            final StorageReference imageRef = fStorage.getReference("Images").child(System.currentTimeMillis() + "");//fStorageRef.child("Images/"+System.currentTimeMillis());
+            final StorageReference imageRef = fStorage.getReference("Images").child(System.currentTimeMillis() + "");
             UploadTask uploadTask = imageRef.putFile(mImageUri);
             Task<Uri> urlTask = uploadTask.continueWithTask(new Continuation<UploadTask.TaskSnapshot, Task<Uri>>()
             {
@@ -127,11 +113,11 @@ public class UploadActivity extends AppCompatActivity
                         Uri downloadUri = task.getResult();
 
                         Map<String, Object> image = new HashMap<>();
-                        image.put("Name", name);
-                        image.put("Uri", downloadUri.toString());
+                        image.put("name", name);
+                        image.put("uri", downloadUri.toString());
 
                         DocumentReference db = fStore.collection("data").document(userID)
-                                .collection("images").document(userID + "I");
+                                .collection("images").document();
                         db.set(image).addOnSuccessListener(new OnSuccessListener<Void>()
                         {
                             @Override
@@ -173,6 +159,9 @@ public class UploadActivity extends AppCompatActivity
                     {
                         mImageUri = data.getData();
                         Picasso.with(UploadActivity.this).load(mImageUri).into(mImageUpload);
+
+
+                        setWidthHeight(null, null, mImageUpload);
                     }
             }
         }
@@ -186,5 +175,51 @@ public class UploadActivity extends AppCompatActivity
         System.out.println("User:" + userID);
         fStore = FirebaseFirestore.getInstance();
         fStorage = FirebaseStorage.getInstance();
+    }
+
+    private void setupComponents(){
+        mImageUpload.setImageResource(R.drawable.ic_upload);
+        setWidthHeight(null, null, mImageUpload);
+
+    }
+
+    private void setupListeners(){
+
+        mImageUpload.setOnClickListener(new View.OnClickListener()
+        {
+            @Override
+            public void onClick(View v)
+            {
+                openFileChooser();
+            }
+        });
+
+        mUploadButton.setOnClickListener(new View.OnClickListener()
+        {
+            @Override
+            public void onClick(View v)
+            {
+                uploadImage();
+
+            }
+        });
+    }
+
+    /**
+     *
+     * @param height of the View
+     * @param width of the View
+     *
+     * Set null if you want by default 600 by default
+     */
+    private void setWidthHeight(Integer height, Integer width, View view){
+        if(height == null && width == null){
+            view.getLayoutParams().height =600;
+            view.getLayoutParams().width = 600;
+        }else{
+            view.getLayoutParams().height = height;
+            view.getLayoutParams().width = width;
+
+        }
     }
 }

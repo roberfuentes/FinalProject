@@ -11,6 +11,7 @@ import androidx.annotation.Nullable;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
+import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -20,7 +21,10 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
+import com.example.finalprojectapplication.Activities.Main.MainActivity;
 import com.example.finalprojectapplication.Activities.Main.UploadActivity;
+import com.example.finalprojectapplication.Adapters.ImageAdapter;
+import com.example.finalprojectapplication.Model.Image;
 import com.example.finalprojectapplication.Model.User;
 import com.example.finalprojectapplication.R;
 import com.firebase.ui.firestore.FirestoreRecyclerAdapter;
@@ -49,7 +53,6 @@ public class HomeFragment extends Fragment
     private String userID;
     private FirestoreRecyclerAdapter adapter;
     FirebaseStorage mStorageRef;
-    private DatabaseReference mDatabaseRef;
 
 
 
@@ -80,7 +83,8 @@ public class HomeFragment extends Fragment
         //setup view and data
         setupRecyclerView();
         setupFirebase();
-        setupDataInRecycerView();
+        setupImages();
+        //setupDataInRecycerView();
 
         //setup Components and listeners
         setComponents();
@@ -88,38 +92,40 @@ public class HomeFragment extends Fragment
 
     }
 
-    
-    
-    
+
     //SETUP
-    
-    public void setComponents(){
+
+    public void setComponents()
+    {
         uploadButton = view.findViewById(R.id.uploadButton);
 
 
     }
 
-    public void setListeners(){
+    public void setListeners()
+    {
         uploadButton.setOnClickListener(new View.OnClickListener()
         {
             @Override
             public void onClick(View v)
             {
-                
-                
+
+
                 openUploadDialog();
 
             }
         });
     }
-    
 
-    public void setupRecyclerView(){
+
+    public void setupRecyclerView()
+    {
         //Recycler
         recyclerView = view.findViewById(R.id.recyclerView);
     }
 
-    private void setupFirebase(){
+    private void setupFirebase()
+    {
         fAuth = FirebaseAuth.getInstance();
         fStore = FirebaseFirestore.getInstance();
         userID = fAuth.getCurrentUser().getUid();
@@ -128,8 +134,8 @@ public class HomeFragment extends Fragment
     }
 
 
-
-    public void setupDataInRecycerView(){
+    public void setupDataInRecycerView()
+    {
 
         Log.i(TAG, "This is the current UID" + userID);
 
@@ -137,9 +143,9 @@ public class HomeFragment extends Fragment
         Query query = fStore.collection("users");
 
         //RecyclerOptions
-        FirestoreRecyclerOptions<User> options = new FirestoreRecyclerOptions.Builder<User>()
-                    .setQuery(query, User.class)
-                    .build();
+               FirestoreRecyclerOptions<User> options = new FirestoreRecyclerOptions.Builder<User>()
+                .setQuery(query, User.class)
+                .build();
 
         //RecyclerAdapter
         adapter = new FirestoreRecyclerAdapter<User, UserViewHolder>(options)
@@ -156,13 +162,13 @@ public class HomeFragment extends Fragment
             @Override
             protected void onBindViewHolder(@NonNull UserViewHolder holder, int position, @NonNull User model)
             {
-                holder.listName.setText(model.getName());
+                holder.singleFileName.setText(model.getName());
 
             }
         };
 
         //recyclerView.setHasFixedSize(true);
-        recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
+        recyclerView.setLayoutManager(new GridLayoutManager(getContext(), 2));
         recyclerView.setAdapter(adapter);
 
         System.out.println("work");
@@ -170,21 +176,36 @@ public class HomeFragment extends Fragment
 
     }
 
-    private class UserViewHolder extends RecyclerView.ViewHolder{
+    private void setupImages(){
+        Query query = fStore.collection("data").document(userID).collection("images");
+        FirestoreRecyclerOptions<Image> options = new FirestoreRecyclerOptions.Builder<Image>().setQuery(query,Image.class ).build();
 
-        private TextView listName;
+        adapter = new ImageAdapter(options, getContext());
+        
+        recyclerView.setLayoutManager(new GridLayoutManager(getContext(), 2));
+
+        recyclerView.setAdapter(adapter);
+        
+
+    }
+
+
+
+
+    private class UserViewHolder extends RecyclerView.ViewHolder
+    {
+
+        private TextView singleFileName;
+
         public UserViewHolder(@NonNull View itemView)
         {
             super(itemView);
 
-            listName = itemView.findViewById(R.id.listName);
+            singleFileName = itemView.findViewById(R.id.singleFileName);
         }
     }
-    
-    
-    
-    
-    
+
+
     //LifeCycle
 
     @Override
@@ -210,23 +231,24 @@ public class HomeFragment extends Fragment
         adapter.startListening();
     }
 
-    
-    
-    
+
     //Permissionsç
-    private void openUploadDialog(){
+    private void openUploadDialog()
+    {
         String[] permissions = {Manifest.permission.READ_EXTERNAL_STORAGE,
                 Manifest.permission.WRITE_EXTERNAL_STORAGE};
 
-        if(ContextCompat.checkSelfPermission(getContext(), permissions[0])  == PackageManager.PERMISSION_GRANTED
-                && ContextCompat.checkSelfPermission(getContext(), permissions[1]) == PackageManager.PERMISSION_GRANTED){
+        if (ContextCompat.checkSelfPermission(getContext(), permissions[0]) == PackageManager.PERMISSION_GRANTED
+                && ContextCompat.checkSelfPermission(getContext(), permissions[1]) == PackageManager.PERMISSION_GRANTED)
+        {
 
 
             Intent intent = new Intent(getActivity(), UploadActivity.class);
             startActivity(intent);
             //new UploadDialog(getActivity());  Dialog Abandoned
 
-        }else{
+        } else
+        {
             ActivityCompat.requestPermissions(getActivity(), permissions, REQUEST_STORAGE_WRITE_READ);
         }
     }
@@ -234,7 +256,8 @@ public class HomeFragment extends Fragment
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults)
     {
-        if(requestCode == REQUEST_STORAGE_WRITE_READ){
+        if (requestCode == REQUEST_STORAGE_WRITE_READ)
+        {
             openUploadDialog();
         }
 
