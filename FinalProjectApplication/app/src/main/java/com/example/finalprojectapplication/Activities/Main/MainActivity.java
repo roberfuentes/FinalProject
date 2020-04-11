@@ -50,37 +50,10 @@ public class MainActivity extends AppCompatActivity
         bottomNavigationView.setOnNavigationItemSelectedListener(bottomNavSelect);
 
 
-        fm.beginTransaction().add(R.id.fragment_container, homeFragment).commit();
-        fm.beginTransaction().add(R.id.fragment_container, chatFragment).hide(chatFragment).commit();
-        fm.beginTransaction().add(R.id.fragment_container, profileFragment).hide(profileFragment).commit();
-        selectedFragment = homeFragment;
+        setupFragments();
 
 
 
-        /*fAuth = FirebaseAuth.getInstance();
-        fStore = FirebaseFirestore.getInstance();
-
-        userID = fAuth.getCurrentUser().getUid();
-        DocumentReference db = fStore.collection("users").document(userID);
-        db.addSnapshotListener(MainActivity.this, new EventListener<DocumentSnapshot>()
-        {
-            @Override
-            public void onEvent(@Nullable DocumentSnapshot documentSnapshot, @Nullable FirebaseFirestoreException e)
-            {
-                txtId.setText("LOGGED!" + fAuth.getCurrentUser().getUid() + " and your EMAIL is: " + fAuth.getCurrentUser().getEmail() + " " + documentSnapshot.getString("name"));
-            }
-        });
-
-
-        txtId = findViewById(R.id.txtID);
-
-        if(fAuth.getCurrentUser() != null){
-            Toast.makeText(MainActivity.this,"works", Toast.LENGTH_SHORT).show();
-
-        }else{
-            txtId.setText("you are not logged my G :(");
-
-        }*/
     }
 
     private BottomNavigationView.OnNavigationItemSelectedListener bottomNavSelect = new BottomNavigationView.OnNavigationItemSelectedListener()
@@ -128,4 +101,16 @@ public class MainActivity extends AppCompatActivity
         }
         return true;
     }
+
+
+    private void setupFragments(){
+
+        fm.beginTransaction().add(R.id.fragment_container, homeFragment).commit();
+        fm.beginTransaction().add(R.id.fragment_container, chatFragment).hide(chatFragment).commit();
+        fm.beginTransaction().add(R.id.fragment_container, profileFragment).hide(profileFragment).commit();
+
+        selectedFragment = homeFragment;
+    }
+
+
 }

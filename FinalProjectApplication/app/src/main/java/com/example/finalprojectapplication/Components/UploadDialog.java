@@ -1,19 +1,29 @@
 package com.example.finalprojectapplication.Components;
 
 
+
+
+
+import android.app.Activity;
 import android.app.Dialog;
-import android.content.Context;
+import android.content.Intent;
+import android.provider.MediaStore;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
 
 import com.example.finalprojectapplication.R;
 
+
+//Dialog Abandoned
 public class UploadDialog
 {
+    Activity activity;
 
-    public UploadDialog(Context context){
-        final Dialog dialog = new Dialog(context);
+    public UploadDialog(final Activity activity){
+        this.activity = activity;
+
+        final Dialog dialog = new Dialog(activity);
         dialog.setContentView(R.layout.custom_dialog_upload);
         dialog.setTitle("Upload your file");
 
@@ -28,6 +38,12 @@ public class UploadDialog
             public void onClick(View v)
             {
                 System.out.println("Image working");
+
+                Intent takePicture = new Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
+                activity.startActivityForResult(takePicture, 0);
+
+
+
             }
         });
 
