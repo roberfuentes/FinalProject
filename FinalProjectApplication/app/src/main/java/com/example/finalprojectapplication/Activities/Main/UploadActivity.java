@@ -4,14 +4,19 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.content.ContentResolver;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 
+import android.util.Log;
 import android.view.View;
+import android.webkit.MimeTypeMap;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.Toast;
 
 
 import com.example.finalprojectapplication.R;
@@ -21,6 +26,7 @@ import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
+import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.FirebaseFirestore;
@@ -38,13 +44,15 @@ public class UploadActivity extends AppCompatActivity
 
     //private static final String KEY_
 
-    final static int IMAGE_REQUEST = 0;
+    final static int REQUEST_CONTENT = 0;
 
 
-    ImageView mImageUpload;
-    Button mCancelButton;
-    Button mUploadButton;
-    EditText mFileName;
+    private ImageView mImageUpload;
+    private Button mCancelButton;
+    private Button mUploadButton;
+    private EditText mFileName;
+
+    private Button mBtnTest;
 
     private FirebaseFirestore fStore;
     private FirebaseStorage fStorage;
@@ -52,8 +60,15 @@ public class UploadActivity extends AppCompatActivity
     private StorageReference fStorageRef;
 
     private Uri mImageUri;
+    private CharSequence[] chooseType = new CharSequence[]{
+            "Image",
+            "Pdf",
+            "Audio",
+            "Video"
+    };
+    private String userID;
 
-    String userID;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState)
@@ -68,6 +83,8 @@ public class UploadActivity extends AppCompatActivity
         mImageUpload = findViewById(R.id.imageToUpload);
         mFileName = findViewById(R.id.fileName);
 
+        mBtnTest = findViewById(R.id.btnTest);
+
 
         setupComponents();
         setupListeners();
@@ -76,12 +93,51 @@ public class UploadActivity extends AppCompatActivity
     }
 
 
-    private void openFileChooser()
+    private void openFileChooser(int choose)
     {
+        switch(choose){
+            case 0:
+                openImage();
+                break;
+            case 1:
+                openPdf();
+                break;
+            case 2:
+                openAudio();
+                break;
+            case 3:
+                openVideo();
+                break;
+        }
+    }
+
+    private void openImage(){
         Intent intent = new Intent();
         intent.setType("image/*");
         intent.setAction(Intent.ACTION_GET_CONTENT);
-        startActivityForResult(intent, IMAGE_REQUEST);
+        startActivityForResult(intent, REQUEST_CONTENT);
+    }
+
+
+    private void openPdf(){
+        Intent intent = new Intent();
+        intent.setType("application/pdf");
+        intent.setAction(Intent.ACTION_GET_CONTENT);
+        startActivityForResult(intent, REQUEST_CONTENT);
+    }
+
+    private void openAudio(){
+        Intent intent = new Intent();
+        intent.setType("audio/*");
+        intent.setAction(Intent.ACTION_GET_CONTENT);
+        startActivityForResult(intent, REQUEST_CONTENT);
+    }
+
+    private void openVideo(){
+        Intent intent = new Intent();
+        intent.setType("video/*");
+        intent.setAction(Intent.ACTION_GET_CONTENT);
+        startActivityForResult(intent, REQUEST_CONTENT);
     }
 
     private void uploadImage()
@@ -151,18 +207,19 @@ public class UploadActivity extends AppCompatActivity
         {
             switch (requestCode)
             {
-                case IMAGE_REQUEST:
+                case REQUEST_CONTENT:
                     if (data.getData() == null)
                     {
-                        System.out.println("es null bro");
+                        Log.i("UploadActivity", "Uri's file is null");
                     } else
                     {
                         mImageUri = data.getData();
                         Picasso.with(UploadActivity.this).load(mImageUri).into(mImageUpload);
 
-
+                        System.out.println("type:"+MimeTypeMap.getFileExtensionFromUrl(mImageUri.toString()));
                         setWidthHeight(null, null, mImageUpload);
                     }
+                    break;
             }
         }
     }
@@ -177,20 +234,22 @@ public class UploadActivity extends AppCompatActivity
         fStorage = FirebaseStorage.getInstance();
     }
 
-    private void setupComponents(){
+    private void setupComponents()
+    {
         mImageUpload.setImageResource(R.drawable.ic_upload);
         setWidthHeight(null, null, mImageUpload);
 
     }
 
-    private void setupListeners(){
+    private void setupListeners()
+    {
 
         mImageUpload.setOnClickListener(new View.OnClickListener()
         {
             @Override
             public void onClick(View v)
             {
-                openFileChooser();
+                //openFileChooser();
             }
         });
 
@@ -203,23 +262,71 @@ public class UploadActivity extends AppCompatActivity
 
             }
         });
+
+
+        mBtnTest.setOnClickListener(new View.OnClickListener()
+        {
+            @Override
+            public void onClick(View v)
+            {
+                MaterialAlertDialogBuilder builder = new MaterialAlertDialogBuilder(UploadActivity.this);
+
+                builder.setSingleChoiceItems(chooseType, 0, new DialogInterface.OnClickListener()
+                {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which)
+                    {
+                        Toast.makeText(UploadActivity.this, "" + which, Toast.LENGTH_SHORT).show();
+
+                        dialog.dismiss();
+                        openFileChooser(which);
+
+                    }
+                });
+
+                builder.show();
+            }
+        });
+    }
+
+    private void getExtension(Uri uri)
+    {
+        System.out.println("type:"+MimeTypeMap.getFileExtensionFromUrl(uri.toString()));
+        getMimeType(uri);
+
     }
 
     /**
-     *
      * @param height of the View
-     * @param width of the View
-     *
-     * Set null if you want by default 600 by default
+     * @param width  of the View
+     *               <p>
+     *               Set null if you want by default 600 by default
      */
-    private void setWidthHeight(Integer height, Integer width, View view){
-        if(height == null && width == null){
-            view.getLayoutParams().height =600;
+    private void setWidthHeight(Integer height, Integer width, View view)
+    {
+        if (height == null && width == null)
+        {
+            view.getLayoutParams().height = 600;
             view.getLayoutParams().width = 600;
-        }else{
+        } else
+        {
             view.getLayoutParams().height = height;
             view.getLayoutParams().width = width;
 
         }
+    }
+
+    public void getMimeType(Uri uri) {
+        String mimeType = null;
+        if (uri.getScheme().equals(ContentResolver.SCHEME_CONTENT)) {
+            ContentResolver cr = getApplicationContext().getContentResolver();
+            mimeType = cr.getType(uri);
+        } else {
+            String fileExtension = MimeTypeMap.getFileExtensionFromUrl(uri
+                    .toString());
+            mimeType = MimeTypeMap.getSingleton().getMimeTypeFromExtension(
+                    fileExtension.toLowerCase());
+        }
+        System.out.println(mimeType);
     }
 }
