@@ -1,7 +1,8 @@
 package com.example.finalprojectapplication.Model;
 
-public class Image
+public class Data
 {
+
     private String name;
     private String url;
     private String type;
@@ -9,7 +10,7 @@ public class Image
 
 
 
-    public Image()
+    public Data()
     {
     }
 
@@ -54,3 +55,5 @@ public class Image
         this.size = size;
     }
 }
+
+

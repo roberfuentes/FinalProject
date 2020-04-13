@@ -1,18 +1,15 @@
 package com.example.finalprojectapplication.Model;
 
-public class Image
+public class Pdf
 {
     private String name;
-    private String url;
     private String type;
+    private String url;
     private long size;
 
-
-
-    public Image()
+    public Pdf()
     {
     }
-
 
     public String getName()
     {
@@ -24,14 +21,14 @@ public class Image
         this.name = name;
     }
 
-    public String getUrl()
+    public long getSize()
     {
-        return url;
+        return size;
     }
 
-    public void setUrl(String url)
+    public void setSize(long size)
     {
-        this.url = url;
+        this.size = size;
     }
 
     public String getType()
@@ -42,15 +39,5 @@ public class Image
     public void setType(String type)
     {
         this.type = type;
-    }
-
-    public long getSize()
-    {
-        return size;
-    }
-
-    public void setSize(long size)
-    {
-        this.size = size;
     }
 }

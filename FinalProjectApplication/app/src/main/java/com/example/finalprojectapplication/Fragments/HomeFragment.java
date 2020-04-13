@@ -2,6 +2,7 @@ package com.example.finalprojectapplication.Fragments;
 
 
 import android.Manifest;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
@@ -12,27 +13,22 @@ import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.GridLayoutManager;
-import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.TextView;
+import android.widget.Toast;
 
-import com.example.finalprojectapplication.Activities.Main.MainActivity;
 import com.example.finalprojectapplication.Activities.Main.UploadActivity;
-import com.example.finalprojectapplication.Adapters.ImageAdapter;
-import com.example.finalprojectapplication.Model.Image;
-import com.example.finalprojectapplication.Model.User;
+import com.example.finalprojectapplication.Adapters.DataAdapter;
+import com.example.finalprojectapplication.Model.Data;
 import com.example.finalprojectapplication.R;
-import com.firebase.ui.firestore.FirestoreRecyclerAdapter;
 import com.firebase.ui.firestore.FirestoreRecyclerOptions;
+import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.Query;
 import com.google.firebase.storage.FirebaseStorage;
@@ -40,8 +36,9 @@ import com.google.firebase.storage.FirebaseStorage;
 /**
  * A simple {@link Fragment} subclass.
  */
-public class HomeFragment extends Fragment
+public class HomeFragment extends Fragment implements DataAdapter.OnFileListener
 {
+
 
     private static final String TAG = "HomeFragment";
     private static final int REQUEST_STORAGE_WRITE_READ = 1;
@@ -51,7 +48,7 @@ public class HomeFragment extends Fragment
     private FirebaseAuth fAuth;
     private FirebaseFirestore fStore;
     private String userID;
-    private FirestoreRecyclerAdapter adapter;
+    private DataAdapter adapter;
     FirebaseStorage mStorageRef;
 
 
@@ -60,6 +57,12 @@ public class HomeFragment extends Fragment
     private View view;
 
     FloatingActionButton uploadButton;
+
+    private CharSequence[] chooseOption = new CharSequence[]{
+            "Download",
+            "Details",
+            "Delete",
+    };
 
     public HomeFragment()
     {
@@ -83,7 +86,8 @@ public class HomeFragment extends Fragment
         //setup view and data
         setupRecyclerView();
         setupFirebase();
-        setupImages();
+        setupData();
+
         //setupDataInRecycerView();
 
         //setup Components and listeners
@@ -134,78 +138,22 @@ public class HomeFragment extends Fragment
     }
 
 
-    public void setupDataInRecycerView()
-    {
+    private void setupData(){
+        Query query = fStore.collection("data").document(userID).collection("userData");
 
-        Log.i(TAG, "This is the current UID" + userID);
+        FirestoreRecyclerOptions<Data> options = new FirestoreRecyclerOptions.Builder<Data>().setQuery(query, Data.class).build();
 
-        //Query
-        Query query = fStore.collection("users");
+        //FirestoreRecyclerOptions<Image> options = new FirestoreRecyclerOptions.Builder<Image>().setLifecycleOwner(this).setQuery(query,Image.class ).build();
 
-        //RecyclerOptions
-               FirestoreRecyclerOptions<User> options = new FirestoreRecyclerOptions.Builder<User>()
-                .setQuery(query, User.class)
-                .build();
+        adapter = new DataAdapter(options, getContext(), this, fStore, fAuth);
 
-        //RecyclerAdapter
-        adapter = new FirestoreRecyclerAdapter<User, UserViewHolder>(options)
-        {
-            @NonNull
-            @Override
-            public UserViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType)
-            {
-                System.out.println("view holder");
-                View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.list_single_file, parent, false);
-                return new UserViewHolder(view);
-            }
-
-            @Override
-            protected void onBindViewHolder(@NonNull UserViewHolder holder, int position, @NonNull User model)
-            {
-                holder.singleFileName.setText(model.getName());
-
-            }
-        };
-
-        //recyclerView.setHasFixedSize(true);
-        recyclerView.setLayoutManager(new GridLayoutManager(getContext(), 2));
-        recyclerView.setAdapter(adapter);
-
-        System.out.println("work");
-
-
-    }
-
-    private void setupImages(){
-        Query query = fStore.collection("data").document(userID).collection("images");
-        FirestoreRecyclerOptions<Image> options = new FirestoreRecyclerOptions.Builder<Image>().setQuery(query,Image.class ).build();
-
-        adapter = new ImageAdapter(options, getContext());
-        
         recyclerView.setLayoutManager(new GridLayoutManager(getContext(), 2));
 
+
+
+
         recyclerView.setAdapter(adapter);
-        
-
     }
-
-
-
-
-    private class UserViewHolder extends RecyclerView.ViewHolder
-    {
-
-        private TextView singleFileName;
-
-        public UserViewHolder(@NonNull View itemView)
-        {
-            super(itemView);
-
-            singleFileName = itemView.findViewById(R.id.singleFileName);
-        }
-    }
-
-
     //LifeCycle
 
     @Override
@@ -231,6 +179,46 @@ public class HomeFragment extends Fragment
         adapter.startListening();
     }
 
+
+    @Override
+    public void onFileClick(int position)
+    {
+        Log.d("ITEM CLICK", "Clicked item:" + position);
+
+        //adapter.deleteItem(position);
+        adapter.getInfoItem(position);
+    }
+
+    @Override
+    public void onFileLongClickListener(final int position)
+    {
+        final MaterialAlertDialogBuilder builder = new MaterialAlertDialogBuilder(getContext());
+        builder.setSingleChoiceItems(chooseOption, 0, new DialogInterface.OnClickListener()
+        {
+            @Override
+            public void onClick(DialogInterface dialog, int which)
+            {
+                switch (which){
+                    case 0:
+                        dialog.dismiss();
+                        Toast.makeText(getContext(), "This should downnload", Toast.LENGTH_SHORT).show();
+                        break;
+                    case 1:
+                        adapter.getInfoItem(position);
+                        dialog.dismiss();
+                        Toast.makeText(getContext(), "This should details", Toast.LENGTH_SHORT).show();
+                        break;
+                    case 2:
+                        adapter.deleteItem(position);
+                        dialog.dismiss();
+                        Toast.makeText(getContext(), "This should delete", Toast.LENGTH_SHORT).show();
+                        break;
+                }
+            }
+        });
+
+        builder.show();
+    }
 
     //Permissionsç
     private void openUploadDialog()
@@ -260,6 +248,7 @@ public class HomeFragment extends Fragment
         {
             openUploadDialog();
         }
-
     }
+
+
 }
