@@ -1,8 +1,11 @@
 package com.example.finalprojectapplication.Adapters;
 
+import android.app.DownloadManager;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.net.Uri;
+import android.os.Environment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -16,6 +19,7 @@ import com.example.finalprojectapplication.R;
 import com.firebase.ui.firestore.FirestoreRecyclerAdapter;
 import com.firebase.ui.firestore.FirestoreRecyclerOptions;
 import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.google.firebase.auth.FirebaseAuth;
@@ -24,8 +28,11 @@ import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.QuerySnapshot;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageReference;
 import com.squareup.picasso.Picasso;
 
+import java.io.File;
 import java.util.Map;
 
 import androidx.annotation.NonNull;
@@ -149,21 +156,58 @@ public class DataAdapter extends FirestoreRecyclerAdapter<Data, DataAdapter.Data
                 if(task.isSuccessful()){
                     DocumentSnapshot documentSnapshot = task.getResult();
                     if(documentSnapshot.exists()){
+
                         Data data = documentSnapshot.toObject(Data.class);
-                        System.out.println(data.getName());
-                        System.out.println(data.getUrl());
+                    }
+                }
+            }
+
+        });
+    }
+
+    public DocumentReference getInfoFile(int position){
+        return getSnapshots().getSnapshot(position).getReference();
+    }
+
+    public void downloadUrl(int position){
+        DocumentReference fileRef = getInfoFile(position);
+
+        fileRef.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>()
+        {
+            @Override
+            public void onComplete(@NonNull Task<DocumentSnapshot> task)
+            {
+                if(task.isSuccessful()){
+                    DocumentSnapshot documentSnapshot = task.getResult();
+                    if(documentSnapshot.exists()){
+                        Data data = documentSnapshot.toObject(Data.class);
+                        String type = data.getType();
+
+                        switch(type){
+                            case "image":
+                                //StorageReference storageReference = FirebaseStorage.getInstance().getReference();
+                                //storageReference = storageReference.child("images/"+data.getUrl());
+
+                                downloadFile(mContext, data.getName(), Environment.DIRECTORY_DOWNLOADS, data.getUrl());
+                        }
 
                     }
                 }
             }
         });
+    }
 
+    private void downloadFile(Context context, String fileName, String destinationDirectory, String url){
 
+        DownloadManager downloadManager = (DownloadManager) context.getSystemService(Context.DOWNLOAD_SERVICE);
+        Uri uri = Uri.parse(url);
+        DownloadManager.Request request = new DownloadManager.Request(uri);
 
+        request.setNotificationVisibility(DownloadManager.Request.VISIBILITY_VISIBLE_NOTIFY_COMPLETED);
+        request.setDestinationInExternalFilesDir(context, destinationDirectory, fileName);
 
-
-
-
+        System.out.println("Downloading");
+        downloadManager.enqueue(request);
     }
 
 }

@@ -201,6 +201,7 @@ public class HomeFragment extends Fragment implements DataAdapter.OnFileListener
                 switch (which){
                     case 0:
                         dialog.dismiss();
+                        adapter.downloadUrl(position);
                         Toast.makeText(getContext(), "This should downnload", Toast.LENGTH_SHORT).show();
                         break;
                     case 1:
