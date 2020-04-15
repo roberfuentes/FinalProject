@@ -21,6 +21,8 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Toast;
 
+import com.example.finalprojectapplication.Activities.Main.InfoActivity;
+import com.example.finalprojectapplication.Activities.Main.MainActivity;
 import com.example.finalprojectapplication.Activities.Main.UploadActivity;
 import com.example.finalprojectapplication.Adapters.DataAdapter;
 import com.example.finalprojectapplication.Model.Data;
@@ -29,6 +31,7 @@ import com.firebase.ui.firestore.FirestoreRecyclerOptions;
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.Query;
 import com.google.firebase.storage.FirebaseStorage;
@@ -68,6 +71,8 @@ public class HomeFragment extends Fragment implements DataAdapter.OnFileListener
     {
         setRetainInstance(true);
     }
+
+
 
 
     @Override
@@ -186,7 +191,7 @@ public class HomeFragment extends Fragment implements DataAdapter.OnFileListener
         Log.d("ITEM CLICK", "Clicked item:" + position);
 
         //adapter.deleteItem(position);
-        adapter.getInfoItem(position);
+        //Picture
     }
 
     @Override
@@ -205,12 +210,24 @@ public class HomeFragment extends Fragment implements DataAdapter.OnFileListener
                         Toast.makeText(getContext(), "This should downnload", Toast.LENGTH_SHORT).show();
                         break;
                     case 1:
-                        adapter.getInfoItem(position);
+
+                        DocumentReference fileRef = adapter.getInfoFile(position);
+                        System.out.println("FILE ID " + fileRef.getId());
+                        Data data = new Data();
+                        data.setUrl(fileRef.getId());
+
+
+                        Bundle bundle = new Bundle();
+                        bundle.putParcelable("data", data);
+
+                        Intent intent = new Intent(getContext(), InfoActivity.class);
+                        intent.putExtras(bundle);
+                        startActivity(intent);
                         dialog.dismiss();
-                        Toast.makeText(getContext(), "This should details", Toast.LENGTH_SHORT).show();
                         break;
+
                     case 2:
-                        adapter.deleteItem(position);
+                        adapter.deleteFile(position);
                         dialog.dismiss();
                         Toast.makeText(getContext(), "This should delete", Toast.LENGTH_SHORT).show();
                         break;
@@ -219,6 +236,12 @@ public class HomeFragment extends Fragment implements DataAdapter.OnFileListener
         });
 
         builder.show();
+    }
+
+    @Override
+    public Data getInfoData(Data data)
+    {
+        return data;
     }
 
     //Permissionsç
@@ -234,7 +257,6 @@ public class HomeFragment extends Fragment implements DataAdapter.OnFileListener
 
             Intent intent = new Intent(getActivity(), UploadActivity.class);
             startActivity(intent);
-            //new UploadDialog(getActivity());  Dialog Abandoned
 
         } else
         {

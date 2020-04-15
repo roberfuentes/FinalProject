@@ -11,29 +11,20 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
-import android.widget.Toast;
 
-import com.example.finalprojectapplication.Activities.Main.UploadActivity;
 import com.example.finalprojectapplication.Model.Data;
 import com.example.finalprojectapplication.R;
 import com.firebase.ui.firestore.FirestoreRecyclerAdapter;
 import com.firebase.ui.firestore.FirestoreRecyclerOptions;
 import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.Task;
-import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
-import com.google.firebase.firestore.Query;
-import com.google.firebase.firestore.QuerySnapshot;
-import com.google.firebase.storage.FirebaseStorage;
-import com.google.firebase.storage.StorageReference;
 import com.squareup.picasso.Picasso;
 
-import java.io.File;
-import java.util.Map;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
@@ -45,6 +36,8 @@ public class DataAdapter extends FirestoreRecyclerAdapter<Data, DataAdapter.Data
     private OnFileListener onFileListener;
     FirebaseFirestore fStore;
     FirebaseAuth fAuth;
+
+    Data data;
 
 
 
@@ -113,6 +106,10 @@ public class DataAdapter extends FirestoreRecyclerAdapter<Data, DataAdapter.Data
             onFileListener.onFileLongClickListener(getAdapterPosition());
             return true;
         }
+
+
+
+
     }
 
 
@@ -137,33 +134,14 @@ public class DataAdapter extends FirestoreRecyclerAdapter<Data, DataAdapter.Data
     public interface OnFileListener{
         void onFileClick(int position);
         void onFileLongClickListener(int position);
+        Data getInfoData(Data data);
     }
 
 
-    public void deleteItem(int position){
+    public void deleteFile(int position){
         getSnapshots().getSnapshot(position).getReference().delete();
     }
-    public void getInfoItem(int position){
-        System.out.println("Id:"+getSnapshots().getSnapshot(position).getReference().getId());
 
-
-        DocumentReference itemRef = getSnapshots().getSnapshot(position).getReference();
-        itemRef.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>()
-        {
-            @Override
-            public void onComplete(@NonNull Task<DocumentSnapshot> task)
-            {
-                if(task.isSuccessful()){
-                    DocumentSnapshot documentSnapshot = task.getResult();
-                    if(documentSnapshot.exists()){
-
-                        Data data = documentSnapshot.toObject(Data.class);
-                    }
-                }
-            }
-
-        });
-    }
 
     public DocumentReference getInfoFile(int position){
         return getSnapshots().getSnapshot(position).getReference();
@@ -182,12 +160,10 @@ public class DataAdapter extends FirestoreRecyclerAdapter<Data, DataAdapter.Data
                     if(documentSnapshot.exists()){
                         Data data = documentSnapshot.toObject(Data.class);
                         String type = data.getType();
-
                         switch(type){
                             case "image":
                                 //StorageReference storageReference = FirebaseStorage.getInstance().getReference();
                                 //storageReference = storageReference.child("images/"+data.getUrl());
-
                                 downloadFile(mContext, data.getName(), Environment.DIRECTORY_DOWNLOADS, data.getUrl());
                         }
 
@@ -208,6 +184,49 @@ public class DataAdapter extends FirestoreRecyclerAdapter<Data, DataAdapter.Data
 
         System.out.println("Downloading");
         downloadManager.enqueue(request);
+    }
+    
+    
+    public void infoFile(int position){
+        DocumentReference fileRef = getInfoFile(position);
+
+        fileRef.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>()
+        {
+            @Override
+            public void onComplete(@NonNull Task<DocumentSnapshot> task)
+            {
+
+                if(task.isSuccessful()){
+                    System.out.println("Is succesfull");
+                    DocumentSnapshot documentSnapshot = task.getResult();
+
+                    if(documentSnapshot.exists()){
+                        System.out.println("Exists");
+                        Data data = documentSnapshot.toObject(Data.class);
+                        setData(data);
+
+                    }
+                }
+            }
+        }).addOnFailureListener(new OnFailureListener()
+        {
+            @Override
+            public void onFailure(@NonNull Exception e)
+            {
+
+            }
+        });
+
+    }
+
+    public void setData(Data data){
+        System.out.println("Setting data");
+        this.data = data;
+    }
+
+    public Data getData(){
+        System.out.println("Getting data");
+        return data;
     }
 
 }

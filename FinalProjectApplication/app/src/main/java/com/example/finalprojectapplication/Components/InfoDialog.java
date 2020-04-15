@@ -16,11 +16,11 @@ import com.example.finalprojectapplication.R;
 
 
 //Dialog Abandoned
-public class UploadDialog
+public class InfoDialog
 {
     Activity activity;
 
-    public UploadDialog(final Activity activity){
+    public InfoDialog(final Activity activity){
         this.activity = activity;
 
         final Dialog dialog = new Dialog(activity);
@@ -38,6 +38,8 @@ public class UploadDialog
             public void onClick(View v)
             {
                 System.out.println("Image working");
+
+
 
                 Intent takePicture = new Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
                 activity.startActivityForResult(takePicture, 0);

@@ -1,6 +1,9 @@
 package com.example.finalprojectapplication.Model;
 
-public class Data
+import android.os.Parcel;
+import android.os.Parcelable;
+
+public class Data implements Parcelable
 {
 
     private String name;
@@ -54,6 +57,43 @@ public class Data
     {
         this.size = size;
     }
+
+
+
+    //Parcelling part
+    @Override
+    public int describeContents()
+    {
+        return 0;
+    }
+
+    @Override
+    public void writeToParcel(Parcel dest, int flags)
+    {
+        dest.writeString(this.name);
+        dest.writeString(this.url);
+        dest.writeString(this.type);
+        dest.writeLong(this.size);
+    }
+
+    public static final Parcelable.Creator CREATOR = new Parcelable.Creator(){
+        public Data createFromParcel(Parcel in){
+            return new Data(in);
+        }
+
+        public Data[] newArray(int size){
+            return new Data[size];
+        }
+    };
+
+    public Data (Parcel in){
+        this.name = in.readString();
+        this.url = in.readString();
+        this.size = in.readLong();
+        this.type = in.readString();
+    }
+
+
 }
 
 
