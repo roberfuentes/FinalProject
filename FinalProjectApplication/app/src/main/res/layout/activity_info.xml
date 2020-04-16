@@ -3,53 +3,123 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     tools:context=".Activities.Main.InfoActivity">
 
-    <ImageView
-        android:id="@+id/infoPicture"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:minWidth="200dp"
-        android:minHeight="150dp"
-        android:layout_marginTop="20dp"
-        android:layout_centerHorizontal="true"
-        />
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="220dp"
+        android:id="@+id/topLinear"
+        android:orientation="horizontal"
+        android:gravity="center_horizontal"
+        android:background="@color/colorBlueLight">
+
+        <androidx.cardview.widget.CardView
+            android:layout_marginTop="10dp"
+            android:layout_marginBottom="10dp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/infoCardViewImage"
+            android:background="@color/colorBlueLight"
+            android:layout_gravity="center">
+
+            <ImageView
+                android:id="@+id/infoPicture"
+                android:scaleType="centerCrop"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"/>
+
+        </androidx.cardview.widget.CardView>
+    </LinearLayout>
+
     <LinearLayout
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="15dp"
-        android:layout_below="@+id/infoPicture"
+        android:layout_below="@+id/topLinear"
         android:orientation="vertical"
-        >
-        <TextView
-            android:id="@+id/infoName"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginBottom="10dp"
-            android:drawableEnd="@drawable/ic_edit_outlined"
-            />
-
-        <TextView
-            android:id="@+id/infoSize"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginBottom="10dp"
-            />
-
-        <TextView
-            android:id="@+id/infoType"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginBottom="10dp"
-            />
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="40dp">
 
         <androidx.cardview.widget.CardView
             android:layout_width="300dp"
             android:layout_height="120dp"
-            android:id="@+id/infoCardView"/>
+            android:id="@+id/infoEditableCardView"
+            app:cardElevation="5dp"
+            >
+
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent">
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/titleEditableCard"
+                    android:layout_centerHorizontal="true"
+                    android:textAlignment="center"
+                    android:text="Editable information of the file"
+                    android:layout_marginBottom="5dp"
+                    android:drawableEnd="@drawable/ic_edit_outlined"
+                    android:textColor="@color/colorBlack"/>
+
+                <TextView
+                    android:id="@+id/infoName"
+                    android:layout_below="@id/titleEditableCard"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="10dp"/>
+
+
+            </RelativeLayout>
+
+        </androidx.cardview.widget.CardView>
+
+        <androidx.cardview.widget.CardView
+            android:layout_width="300dp"
+            android:layout_height="120dp"
+            android:id="@+id/infoCardView"
+            android:layout_marginTop="30dp"
+            android:layout_marginBottom="20dp"
+            app:cardElevation="5dp"
+
+            >
+
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent">
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/titleInfoCard"
+                    android:layout_centerHorizontal="true"
+                    android:textAlignment="center"
+                    android:text="Information about file"
+                    android:layout_marginBottom="5dp"
+                    android:drawableEnd="@drawable/ic_description_outlined"
+                    android:textColor="@color/colorBlack"/>
+
+                <TextView
+                    android:id="@+id/infoSize"
+
+                    android:layout_below="@+id/titleInfoCard"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="10dp"/>
+
+                <TextView
+                    android:id="@+id/infoType"
+                    android:layout_below="@id/infoSize"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="10dp"/>
+
+            </RelativeLayout>
+
+        </androidx.cardview.widget.CardView>
+
     </LinearLayout>
-
-
 
 
 </RelativeLayout>

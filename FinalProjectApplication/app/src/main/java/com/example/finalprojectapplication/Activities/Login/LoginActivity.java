@@ -44,6 +44,8 @@ public class LoginActivity extends AppCompatActivity
         //Views
         mEtEmail = findViewById(R.id.etEmail);
         mEtPassword = findViewById(R.id.etPassword);
+        mEtEmail.setText("rober97frr@gmail.com");
+        mEtPassword.setText("123456");
 
         mBtnLogin = findViewById(R.id.btnLogin);
         mBtnRegisterEmail = findViewById(R.id.btnRegisterEmail);
