@@ -7,6 +7,11 @@ public class User
 {
 
     String name;
+    String email;
+    String password;
+    String location;
+    String age;
+    String profilePictureUrl;
 
     public User(){
 
@@ -25,6 +30,56 @@ public class User
         this.name = name;
     }
 
+    public String getEmail()
+    {
+        return email;
+    }
+
+    public void setEmail(String email)
+    {
+        this.email = email;
+    }
+
+    public String getPassword()
+    {
+        return password;
+    }
+
+    public void setPassword(String password)
+    {
+        this.password = password;
+    }
+
+    public String getLocation()
+    {
+        return location;
+    }
+
+
+    public void setLocation(String location)
+    {
+        this.location = location;
+    }
+
+    public String getAge()
+    {
+        return age;
+    }
+
+    public void setAge(String age)
+    {
+        this.age = age;
+    }
+
+    public String getProfilePictureUrl()
+    {
+        return profilePictureUrl;
+    }
+
+    public void setProfilePictureUrl(String profilePictureUrl)
+    {
+        this.profilePictureUrl = profilePictureUrl;
+    }
     //Parcelling part
 
     /*public User(Parcel in){

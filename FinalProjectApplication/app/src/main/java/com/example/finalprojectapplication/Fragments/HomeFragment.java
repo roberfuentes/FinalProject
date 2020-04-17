@@ -146,7 +146,7 @@ public class HomeFragment extends Fragment implements DataAdapter.OnFileListener
     private void setupData(){
         Query query = fStore.collection("data").document(userID).collection("userData");
 
-        FirestoreRecyclerOptions<Data> options = new FirestoreRecyclerOptions.Builder<Data>().setQuery(query, Data.class).build();
+        FirestoreRecyclerOptions<Data> options = new FirestoreRecyclerOptions.Builder<Data>().setLifecycleOwner(getActivity()).setQuery(query, Data.class).build();
 
         //FirestoreRecyclerOptions<Image> options = new FirestoreRecyclerOptions.Builder<Image>().setLifecycleOwner(this).setQuery(query,Image.class ).build();
 
@@ -160,7 +160,7 @@ public class HomeFragment extends Fragment implements DataAdapter.OnFileListener
         recyclerView.setAdapter(adapter);
     }
     //LifeCycle
-
+/*
     @Override
     public void onStart()
     {
@@ -183,7 +183,7 @@ public class HomeFragment extends Fragment implements DataAdapter.OnFileListener
         super.onResume();
         adapter.startListening();
     }
-
+*/
 
     @Override
     public void onFileClick(int position)

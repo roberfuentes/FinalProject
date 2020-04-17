@@ -30,6 +30,12 @@ public class RegisterActivity extends AppCompatActivity
 
     private static final String TAG = "RegisterActivity";
     private static final String KEY_NAME = "name";
+    private static final String KEY_EMAIL = "email";
+    private static final String KEY_PASSWORD = "password";
+    private static final String KEY_LOCATION = "location";
+    private static final String KEY_AGE = "age";
+    private static final String KEY_PROFILE = "profilePictureUrl";
+
 
     private FirebaseAuth fAuth;
     private FirebaseFirestore fStore;
@@ -94,8 +100,8 @@ public class RegisterActivity extends AppCompatActivity
     private void registerAccount()
     {
         final String name = mName.getText().toString();
-        String email = mEmail.getText().toString();
-        String password = mPassword.getText().toString();
+        final String email = mEmail.getText().toString();
+        final String password = mPassword.getText().toString();
         String passwordRepeat = mPasswordRepeat.getText().toString();
 
         if (checkFields(name, email, password, passwordRepeat))
@@ -109,7 +115,7 @@ public class RegisterActivity extends AppCompatActivity
                     {
                         Toast.makeText(RegisterActivity.this, "Succesful!", Toast.LENGTH_SHORT).show();
 
-                        saveUserInCloud(name);
+                        saveUserInCloud(name, email, password);
                         goToMainActivity();
                     } else
                     {
@@ -127,12 +133,18 @@ public class RegisterActivity extends AppCompatActivity
         startActivity(intent);
     }
 
-    private void saveUserInCloud(String name)
+    private void saveUserInCloud(String name, String email, String password)
     {
         String userID = fAuth.getCurrentUser().getUid();
         DocumentReference db = fStore.collection("users").document(userID);
         Map<String, Object> user = new HashMap<>();
         user.put(KEY_NAME, name);
+        user.put(KEY_EMAIL, email);
+        user.put(KEY_PASSWORD, password);
+        user.put(KEY_LOCATION, "");
+        user.put(KEY_AGE, "");
+        user.put(KEY_PROFILE, "");
+
         System.out.println("There we go");
 
         db.set(user).addOnSuccessListener(new OnSuccessListener<Void>()
