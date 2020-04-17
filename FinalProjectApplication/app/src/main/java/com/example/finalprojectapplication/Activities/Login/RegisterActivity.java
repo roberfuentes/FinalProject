@@ -147,6 +147,7 @@ public class RegisterActivity extends AppCompatActivity
 
         System.out.println("There we go");
 
+
         db.set(user).addOnSuccessListener(new OnSuccessListener<Void>()
         {
             @Override

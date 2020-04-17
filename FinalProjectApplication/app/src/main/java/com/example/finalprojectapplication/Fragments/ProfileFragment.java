@@ -1,6 +1,7 @@
 package com.example.finalprojectapplication.Fragments;
 
 
+import android.app.AlertDialog;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
@@ -10,7 +11,9 @@ import androidx.fragment.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.example.finalprojectapplication.Model.User;
@@ -21,7 +24,6 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
-import com.google.firebase.storage.FirebaseStorage;
 import com.squareup.picasso.Picasso;
 
 /**
@@ -30,15 +32,19 @@ import com.squareup.picasso.Picasso;
 public class ProfileFragment extends Fragment
 {
 
-    FirebaseFirestore fstore;
-    FirebaseAuth fAuth;
+    private FirebaseFirestore fstore;
+    private FirebaseAuth fAuth;
 
-    String userID;
+    private String userID;
 
-    TextView mProfileName, mProfileEmail, mProfilePassword,  mProfileLocation, mProfileAge;
-    ImageView mProfilePicture;
+    private TextView mProfileName, mProfileEmail, mProfilePassword,  mProfileLocation, mProfileAge;
+    private EditText mProfileNameEdit, mProfileEmailEdit, mProfilePasswordEdit,  mProfileLocationEdit, mProfileAgeEdit;
+    private ImageView mProfilePicture;
 
-    View view;
+    private LinearLayout mContainerInfo, mContainerEditInfo;
+
+    private View view;
+
 
     public ProfileFragment()
     {
@@ -63,11 +69,16 @@ public class ProfileFragment extends Fragment
         setupFirebase();
         setupViewComponents();
         getUserInformation();
+        setupListeners();
 
 
     }
 
     public void setupViewComponents(){
+
+        mContainerInfo = view.findViewById(R.id.containerInformation);
+        mContainerEditInfo = view.findViewById(R.id.containerEditInformation);
+
 
         mProfilePicture = view.findViewById(R.id.profilePicture);
         mProfileName = view.findViewById(R.id.profileName);
@@ -76,17 +87,27 @@ public class ProfileFragment extends Fragment
         mProfileAge = view.findViewById(R.id.profileAge);
         mProfileLocation = view.findViewById(R.id.profileLocation);
 
+        mProfileNameEdit = view.findViewById(R.id.profileEditName);
+        mProfileEmailEdit= view.findViewById(R.id.profileEditEmail);
+        mProfilePasswordEdit = view.findViewById(R.id.profileEditPassword);
+        mProfileAgeEdit = view.findViewById(R.id.profileEditAge);
+        mProfileLocationEdit = view.findViewById(R.id.profileEditLocation);
+
+
+
 
     }
 
-    public void setupFirebase(){
+    private void setupFirebase(){
 
         fstore = FirebaseFirestore.getInstance();
         fAuth = FirebaseAuth.getInstance();
         userID = fAuth.getCurrentUser().getUid();
     }
 
-    public void getUserInformation(){
+
+
+    private void getUserInformation(){
         DocumentReference userRef = fstore.collection("users").document(userID);
 
         userRef.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>()
@@ -106,11 +127,11 @@ public class ProfileFragment extends Fragment
                                 Picasso.with(getContext()).load(user.getProfilePictureUrl()).into(mProfilePicture);
                             }
 
-                            mProfileName.setText("Name: "+user.getName());
-                            mProfileEmail.setText("Email: "+user.getEmail());
-                            mProfilePassword.setText("Password: "+user.getPassword());
-                            mProfileAge.setText("Age: "+user.getAge());
-                            mProfileLocation.setText("Location: "+user.getLocation());
+                            mProfileName.setText(user.getName());
+                            mProfileEmail.setText(user.getEmail());
+                            mProfilePassword.setText(user.getPassword());
+                            mProfileAge.setText(user.getAge());
+                            mProfileLocation.setText(user.getLocation());
 
                         }
 
@@ -118,6 +139,28 @@ public class ProfileFragment extends Fragment
                 }
             }
         });
+    }
+
+
+    private void setupListeners(){
+        mProfileName.setOnClickListener(new View.OnClickListener()
+        {
+            @Override
+            public void onClick(View v)
+            {
+                mContainerInfo.setVisibility(View.INVISIBLE);
+                mContainerEditInfo.setVisibility(View.VISIBLE);
+
+                mProfileNameEdit.setText(mProfileName.getText().toString());
+                mProfileEmail.setText(mProfileEmail.getText().toString());
+                mProfilePasswordEdit.setText(mProfilePassword.getText().toString());
+                mProfileAgeEdit.setText(mProfileAge.getText().toString());
+                mProfileLocationEdit.setText(mProfileLocation.getText().toString());
+
+            }
+        });
+
+
     }
 
 }
