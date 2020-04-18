@@ -33,6 +33,7 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.storage.FirebaseStorage;
 import com.squareup.picasso.Picasso;
 
 import java.util.HashMap;
@@ -78,8 +79,6 @@ public class ProfileFragment extends Fragment implements MenuItem.OnMenuItemClic
     {
         super.onCreate(savedInstanceState);
         setHasOptionsMenu(true);
-
-
     }
 
 
@@ -293,9 +292,5 @@ public class ProfileFragment extends Fragment implements MenuItem.OnMenuItemClic
 
         containerInTextMode();
     }
-
-
-
-
 
 }

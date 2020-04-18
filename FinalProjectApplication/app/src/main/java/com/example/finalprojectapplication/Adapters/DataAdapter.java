@@ -2,8 +2,6 @@ package com.example.finalprojectapplication.Adapters;
 
 import android.app.DownloadManager;
 import android.content.Context;
-import android.content.DialogInterface;
-import android.content.Intent;
 import android.net.Uri;
 import android.os.Environment;
 import android.view.LayoutInflater;
@@ -11,19 +9,27 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.example.finalprojectapplication.Model.Data;
 import com.example.finalprojectapplication.R;
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.android.gms.tasks.Task;
+
 import com.firebase.ui.firestore.FirestoreRecyclerAdapter;
 import com.firebase.ui.firestore.FirestoreRecyclerOptions;
-import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.OnFailureListener;
-import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
+
+
+import com.google.firebase.storage.FirebaseStorage;
 import com.squareup.picasso.Picasso;
+
+import java.util.ArrayList;
+
 
 
 import androidx.annotation.NonNull;
@@ -36,18 +42,22 @@ public class DataAdapter extends FirestoreRecyclerAdapter<Data, DataAdapter.Data
     private OnFileListener onFileListener;
     FirebaseFirestore fStore;
     FirebaseAuth fAuth;
+    FirebaseStorage fStorage;
+
 
     Data data;
 
+    ArrayList<String> fileUrl = new ArrayList<>();
 
 
-    public DataAdapter(@NonNull FirestoreRecyclerOptions<Data> options, Context context, OnFileListener onFileListener, FirebaseFirestore fStore, FirebaseAuth fAuth)
+    public DataAdapter(@NonNull FirestoreRecyclerOptions<Data> options, Context context, OnFileListener onFileListener, FirebaseFirestore fStore, FirebaseAuth fAuth, FirebaseStorage fStorage)
     {
         super(options);
         this.mContext= context;
         this.onFileListener = onFileListener;
         this.fStore = fStore;
         this.fAuth = fAuth;
+        this.fStorage = fStorage;
     }
 
 
@@ -60,6 +70,7 @@ public class DataAdapter extends FirestoreRecyclerAdapter<Data, DataAdapter.Data
 
         holder.singleFileName.setText(model.getName());
         System.out.println(model.getUrl());
+        fileUrl.add(model.getUrl());
 
         setTypePicture(model.getType(), holder, model);
 
@@ -74,6 +85,8 @@ public class DataAdapter extends FirestoreRecyclerAdapter<Data, DataAdapter.Data
         View v = LayoutInflater.from(parent.getContext()).inflate(R.layout.list_single_file, parent, false);
         return new DataHolder(v);
     }
+
+
 
 
 
@@ -134,12 +147,31 @@ public class DataAdapter extends FirestoreRecyclerAdapter<Data, DataAdapter.Data
     public interface OnFileListener{
         void onFileClick(int position);
         void onFileLongClickListener(int position);
-        Data getInfoData(Data data);
     }
 
 
     public void deleteFile(int position){
-        getSnapshots().getSnapshot(position).getReference().delete();
+        getSnapshots().getSnapshot(position).getReference().delete().addOnSuccessListener(new OnSuccessListener<Void>()
+        {
+            @Override
+            public void onSuccess(Void aVoid)
+            {
+                Toast.makeText(mContext, "Data has been deleted from Database", Toast.LENGTH_SHORT).show();
+            }
+        });
+        String url = fileUrl.get(position);
+        fStorage.getReferenceFromUrl(url).delete().addOnSuccessListener(new OnSuccessListener<Void>()
+        {
+            @Override
+            public void onSuccess(Void aVoid)
+            {
+                Toast.makeText(mContext, "Data has been deleted from Storage", Toast.LENGTH_SHORT).show();
+            }
+        });
+        fileUrl.remove(position);
+
+
+
     }
 
 
@@ -186,38 +218,7 @@ public class DataAdapter extends FirestoreRecyclerAdapter<Data, DataAdapter.Data
         downloadManager.enqueue(request);
     }
     
-    
-    public void infoFile(int position){
-        DocumentReference fileRef = getInfoFile(position);
 
-        fileRef.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>()
-        {
-            @Override
-            public void onComplete(@NonNull Task<DocumentSnapshot> task)
-            {
-
-                if(task.isSuccessful()){
-                    System.out.println("Is succesfull");
-                    DocumentSnapshot documentSnapshot = task.getResult();
-
-                    if(documentSnapshot.exists()){
-                        System.out.println("Exists");
-                        Data data = documentSnapshot.toObject(Data.class);
-                        setData(data);
-
-                    }
-                }
-            }
-        }).addOnFailureListener(new OnFailureListener()
-        {
-            @Override
-            public void onFailure(@NonNull Exception e)
-            {
-
-            }
-        });
-
-    }
 
     public void setData(Data data){
         System.out.println("Setting data");

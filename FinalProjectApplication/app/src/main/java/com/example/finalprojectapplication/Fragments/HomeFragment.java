@@ -52,7 +52,8 @@ public class HomeFragment extends Fragment implements DataAdapter.OnFileListener
     private FirebaseFirestore fStore;
     private String userID;
     private DataAdapter adapter;
-    FirebaseStorage mStorageRef;
+    private FirebaseStorage fStorage;
+
 
 
 
@@ -138,6 +139,8 @@ public class HomeFragment extends Fragment implements DataAdapter.OnFileListener
         fAuth = FirebaseAuth.getInstance();
         fStore = FirebaseFirestore.getInstance();
         userID = fAuth.getCurrentUser().getUid();
+        fStorage = FirebaseStorage.getInstance();
+
 
 
     }
@@ -150,7 +153,7 @@ public class HomeFragment extends Fragment implements DataAdapter.OnFileListener
 
         //FirestoreRecyclerOptions<Image> options = new FirestoreRecyclerOptions.Builder<Image>().setLifecycleOwner(this).setQuery(query,Image.class ).build();
 
-        adapter = new DataAdapter(options, getContext(), this, fStore, fAuth);
+        adapter = new DataAdapter(options, getContext(), this, fStore, fAuth, fStorage);
 
         recyclerView.setLayoutManager(new GridLayoutManager(getContext(), 2));
 
@@ -238,13 +241,8 @@ public class HomeFragment extends Fragment implements DataAdapter.OnFileListener
         builder.show();
     }
 
-    @Override
-    public Data getInfoData(Data data)
-    {
-        return data;
-    }
 
-    //Permissionsç
+    //Permissions
     private void openUploadDialog()
     {
         String[] permissions = {Manifest.permission.READ_EXTERNAL_STORAGE,

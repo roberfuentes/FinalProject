@@ -429,6 +429,15 @@ public class UploadActivity extends AppCompatActivity
 
             }
         });
+
+        mBtnTest.setOnClickListener(new View.OnClickListener()
+        {
+            @Override
+            public void onClick(View v)
+            {
+                testDeleteFile();
+            }
+        });
     }
 
 
@@ -453,4 +462,24 @@ public class UploadActivity extends AppCompatActivity
     }
 
 
+
+    public void testDeleteFile(){
+        StorageReference storageReference = fStorage.getReferenceFromUrl("https://firebasestorage.googleapis.com/v0/b/finalprojectapplication-c06eb.appspot.com/o/I%2F1586968891235?alt=media&token=ff74ae6a-bd54-42be-8ec6-7324761028dc");
+        storageReference.delete().addOnSuccessListener(new OnSuccessListener<Void>()
+        {
+            @Override
+            public void onSuccess(Void aVoid)
+            {
+                Toast.makeText(UploadActivity.this, "Works delete", Toast.LENGTH_SHORT).show();
+            }
+        }).addOnFailureListener(new OnFailureListener()
+        {
+            @Override
+            public void onFailure(@NonNull Exception e)
+            {
+                Toast.makeText(UploadActivity.this, "NOT delete", Toast.LENGTH_SHORT).show();
+            }
+        });
+
+    }
 }
