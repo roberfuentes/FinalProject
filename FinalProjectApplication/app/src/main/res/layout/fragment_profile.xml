@@ -7,12 +7,30 @@
     tools:context=".Fragments.ProfileFragment">
 
 
+
+    <com.google.android.material.appbar.MaterialToolbar
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:contentInsetStart="0dp"
+        >
+
+        <androidx.appcompat.widget.Toolbar
+            android:id="@+id/profile_editToolbar"
+            android:layout_width="match_parent"
+            android:layout_height="?attr/actionBarSize"
+            android:background="@color/colorWhite"
+            />
+
+    </com.google.android.material.appbar.MaterialToolbar>
+
     <LinearLayout
         android:id="@+id/containerPicture"
         android:layout_width="match_parent"
         android:layout_height="220dp"
         android:background="@color/colorBlueLight"
-        android:gravity="center">
+        android:gravity="center"
+        android:layout_marginTop="?attr/actionBarSize"
+        >
 
         <de.hdodenhof.circleimageview.CircleImageView
             android:id="@+id/profilePicture"

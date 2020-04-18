@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    >
+
+
+
+    <item
+        android:id="@+id/edit_pen_action"
+        android:title="Edit pen"
+        android:icon="@drawable/ic_edit_filled"
+        android:visible="true"
+        app:showAsAction="ifRoom"
+        />
+
+    <item
+        android:id="@+id/cancel_edit_action"
+        android:title="Cancel edit"
+        android:icon="@drawable/ic_cancel_filled"
+        app:showAsAction="ifRoom"
+        android:visible="false"/>
+
+    <item
+        android:id="@+id/check_edit_action"
+        android:title="Check edit"
+        android:icon="@drawable/ic_check_filled"
+        app:showAsAction="ifRoom"
+        android:visible="false"/>
+
+
+
+
+
+
+</menu>

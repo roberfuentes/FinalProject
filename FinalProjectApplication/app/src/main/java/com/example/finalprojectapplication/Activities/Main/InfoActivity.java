@@ -2,8 +2,12 @@ package com.example.finalprojectapplication.Activities.Main;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
 
 import android.os.Bundle;
+import android.view.Menu;
+import android.view.MenuItem;
+import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -29,6 +33,8 @@ public class InfoActivity extends AppCompatActivity
     FirebaseAuth fAuth;
 
 
+    private Toolbar mToolbarEdit;
+    Menu menu;
 
     Data data;
     @Override
@@ -42,9 +48,13 @@ public class InfoActivity extends AppCompatActivity
         mInfoSize = findViewById(R.id.infoSize);
         mInfoType = findViewById(R.id.infoType);
 
+        mToolbarEdit = findViewById(R.id.info_editToolbar);
+
+        setSupportActionBar(mToolbarEdit);
 
         setupFirebase();
         setupInfoData();
+
 
 
     }
@@ -102,4 +112,32 @@ public class InfoActivity extends AppCompatActivity
         fStore = FirebaseFirestore.getInstance();
         fAuth = FirebaseAuth.getInstance();
     }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu)
+    {
+        getMenuInflater().inflate(R.menu.editable_toolbar, menu);
+        this.menu = menu;
+
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item)
+    {
+        switch(item.getItemId()){
+            case R.id.edit_pen_action:
+                menu.findItem(R.id.edit_pen_action).setVisible(false);
+                menu.findItem(R.id.check_edit_action).setVisible(true);
+                menu.findItem(R.id.cancelButton).setVisible(true);
+                break;
+            case R.id.check_edit_action:
+                break;
+            case R.id.cancel_edit_action:
+                break;
+        }
+        return false;
+    }
+
+
 }
