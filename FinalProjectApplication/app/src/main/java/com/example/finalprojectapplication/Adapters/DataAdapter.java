@@ -2,7 +2,9 @@ package com.example.finalprojectapplication.Adapters;
 
 import android.app.DownloadManager;
 import android.content.Context;
+import android.content.Intent;
 import android.net.Uri;
+import android.os.Bundle;
 import android.os.Environment;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -11,6 +13,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.example.finalprojectapplication.Activities.Main.FileViewerActivity;
 import com.example.finalprojectapplication.Model.Data;
 import com.example.finalprojectapplication.R;
 import com.google.android.gms.tasks.OnCompleteListener;
@@ -48,6 +51,7 @@ public class DataAdapter extends FirestoreRecyclerAdapter<Data, DataAdapter.Data
     Data data;
 
     ArrayList<String> fileUrl = new ArrayList<>();
+    ArrayList<String> fileType = new ArrayList<>();
 
 
     public DataAdapter(@NonNull FirestoreRecyclerOptions<Data> options, Context context, OnFileListener onFileListener, FirebaseFirestore fStore, FirebaseAuth fAuth, FirebaseStorage fStorage)
@@ -71,6 +75,7 @@ public class DataAdapter extends FirestoreRecyclerAdapter<Data, DataAdapter.Data
         holder.singleFileName.setText(model.getName());
         System.out.println(model.getUrl());
         fileUrl.add(model.getUrl());
+        fileType.add(model.getType());
 
         setTypePicture(model.getType(), holder, model);
 
@@ -85,6 +90,7 @@ public class DataAdapter extends FirestoreRecyclerAdapter<Data, DataAdapter.Data
         View v = LayoutInflater.from(parent.getContext()).inflate(R.layout.list_single_file, parent, false);
         return new DataHolder(v);
     }
+
 
 
 
@@ -169,6 +175,7 @@ public class DataAdapter extends FirestoreRecyclerAdapter<Data, DataAdapter.Data
             }
         });
         fileUrl.remove(position);
+        fileType.remove(position);
 
 
 
@@ -217,17 +224,35 @@ public class DataAdapter extends FirestoreRecyclerAdapter<Data, DataAdapter.Data
         System.out.println("Downloading");
         downloadManager.enqueue(request);
     }
-    
 
 
-    public void setData(Data data){
-        System.out.println("Setting data");
-        this.data = data;
+    public void readFile(int position){
+
+        String type = fileType.get(position);
+        String url = fileUrl.get(position);
+
+
+
+        if(type==null || url == null || type.equals("") || url.equals("")){
+            Toast.makeText(mContext, "Couldn't retrieve the file try again later", Toast.LENGTH_SHORT).show();
+        }else{
+            fileUrl.clear();
+            fileType.clear();
+
+            DocumentReference fileRef = getInfoFile(position);
+
+
+            Intent intent = new Intent(mContext, FileViewerActivity.class);
+            intent.putExtra("url", url);
+            intent.putExtra("type", type);
+            intent.putExtra("fileRef", fileRef.getId());
+
+            mContext.startActivity(intent);
+        }
     }
 
-    public Data getData(){
-        System.out.println("Getting data");
-        return data;
-    }
+
+
+
 
 }

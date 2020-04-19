@@ -435,7 +435,7 @@ public class UploadActivity extends AppCompatActivity
             @Override
             public void onClick(View v)
             {
-                testDeleteFile();
+                startActivity(new Intent(UploadActivity.this, FileViewerActivity.class));
             }
         });
     }

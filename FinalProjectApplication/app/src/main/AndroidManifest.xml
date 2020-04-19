@@ -13,7 +13,8 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name=".Activities.Main.InfoActivity"></activity>
+        <activity android:name=".Activities.Main.FileViewerActivity" />
+        <activity android:name=".Activities.Main.InfoActivity" />
         <activity android:name=".Activities.Main.UploadActivity" />
         <activity android:name=".Activities.Login.RegisterActivity" />
         <activity android:name=".Activities.Login.LoginActivity">

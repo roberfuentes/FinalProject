@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    tools:context=".Activities.Main.FileViewerActivity"
+    android:id="@+id/mainLayout">
+
+
+    <com.google.android.material.appbar.MaterialToolbar
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:contentInsetStart="0dp">
+
+        <androidx.appcompat.widget.Toolbar
+            android:id="@+id/fileviewer_toolbar"
+            android:layout_width="match_parent"
+            android:layout_height="?attr/actionBarSize"
+            android:visibility="invisible"
+            />
+
+    </com.google.android.material.appbar.MaterialToolbar>
+
+    <com.github.barteksc.pdfviewer.PDFView
+        android:id="@+id/pdfView"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:visibility="invisible"
+        />
+
+    <ImageView
+        android:id="@+id/imageView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerVertical="true"
+        android:layout_centerHorizontal="true"
+        android:visibility="invisible"
+        />
+
+    <TextView
+        android:id="@+id/timeAudio"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="50dp"
+        android:layout_below="@id/imageView"/>
+
+    <SeekBar
+        android:id="@+id/progressAudio"
+        android:layout_marginTop="15dp"
+        android:layout_below="@id/timeAudio"
+        android:layout_width="300dp"
+        android:layout_height="wrap_content"
+        android:layout_centerHorizontal="true"
+        android:visibility="invisible"
+        />
+
+
+    <ImageView
+        android:layout_marginTop="30dp"
+        android:id="@+id/toggleAction"
+        android:layout_width="50dp"
+        android:layout_height="50dp"
+        android:layout_centerHorizontal="true"
+        android:layout_below="@id/progressAudio"
+        android:visibility="invisible"
+        />
+
+
+    <com.google.android.exoplayer2.ui.PlayerView
+        android:id="@+id/exoPlayer"
+        app:shutter_background_color="@color/colorBlack"
+        android:background="@color/colorBlack"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:visibility="invisible"
+        />
+
+
+
+
+
+
+
+</RelativeLayout>

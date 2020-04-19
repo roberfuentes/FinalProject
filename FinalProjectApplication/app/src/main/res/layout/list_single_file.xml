@@ -15,22 +15,19 @@
         android:layout_height="match_parent"
         android:orientation="vertical"
         android:gravity="center_horizontal"
-        >
+        android:background="?selectableItemBackgroundBorderless">
         <ImageView
             android:id="@+id/singleFile"
             android:layout_width="match_parent"
             android:layout_height="160dp"
-            android:scaleType="centerCrop"
-            />
+            android:scaleType="centerCrop"/>
         <TextView
             android:id="@+id/singleFileName"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="Textview"
             android:padding="10dp"
-            android:gravity="center"
-
-            />
+            android:gravity="center"/>
     </LinearLayout>
 
 

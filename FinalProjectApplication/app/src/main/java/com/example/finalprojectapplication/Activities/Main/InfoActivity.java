@@ -3,11 +3,14 @@ package com.example.finalprojectapplication.Activities.Main;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
+import androidx.cardview.widget.CardView;
 
 import android.os.Bundle;
+import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -15,6 +18,8 @@ import android.widget.Toast;
 import com.example.finalprojectapplication.Model.Data;
 import com.example.finalprojectapplication.R;
 import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.DocumentReference;
@@ -22,11 +27,17 @@ import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.squareup.picasso.Picasso;
 
+import java.util.HashMap;
+import java.util.Map;
+
 public class InfoActivity extends AppCompatActivity
 {
 
     ImageView mInfoPicture;
-    TextView mInfoName, mInfoSize, mInfoType;
+    TextView mInfoName, mInfoExtraSize, mInfoExtraType;
+    EditText mInfoEditName;
+
+    CardView mInfoCardView, mInfoEditableCardView;
 
 
     FirebaseFirestore fStore;
@@ -37,6 +48,7 @@ public class InfoActivity extends AppCompatActivity
     Menu menu;
 
     Data data;
+    String urlData;
     @Override
     protected void onCreate(Bundle savedInstanceState)
     {
@@ -45,8 +57,12 @@ public class InfoActivity extends AppCompatActivity
 
         mInfoPicture= findViewById(R.id.infoPicture);
         mInfoName = findViewById(R.id.infoName);
-        mInfoSize = findViewById(R.id.infoSize);
-        mInfoType = findViewById(R.id.infoType);
+        mInfoExtraSize = findViewById(R.id.infoExtraSize);
+        mInfoExtraType = findViewById(R.id.infoExtraType);
+        mInfoEditName = findViewById(R.id.infoEditableName);
+
+        mInfoCardView = findViewById(R.id.infoCardView);
+        mInfoEditableCardView = findViewById(R.id.infoEditableCardView);
 
         mToolbarEdit = findViewById(R.id.info_editToolbar);
 
@@ -63,11 +79,19 @@ public class InfoActivity extends AppCompatActivity
 
     public boolean getInfoDataBundle(){
         data = getIntent().getExtras().getParcelable("data");
-        if(data.getUrl()== null){
-            return false;
-        }else{
-            return true;
-        }
+
+            if(data == null){
+                urlData = getIntent().getStringExtra("fileRef");
+                if(urlData == null){
+                    return false;
+                }else{
+                    return true;
+                }
+
+            }else{
+                return true;
+            }
+
     }
     public void setupInfoData(){
         if(getInfoDataBundle()){
@@ -83,11 +107,20 @@ public class InfoActivity extends AppCompatActivity
                         if(documentSnapshot.exists()){
                             Data data = documentSnapshot.toObject(Data.class);
                             if(data!=null){
-                                Picasso.with(InfoActivity.this).load(data.getUrl()).into(mInfoPicture);
+                                if(data.getType().equals("image")){
+                                    Picasso.with(InfoActivity.this).load(data.getUrl()).into(mInfoPicture);
+                                }else if(data.getType().equals("pdf")){
+                                    mInfoPicture.setImageResource(R.drawable.ic_picture_as_pdf_outlined);
+                                }else if(data.getType().equals("video")){
+                                    mInfoPicture.setImageResource(R.drawable.ic_video_outlined);
+                                }else if(data.getType().equals("audio")){
+                                    mInfoPicture.setImageResource(R.drawable.ic_audio_outlined);
+                                }
+
 
                                 mInfoName.setText(data.getName());
-                                mInfoType.setText(data.getType());
-                                mInfoSize.setText(data.getSize()/1000 +" MB");
+                                mInfoExtraType.setText(data.getType());
+                                mInfoExtraSize.setText(data.getSize()/1000 +" MB");
 
                                 mInfoPicture.getLayoutParams().height = 600;
                                 mInfoPicture.getLayoutParams().width = 600;
@@ -102,12 +135,19 @@ public class InfoActivity extends AppCompatActivity
         }
     }
 
-    public DocumentReference getInfoDataFromCloud(){
-        DocumentReference fileRef = fStore.collection("data").document(fAuth.getCurrentUser().getUid()).collection("userData").document(data.getUrl());
-        return fileRef;
-
-
+    public DocumentReference getInfoDataFromCloud()
+    {
+        if (data != null)
+        {
+            DocumentReference fileRef = fStore.collection("data").document(fAuth.getCurrentUser().getUid()).collection("userData").document(data.getUrl());
+            return fileRef;
+        } else
+        {
+            DocumentReference fileRef = fStore.collection("data").document(fAuth.getCurrentUser().getUid()).collection("userData").document(urlData);
+            return fileRef;
+        }
     }
+
     public void setupFirebase(){
         fStore = FirebaseFirestore.getInstance();
         fAuth = FirebaseAuth.getInstance();
@@ -127,17 +167,86 @@ public class InfoActivity extends AppCompatActivity
     {
         switch(item.getItemId()){
             case R.id.edit_pen_action:
-                menu.findItem(R.id.edit_pen_action).setVisible(false);
-                menu.findItem(R.id.check_edit_action).setVisible(true);
-                menu.findItem(R.id.cancelButton).setVisible(true);
+                activeEditMode();
                 break;
             case R.id.check_edit_action:
+                updateData();
                 break;
             case R.id.cancel_edit_action:
+                containerInTextMode();
                 break;
         }
         return false;
     }
 
+    private void activeEditMode(){
+        menu.findItem(R.id.edit_pen_action).setVisible(false);
+        menu.findItem(R.id.check_edit_action).setVisible(true);
+        menu.findItem(R.id.cancel_edit_action).setVisible(true);
 
+
+        containerInEditMode();
+        mInfoEditableCardView.setVisibility(View.VISIBLE);
+        mInfoCardView.setVisibility(View.INVISIBLE);
+
+
+    }
+
+    private void containerInEditMode(){
+        mInfoEditName.setText(mInfoName.getText());
+    }
+
+    private void containerInTextMode(){
+        menu.findItem(R.id.edit_pen_action).setVisible(true);
+        menu.findItem(R.id.check_edit_action).setVisible(false);
+        menu.findItem(R.id.cancel_edit_action).setVisible(false);
+
+        mInfoCardView.setVisibility(View.VISIBLE);
+        mInfoEditableCardView.setVisibility(View.INVISIBLE);
+    }
+
+    private void updateData(){
+
+        updateDataInCloud();
+    }
+
+    private void updateDataInCloud(){
+        final String name = mInfoEditName.getText().toString();
+        if(name.equals("")){
+            Toast.makeText(InfoActivity.this, "Field can't be empty", Toast.LENGTH_SHORT).show();
+        }else{
+            Map<String, Object> info = new HashMap<>();
+            info.put("name", name);
+
+            if(data!=null || urlData!=null){
+                DocumentReference fileRef = getInfoDataFromCloud();
+                fileRef.update(info).addOnSuccessListener(new OnSuccessListener<Void>()
+                {
+                    @Override
+                    public void onSuccess(Void aVoid)
+                    {
+                        Toast.makeText(InfoActivity.this, "File updated", Toast.LENGTH_SHORT).show();
+                        mInfoName.setText(name);
+                        containerInTextMode();
+                    }
+                }).addOnFailureListener(new OnFailureListener()
+                {
+                    @Override
+                    public void onFailure(@NonNull Exception e)
+                    {
+                        Toast.makeText(InfoActivity.this, "File couldn't be updated", Toast.LENGTH_SHORT).show();
+                    }
+                });
+            }
+        }
+    }
+
+    @Override
+    public boolean onKeyDown(int keyCode, KeyEvent event)
+    {
+        if((keyCode == event.KEYCODE_BACK)){
+            finish();
+        }
+        return super.onKeyDown(keyCode, event);
+    }
 }

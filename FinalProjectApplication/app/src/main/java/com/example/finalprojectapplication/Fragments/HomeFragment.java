@@ -162,36 +162,11 @@ public class HomeFragment extends Fragment implements DataAdapter.OnFileListener
 
         recyclerView.setAdapter(adapter);
     }
-    //LifeCycle
-/*
-    @Override
-    public void onStart()
-    {
-        super.onStart();
-        System.out.println("Started");
-        adapter.startListening();
-    }
-
-    @Override
-    public void onStop()
-    {
-        super.onStop();
-        System.out.println("Stopped");
-        adapter.stopListening();
-    }
-
-    @Override
-    public void onResume()
-    {
-        super.onResume();
-        adapter.startListening();
-    }
-*/
-
     @Override
     public void onFileClick(int position)
     {
-        Log.d("ITEM CLICK", "Clicked item:" + position);
+        adapter.readFile(position);
+        System.out.println("The position is:" + position);
 
         //adapter.deleteItem(position);
         //Picture

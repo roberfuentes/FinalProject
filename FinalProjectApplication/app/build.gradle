@@ -1,6 +1,10 @@
 apply plugin: 'com.android.application'
 
 android {
+    compileOptions{
+        targetCompatibility JavaVersion.VERSION_1_8
+    }
+
     compileSdkVersion 28
     defaultConfig {
         applicationId "com.example.finalprojectapplication"
@@ -45,6 +49,11 @@ dependencies {
 
     implementation 'com.github.bumptech.glide:glide:3.7.0'
     implementation 'de.hdodenhof:circleimageview:3.1.0'
+
+    implementation 'com.github.barteksc:android-pdf-viewer:2.8.2'
+
+    implementation 'com.google.android.exoplayer:exoplayer:2.11.4'
+
 
 
 }
