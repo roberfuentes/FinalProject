@@ -47,9 +47,6 @@ public class DataAdapter extends FirestoreRecyclerAdapter<Data, DataAdapter.Data
     FirebaseAuth fAuth;
     FirebaseStorage fStorage;
 
-
-    Data data;
-
     ArrayList<String> fileUrl = new ArrayList<>();
     ArrayList<String> fileType = new ArrayList<>();
 
@@ -90,10 +87,6 @@ public class DataAdapter extends FirestoreRecyclerAdapter<Data, DataAdapter.Data
         View v = LayoutInflater.from(parent.getContext()).inflate(R.layout.list_single_file, parent, false);
         return new DataHolder(v);
     }
-
-
-
-
 
 
 

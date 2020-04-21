@@ -71,6 +71,7 @@ public class HomeFragment extends Fragment implements DataAdapter.OnFileListener
     public HomeFragment()
     {
         setRetainInstance(true);
+
     }
 
 
@@ -157,9 +158,6 @@ public class HomeFragment extends Fragment implements DataAdapter.OnFileListener
 
         recyclerView.setLayoutManager(new GridLayoutManager(getContext(), 2));
 
-
-
-
         recyclerView.setAdapter(adapter);
     }
     @Override
@@ -245,6 +243,5 @@ public class HomeFragment extends Fragment implements DataAdapter.OnFileListener
             openUploadDialog();
         }
     }
-
 
 }

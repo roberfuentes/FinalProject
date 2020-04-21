@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <item
+        android:icon="@drawable/ic_person_add_filledx"
+        app:showAsAction="ifRoom"
+        android:title="Add friends"
+        android:id="@+id/chat_friends_add"/>
+
+    <item
+        android:icon="@drawable/ic_friends_filled"
+        app:showAsAction="ifRoom"
+        android:title="Friends"
+        android:id="@+id/chat_friends_list"/>
+
+</menu>
