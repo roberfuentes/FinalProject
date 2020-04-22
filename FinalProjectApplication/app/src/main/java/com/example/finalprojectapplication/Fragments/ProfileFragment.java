@@ -261,8 +261,11 @@ public class ProfileFragment extends Fragment implements MenuItem.OnMenuItemClic
             user.put(KEY_PASSWORD, password);
             user.put(KEY_AGE, age);
             user.put(KEY_LOCATION, location);
+            user.put("status", "");
 
             DocumentReference userRef = fstore.collection("users").document(userID);
+
+
             userRef.update(user).addOnSuccessListener(new OnSuccessListener<Void>()
             {
                 @Override

@@ -12,6 +12,7 @@ public class User
     String location;
     String age;
     String profilePictureUrl;
+    String status;
 
     public User(){
 
@@ -79,6 +80,16 @@ public class User
     public void setProfilePictureUrl(String profilePictureUrl)
     {
         this.profilePictureUrl = profilePictureUrl;
+    }
+
+    public String getStatus()
+    {
+        return status;
+    }
+
+    public void setStatus(String status)
+    {
+        this.status = status;
     }
     //Parcelling part
 

@@ -144,6 +144,7 @@ public class RegisterActivity extends AppCompatActivity
         user.put(KEY_LOCATION, "");
         user.put(KEY_AGE, "");
         user.put(KEY_PROFILE, "");
+        user.put("status", "");
 
         System.out.println("There we go");
 

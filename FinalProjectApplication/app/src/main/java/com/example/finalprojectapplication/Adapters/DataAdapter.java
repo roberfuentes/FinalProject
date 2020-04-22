@@ -118,10 +118,6 @@ public class DataAdapter extends FirestoreRecyclerAdapter<Data, DataAdapter.Data
             onFileListener.onFileLongClickListener(getAdapterPosition());
             return true;
         }
-
-
-
-
     }
 
 

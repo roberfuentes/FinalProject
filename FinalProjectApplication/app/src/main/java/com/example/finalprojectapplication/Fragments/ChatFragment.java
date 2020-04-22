@@ -1,6 +1,7 @@
 package com.example.finalprojectapplication.Fragments;
 
 
+import android.content.Intent;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
@@ -20,6 +21,8 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Toast;
 
+import com.example.finalprojectapplication.Activities.Main.FriendListActivity;
+import com.example.finalprojectapplication.Activities.Main.FriendRequestActivity;
 import com.example.finalprojectapplication.Adapters.ChatAdapter;
 import com.example.finalprojectapplication.Model.Chat;
 import com.example.finalprojectapplication.R;
@@ -137,7 +140,6 @@ public class ChatFragment extends Fragment implements  MenuItem.OnMenuItemClickL
     public void onClick(View v)
     {
         int viewID = v.getId();
-        Toast.makeText(getContext(), viewID+"", Toast.LENGTH_SHORT).show();
 
         switch(viewID){
             case R.id.floating_button_options:
@@ -149,7 +151,20 @@ public class ChatFragment extends Fragment implements  MenuItem.OnMenuItemClickL
                     floatingActionButtonListFriends.setVisibility(View.INVISIBLE);
                     floatingActionButtonAddFriends.setVisibility(View.INVISIBLE);
                 }
+                break;
+            case R.id.floating_button_add_friends:
+                Intent friendRequest = new Intent(getContext(), FriendRequestActivity.class);
+                startActivity(friendRequest);
+                break;
+            case R.id.floating_button_list_friends:
+                Intent friendList = new Intent(getContext(), FriendListActivity.class);
+                startActivity(friendList);
+                break;
+
         }
+    }
+
+    private void goToFriendRequestActivity(){
 
     }
 

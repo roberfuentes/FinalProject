@@ -1,6 +1,57 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:orientation="vertical" android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="wrap_content">
 
-</LinearLayout>
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="5dp"
+        >
+        <View
+            android:id="@+id/friend_request__horizontal_separator"
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:background="@color/colorBlack"
+            android:layout_marginTop="5dp"
+            />
+
+
+        <TextView
+            android:layout_marginTop="15dp"
+            android:id="@+id/friend_request_name"
+            android:layout_width="200dp"
+            android:layout_height="wrap_content"
+            android:textSize="16dp"
+            android:textAlignment="center"
+            android:textColor="@color/colorBlack"
+            />
+
+        <Button
+            android:layout_marginTop="5dp"
+            android:id="@+id/friend_request_accept_button"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_toLeftOf="@id/friend_request_decline_button"
+            android:text="Accept"
+            android:layout_marginRight="20dp"
+            />
+
+        <Button
+            android:layout_marginTop="5dp"
+            android:id="@+id/friend_request_decline_button"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentRight="true"
+            android:text="Decline"
+            />
+    </RelativeLayout>
+
+
+
+
+
+
+
+</RelativeLayout>

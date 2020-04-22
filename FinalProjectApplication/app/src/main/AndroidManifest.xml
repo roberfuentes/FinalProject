@@ -13,6 +13,8 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
+        <activity android:name=".Activities.Main.FriendListActivity"></activity>
+        <activity android:name=".Activities.Main.FriendRequestActivity" />
         <activity android:name=".Activities.Main.FileViewerActivity" />
         <activity android:name=".Activities.Main.InfoActivity" />
         <activity android:name=".Activities.Main.UploadActivity" />
