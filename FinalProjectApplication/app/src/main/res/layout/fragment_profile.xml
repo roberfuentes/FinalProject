@@ -130,10 +130,21 @@
                     android:textSize="16dp" />
 
                 <TextView
-                    android:id="@+id/profileLocation"
+                    android:id="@+id/profileStatus"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_below="@+id/profileAge"
+                    android:drawableStart="@drawable/ic_status_filled"
+                    android:drawablePadding="15dp"
+                    android:padding="10dp"
+                    android:textColor="@color/colorBlack"
+                    android:textSize="16dp" />
+
+                <TextView
+                    android:id="@+id/profileLocation"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@+id/profileStatus"
                     android:background="?attr/selectableItemBackground"
                     android:clickable="true"
                     android:drawableStart="@drawable/ic_place_filled"
@@ -227,10 +238,21 @@
                     android:textSize="16dp" />
 
                 <com.google.android.material.textfield.TextInputEditText
-                    android:id="@+id/profileEditLocation"
+                    android:id="@+id/profileEditStatus"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_below="@+id/profileEditAge"
+                    android:drawableStart="@drawable/ic_status_filled"
+                    android:drawablePadding="15dp"
+                    android:padding="10dp"
+                    android:textColor="@color/colorBlack"
+                    android:textSize="16dp" />
+
+                <com.google.android.material.textfield.TextInputEditText
+                    android:id="@+id/profileEditLocation"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@+id/profileEditStatus"
                     android:drawableStart="@drawable/ic_place_filled"
                     android:drawablePadding="15dp"
                     android:padding="10dp"

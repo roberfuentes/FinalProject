@@ -13,7 +13,7 @@
         android:layout_marginTop="4dp"
         android:padding="10dp"
         android:textAlignment="textStart"
-        android:background="@color/friendUser"
+        android:background="@drawable/layout_sent_message_user_friend"
         android:layout_marginLeft="10dp"
         android:layout_marginRight="70dp"
         >
@@ -29,18 +29,19 @@
     <LinearLayout
         android:visibility="invisible"
         android:id="@+id/chat_message_currentUser_backgroundText"
-        android:layout_width="350dp"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:orientation="vertical"
         android:layout_marginTop="4dp"
         android:padding="10dp"
         android:layout_marginLeft="70dp"
-        android:background="@color/currentUser"
+        android:background="@drawable/layout_sent_message_current_user"
         android:layout_marginRight="10dp"
         android:gravity="right"
         android:layout_alignParentRight="true"
         >
         <TextView
+            android:maxWidth="350dp"
             android:textAlignment="textEnd"
             android:padding="10dp"
             android:id="@+id/chat_message_currentUser_text"

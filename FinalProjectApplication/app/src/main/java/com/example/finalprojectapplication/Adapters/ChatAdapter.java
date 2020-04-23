@@ -25,17 +25,15 @@ public class ChatAdapter extends FirestoreRecyclerAdapter<Chat, ChatAdapter.Chat
     FirestoreRecyclerOptions mOptions;
     Context mContext;
 
+    OnClickChat onClickChat;
     List<String> uid = new ArrayList<>();
 
-
-
-
-    public ChatAdapter(FirestoreRecyclerOptions<Chat> options, Context context){
+    public ChatAdapter(FirestoreRecyclerOptions<Chat> options, Context context, OnClickChat onClickChat){
         super(options);
         mOptions = options;
         mContext = context;
+        this.onClickChat = onClickChat;
     }
-
 
 
     @Override
@@ -50,8 +48,6 @@ public class ChatAdapter extends FirestoreRecyclerAdapter<Chat, ChatAdapter.Chat
 
         uid.add(model.getUid());
         System.out.println("UID SIZE" + uid.size());
-
-
     }
 
     @NonNull
@@ -62,11 +58,11 @@ public class ChatAdapter extends FirestoreRecyclerAdapter<Chat, ChatAdapter.Chat
         return new ChatHolder(v);
     }
 
-    public class ChatHolder extends RecyclerView.ViewHolder{
+    public class ChatHolder extends RecyclerView.ViewHolder implements View.OnClickListener
+    {
 
         private TextView chatName;
         private ImageView chatPicture;
-
 
         public ChatHolder(@NonNull View itemView)
         {
@@ -74,6 +70,17 @@ public class ChatAdapter extends FirestoreRecyclerAdapter<Chat, ChatAdapter.Chat
             chatName = itemView.findViewById(R.id.chat_name);
             chatPicture = itemView.findViewById(R.id.chat_picture);
 
+            itemView.setOnClickListener(this);
         }
+
+        @Override
+        public void onClick(View v)
+        {
+            onClickChat.onClickChat(getSnapshots().getSnapshot(getAdapterPosition()).getReference().getId());
+        }
+    }
+
+    public interface OnClickChat{
+        void onClickChat(String chatID);
     }
 }

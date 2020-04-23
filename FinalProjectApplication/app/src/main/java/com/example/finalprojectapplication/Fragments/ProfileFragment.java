@@ -33,7 +33,6 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
-import com.google.firebase.storage.FirebaseStorage;
 import com.squareup.picasso.Picasso;
 
 import java.util.HashMap;
@@ -48,16 +47,20 @@ public class ProfileFragment extends Fragment implements MenuItem.OnMenuItemClic
     private static final String KEY_NAME = "name";
     private static final String KEY_EMAIL = "email";
     private static final String KEY_PASSWORD = "password";
-    private static final String KEY_LOCATION = "location";
     private static final String KEY_AGE = "age";
+    private static final String KEY_STATUS = "status";
+    private static final String KEY_LOCATION = "location";
+
+
+
 
     private FirebaseFirestore fstore;
     private FirebaseAuth fAuth;
 
     private String userID;
 
-    private TextView mProfileName, mProfileEmail, mProfilePassword,  mProfileLocation, mProfileAge;
-    private EditText mProfileNameEdit, mProfileEmailEdit, mProfilePasswordEdit,  mProfileLocationEdit, mProfileAgeEdit;
+    private TextView mProfileName, mProfileEmail, mProfilePassword,  mProfileLocation, mProfileAge, mProfileStatus;
+    private EditText mProfileNameEdit, mProfileEmailEdit, mProfilePasswordEdit,  mProfileLocationEdit, mProfileAgeEdit, mProfileStatusEdit;
     private ImageView mProfilePicture;
 
     private LinearLayout mContainerInfo, mContainerEditInfo;
@@ -67,7 +70,6 @@ public class ProfileFragment extends Fragment implements MenuItem.OnMenuItemClic
     Menu menu;
 
     MenuItem editItem, checkItem, cancelItem;
-
 
     public ProfileFragment()
     {
@@ -81,16 +83,12 @@ public class ProfileFragment extends Fragment implements MenuItem.OnMenuItemClic
         setHasOptionsMenu(true);
     }
 
-
-
-
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState)
     {
         // Inflate the layout for this fragment
         return inflater.inflate(R.layout.fragment_profile, container, false);
-
     }
 
     @Override
@@ -103,41 +101,34 @@ public class ProfileFragment extends Fragment implements MenuItem.OnMenuItemClic
         getUserInformation();
     }
 
-
     public void setupViewComponents(){
-
         mToolbarEdit = view.findViewById(R.id.profile_editToolbar);
         ((AppCompatActivity)getActivity()).setSupportActionBar(mToolbarEdit);
 
-
         mContainerInfo = view.findViewById(R.id.containerInformation);
         mContainerEditInfo = view.findViewById(R.id.containerEditInformation);
-
 
         mProfilePicture = view.findViewById(R.id.profilePicture);
         mProfileName = view.findViewById(R.id.profileName);
         mProfileEmail= view.findViewById(R.id.profileEmail);
         mProfilePassword = view.findViewById(R.id.profilePassword);
         mProfileAge = view.findViewById(R.id.profileAge);
+        mProfileStatus = view.findViewById(R.id.profileStatus);
         mProfileLocation = view.findViewById(R.id.profileLocation);
 
         mProfileNameEdit = view.findViewById(R.id.profileEditName);
         mProfileEmailEdit= view.findViewById(R.id.profileEditEmail);
         mProfilePasswordEdit = view.findViewById(R.id.profileEditPassword);
         mProfileAgeEdit = view.findViewById(R.id.profileEditAge);
+        mProfileStatusEdit = view.findViewById(R.id.profileEditStatus);
         mProfileLocationEdit = view.findViewById(R.id.profileEditLocation);
-
-
     }
 
     private void setupFirebase(){
-
         fstore = FirebaseFirestore.getInstance();
         fAuth = FirebaseAuth.getInstance();
         userID = fAuth.getCurrentUser().getUid();
     }
-
-
 
     private void getUserInformation(){
         DocumentReference userRef = fstore.collection("users").document(userID);
@@ -158,21 +149,18 @@ public class ProfileFragment extends Fragment implements MenuItem.OnMenuItemClic
                             }else{
                                 Picasso.with(getContext()).load(user.getProfilePictureUrl()).into(mProfilePicture);
                             }
-
                             mProfileName.setText(user.getName());
                             mProfileEmail.setText(user.getEmail());
                             mProfilePassword.setText(user.getPassword());
                             mProfileAge.setText(user.getAge());
+                            mProfileStatus.setText(user.getStatus());
                             mProfileLocation.setText(user.getLocation());
-
                         }
-
                     }
                 }
             }
         });
     }
-
 
     @Override
     public void onCreateOptionsMenu(@NonNull Menu menu, @NonNull MenuInflater inflater)
@@ -187,9 +175,7 @@ public class ProfileFragment extends Fragment implements MenuItem.OnMenuItemClic
         editItem.setOnMenuItemClickListener(this);
         cancelItem.setOnMenuItemClickListener(this);
         checkItem.setOnMenuItemClickListener(this);
-
     }
-
 
     @Override
     public boolean onMenuItemClick(MenuItem item)
@@ -217,8 +203,6 @@ public class ProfileFragment extends Fragment implements MenuItem.OnMenuItemClic
         containerInEditMode();
         mContainerEditInfo.setVisibility(View.VISIBLE);
         mContainerInfo.setVisibility(View.INVISIBLE);
-
-
     }
 
     public void containerInEditMode(){
@@ -226,8 +210,8 @@ public class ProfileFragment extends Fragment implements MenuItem.OnMenuItemClic
         mProfileEmailEdit.setText(mProfileEmail.getText());
         mProfilePasswordEdit.setText(mProfilePassword.getText());
         mProfileAgeEdit.setText(mProfileAge.getText());
+        mProfileStatusEdit.setText(mProfileStatus.getText());
         mProfileLocationEdit.setText(mProfileLocation.getText());
-
     }
 
     public void containerInTextMode(){
@@ -249,6 +233,7 @@ public class ProfileFragment extends Fragment implements MenuItem.OnMenuItemClic
         final String password = mProfilePasswordEdit.getText().toString();
         final String age = mProfileAgeEdit.getText().toString();
         final String location = mProfileLocationEdit.getText().toString();
+        final String status = mProfileStatusEdit.getText().toString();
 
         if(name.equals("") || email.equals("") || password.equals("") || age.equals("") || location.equals("")){
            Toast.makeText(getContext(), "Fields can't be empty", Toast.LENGTH_SHORT).show();
@@ -261,7 +246,7 @@ public class ProfileFragment extends Fragment implements MenuItem.OnMenuItemClic
             user.put(KEY_PASSWORD, password);
             user.put(KEY_AGE, age);
             user.put(KEY_LOCATION, location);
-            user.put("status", "");
+            user.put(KEY_STATUS, status);
 
             DocumentReference userRef = fstore.collection("users").document(userID);
 
@@ -272,7 +257,7 @@ public class ProfileFragment extends Fragment implements MenuItem.OnMenuItemClic
                 public void onSuccess(Void aVoid)
                 {
                     Toast.makeText(getContext(), "Data updated", Toast.LENGTH_SHORT).show();
-                    setDataToTextLocal(name, email, password, age, location);
+                    setDataToTextLocal(name, email, password, age,status,  location);
 
                 }
             }).addOnFailureListener(new OnFailureListener()
@@ -286,14 +271,14 @@ public class ProfileFragment extends Fragment implements MenuItem.OnMenuItemClic
         }
     }
 
-    public void setDataToTextLocal(String name, String email, String password, String age, String location){
+    public void setDataToTextLocal(String name, String email, String password, String age, String status, String location){
         mProfileName.setText(name);
         mProfileEmail.setText(email);
         mProfilePassword.setText(password);
         mProfileAge.setText(age);
+        mProfileStatus.setText(status);
         mProfileLocation.setText(location);
 
         containerInTextMode();
     }
-
 }

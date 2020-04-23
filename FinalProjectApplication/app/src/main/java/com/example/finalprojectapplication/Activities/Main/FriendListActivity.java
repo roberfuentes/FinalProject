@@ -119,6 +119,13 @@ public class FriendListActivity extends AppCompatActivity implements FriendAdapt
                 });
     }
 
+    private void goToChat(String room, String friendID){
+        Intent intent = new Intent(FriendListActivity.this, ChatMessageActivity.class);
+        intent.putExtra("room", room);
+        intent.putExtra("friendID", friendID);
+        startActivity(intent);
+    }
+
     private void createChat(final String friendID){
 
         //Retrieve data user
@@ -136,19 +143,19 @@ public class FriendListActivity extends AppCompatActivity implements FriendAdapt
                         DocumentReference chatRef = fStore.collection("chats").document(currentUID)
                                 .collection("userChat").document();
 
-                        Map<String, Object> chat = new HashMap<>();
-                        chat.put(KEY_NAME, user.getName());
-                        chat.put(KEY_PICTURE, user.getProfilePictureUrl());
-                        chat.put(KEY_ROOM, chatRef.getId());
-                        chat.put(KEY_UID, friendID);
 
-                        chatRef.set(chat).addOnSuccessListener(new OnSuccessListener<Void>()
+                        Map<String, Object> chatMap = new HashMap<>();
+                        chatMap.put(KEY_NAME, user.getName());
+                        chatMap.put(KEY_PICTURE, user.getProfilePictureUrl());
+                        chatMap.put(KEY_ROOM, chatRef.getId());
+                        chatMap.put(KEY_UID, friendID);
+
+                        chatRef.set(chatMap).addOnSuccessListener(new OnSuccessListener<Void>()
                         {
                             @Override
                             public void onSuccess(Void aVoid)
                             {
-                                Toast.makeText(FriendListActivity.this, "Chat has been created", Toast.LENGTH_SHORT).show();
-
+                                createChatFriend(friendID);
                             }
                         }).addOnFailureListener(new OnFailureListener()
                         {
@@ -172,13 +179,88 @@ public class FriendListActivity extends AppCompatActivity implements FriendAdapt
             }
         });
 
+
+
+
+    }
+
+    private void createChatFriend(final String friendID){
+        final Query query = fStore.collection("chats").document(currentUID)
+                .collection("userChat").whereEqualTo("uid", friendID);
+
+        query.get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>()
+        {
+            @Override
+            public void onComplete(@NonNull Task<QuerySnapshot> task)
+            {
+                QuerySnapshot querySnapshot = task.getResult();
+                Toast.makeText(FriendListActivity.this, "Is empty?" + querySnapshot.isEmpty(), Toast.LENGTH_SHORT).show();
+                if(!querySnapshot.isEmpty()){
+                    List<DocumentSnapshot> documentSnapshots= querySnapshot.getDocuments();
+                    System.out.println("Size document:" + documentSnapshots.size());
+                    if(documentSnapshots.size()==1){
+                        for(DocumentSnapshot documentSnapshot:documentSnapshots){
+                            Chat chat = documentSnapshot.toObject(Chat.class);
+                            final String chatID = chat.getRoom();
+
+                            DocumentReference userRef = fStore.collection("users").document(currentUID);
+
+                            userRef.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>()
+                            {
+                                @Override
+                                public void onComplete(@NonNull Task<DocumentSnapshot> task)
+                                {
+                                    if(task.isSuccessful()){
+                                        DocumentSnapshot documentSnapshot = task.getResult();
+                                        if(documentSnapshot.exists()){
+                                            User user = documentSnapshot.toObject(User.class);
+
+                                            DocumentReference chatRef = fStore.collection("chats").document(friendID)
+                                                    .collection("userChat").document(chatID);
+
+                                            Map<String, Object> chatMap = new HashMap<>();
+
+                                            chatMap.put(KEY_NAME, user.getName());
+                                            chatMap.put(KEY_UID, currentUID);
+                                            chatMap.put(KEY_ROOM, chatID);
+                                            chatMap.put(KEY_PICTURE, user.getProfilePictureUrl());
+
+                                            chatRef.set(chatMap).addOnSuccessListener(new OnSuccessListener<Void>()
+                                            {
+                                                @Override
+                                                public void onSuccess(Void aVoid)
+                                                {
+
+                                                }
+                                            }).addOnFailureListener(new OnFailureListener()
+                                            {
+                                                @Override
+                                                public void onFailure(@NonNull Exception e)
+                                                {
+                                                    Toast.makeText(FriendListActivity.this, "We couldn't add user data to create a room", Toast.LENGTH_SHORT).show();
+
+                                                }
+                                            });
+                                        }
+                                    }
+                                }
+                            }).addOnFailureListener(new OnFailureListener()
+                            {
+                                @Override
+                                public void onFailure(@NonNull Exception e)
+                                {
+                                    Toast.makeText(FriendListActivity.this, "We couldn't retrieve the user data to create a room", Toast.LENGTH_SHORT).show();
+
+                                }
+                            });
+
+                        }
+                    }
+
+                }
+            }
+        });
     }
 
 
-    private void goToChat(String room, String friendID){
-        Intent intent = new Intent(FriendListActivity.this, ChatMessageActivity.class);
-        intent.putExtra("room", room);
-        intent.putExtra("friendID", friendID);
-        startActivity(intent);
-    }
 }

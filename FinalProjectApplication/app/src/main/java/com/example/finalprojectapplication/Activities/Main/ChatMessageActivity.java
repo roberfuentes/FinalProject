@@ -8,6 +8,7 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import android.os.Bundle;
+import android.view.View;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ImageView;
@@ -21,6 +22,7 @@ import com.firebase.ui.firestore.FirestoreRecyclerAdapter;
 import com.firebase.ui.firestore.FirestoreRecyclerOptions;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.DocumentReference;
@@ -29,8 +31,15 @@ import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.Query;
 import com.squareup.picasso.Picasso;
 
-public class ChatMessageActivity extends AppCompatActivity
+import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
+
+public class ChatMessageActivity extends AppCompatActivity implements View.OnClickListener
 {
+    private static final String KEY_UID= "fromUid";
+    private static final String KEY_SENTAT= "sentAt";
+    private static final String KEY_MESSAGE= "messageText";
 
     FirebaseFirestore fStore;
     FirebaseAuth fAuth;
@@ -74,11 +83,21 @@ public class ChatMessageActivity extends AppCompatActivity
         mSendButton = findViewById(R.id.chat_message_send_button);
 
 
+        mSendButton.setOnClickListener(this);
         setSupportActionBar(mToolbar);
 
         actionBar = getSupportActionBar();
+    }
 
-
+    @Override
+    public void onClick(View v)
+    {
+        int id = v.getId();
+        switch(id){
+            case R.id.chat_message_send_button:
+                sendMessage();
+                break;
+        }
     }
 
     private void receiveRoom(){
@@ -141,5 +160,33 @@ public class ChatMessageActivity extends AppCompatActivity
             Picasso.with(ChatMessageActivity.this).load(user.getProfilePictureUrl()).into(mProfilePicture);
         }
         actionBar.setTitle(user.getName());
+    }
+
+    private void sendMessage(){
+        String message = mFieldMessage.getText().toString();
+        if(!message.equals("")){
+            DocumentReference messageReference = fStore.collection("messages").document(room)
+                    .collection("roomMessages").document();
+
+            Map<String, Object> messageMap = new HashMap<>();
+            messageMap.put(KEY_UID, currentID);
+            messageMap.put(KEY_MESSAGE, message);
+            messageMap.put(KEY_SENTAT, new Date());
+            messageReference.set(messageMap).addOnSuccessListener(new OnSuccessListener<Void>()
+            {
+                @Override
+                public void onSuccess(Void aVoid)
+                {
+                    mFieldMessage.setText("");
+                }
+            }).addOnFailureListener(new OnFailureListener()
+            {
+                @Override
+                public void onFailure(@NonNull Exception e)
+                {
+                    Toast.makeText(ChatMessageActivity.this, "Message couldn't be sent, try again later", Toast.LENGTH_SHORT).show();
+                }
+            });
+        }
     }
 }
