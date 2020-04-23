@@ -15,4 +15,8 @@
     <color name="colorWhite">#FFFFFF</color>
     <color name="colorBlack">#000000</color>
 
+    <!-- Color for chat message-->
+    <color name="currentUser">#7FDBFF</color>
+    <color name="friendUser">#0074D9</color>
+
 </resources>

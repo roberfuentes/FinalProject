@@ -44,6 +44,7 @@ public class FriendRequestAdapter extends FirestoreRecyclerAdapter<FriendRequest
         holder.mFriendRequestName.setText(model.getName());
 
 
+
     }
 
     public class FriendRequestHolder extends RecyclerView.ViewHolder implements View.OnClickListener{

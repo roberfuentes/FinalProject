@@ -5,13 +5,12 @@ public class Chat
 
     String name;
     String picture;
+    String room;
     String uid;
-
 
     public Chat()
     {
     }
-
 
     public String getName()
     {
@@ -41,5 +40,15 @@ public class Chat
     public void setUid(String uid)
     {
         this.uid = uid;
+    }
+
+    public String getRoom()
+    {
+        return room;
+    }
+
+    public void setRoom(String room)
+    {
+        this.room = room;
     }
 }

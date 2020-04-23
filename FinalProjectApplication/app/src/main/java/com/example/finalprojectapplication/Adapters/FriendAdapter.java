@@ -11,6 +11,7 @@ import com.example.finalprojectapplication.Model.Friend;
 import com.example.finalprojectapplication.R;
 import com.firebase.ui.firestore.FirestoreRecyclerAdapter;
 import com.firebase.ui.firestore.FirestoreRecyclerOptions;
+import com.google.firebase.firestore.DocumentReference;
 import com.squareup.picasso.Picasso;
 
 import androidx.annotation.NonNull;
@@ -19,11 +20,15 @@ import androidx.recyclerview.widget.RecyclerView;
 public class FriendAdapter extends FirestoreRecyclerAdapter<Friend, FriendAdapter.FriendDataHolder>
 {
 
+
     Context mContext;
-    public FriendAdapter(@NonNull FirestoreRecyclerOptions<Friend> options, Context context)
+    onFriendListener onFriendListener;
+
+    public FriendAdapter(@NonNull FirestoreRecyclerOptions<Friend> options, Context context, onFriendListener onFriendListener)
     {
         super(options);
         this.mContext = context;
+        this.onFriendListener = onFriendListener;
     }
 
     @NonNull
@@ -40,6 +45,7 @@ public class FriendAdapter extends FirestoreRecyclerAdapter<Friend, FriendAdapte
 
         holder.mFriendListName.setText(model.getName());
         holder.mFriendListStatus.setText(model.getStatus());
+        System.out.println("status"+model.getStatus());
         if(model.getProfilePictureUrl().equals("")){
             holder.mFriendListProfilePicture.setImageResource(R.drawable.ic_profile_identity_gray);
         }else{
@@ -47,11 +53,14 @@ public class FriendAdapter extends FirestoreRecyclerAdapter<Friend, FriendAdapte
         }
     }
 
-    public class FriendDataHolder extends RecyclerView.ViewHolder{
+    public class FriendDataHolder extends RecyclerView.ViewHolder implements View.OnClickListener{
 
         ImageView mFriendListProfilePicture;
         TextView mFriendListName;
         TextView mFriendListStatus;
+
+
+
         public FriendDataHolder(@NonNull View itemView)
         {
             super(itemView);
@@ -59,7 +68,18 @@ public class FriendAdapter extends FirestoreRecyclerAdapter<Friend, FriendAdapte
             mFriendListName = itemView.findViewById(R.id.friend_list_name);
             mFriendListStatus = itemView.findViewById(R.id.friend_list_status);
 
+            itemView.setOnClickListener(this);
         }
+
+        @Override
+        public void onClick(View v)
+        {
+            onFriendListener.onFriendClick(getSnapshots().getSnapshot(getAdapterPosition()).getReference().getId());
+        }
+    }
+
+    public interface onFriendListener{
+        void onFriendClick(String friendID);
     }
 
 }

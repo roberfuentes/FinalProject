@@ -1,11 +1,15 @@
 package com.example.finalprojectapplication.Activities.Main;
 
 import androidx.annotation.NonNull;
+import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import android.os.Bundle;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.widget.Toast;
 
 import com.example.finalprojectapplication.Adapters.FriendRequestAdapter;
@@ -39,7 +43,7 @@ public class FriendRequestActivity extends AppCompatActivity implements FriendRe
 
     String currentUID;
 
-
+    Toolbar mToolbar;
 
     @Override
     protected void onCreate(Bundle savedInstanceState)
@@ -47,7 +51,19 @@ public class FriendRequestActivity extends AppCompatActivity implements FriendRe
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_friend_request);
 
+        mToolbar = findViewById(R.id.friend_request_toolbar);
         mRecyclerView = findViewById(R.id.friend_request_recycler);
+
+        setSupportActionBar(mToolbar);
+
+        ActionBar mActionBar= getSupportActionBar();
+        //mActionBar.setIcon(R.drawable.ic_left_arrow_filled);
+        mActionBar.setTitle("  Friend requests");
+        mActionBar.setDisplayHomeAsUpEnabled(true);
+        mActionBar.setHomeAsUpIndicator(R.drawable.ic_left_arrow_filled);
+
+
+
 
         setupFirebase();
         setAdapter();
@@ -56,10 +72,10 @@ public class FriendRequestActivity extends AppCompatActivity implements FriendRe
 
     }
 
-
     private void setAdapter(){
 
-        Query query = fStore.collection("friendRequests").document(currentUID).collection("userFriendRequest").whereEqualTo("status", "received");
+        Query query = fStore.collection("friendRequests").document(currentUID).collection("userFriendRequest")
+                .whereEqualTo("status", "received");
 
         FirestoreRecyclerOptions<FriendRequest> options = new FirestoreRecyclerOptions.Builder<FriendRequest>().setLifecycleOwner(this).setQuery(query, FriendRequest.class).build();
 
@@ -132,21 +148,47 @@ public class FriendRequestActivity extends AppCompatActivity implements FriendRe
                     if(documentSnapshot.exists()){
                         User userFriend = documentSnapshot.toObject(User.class);
 
-                        addFriend(userFriend, friendUid);
+                        addFriend(currentUID, userFriend, friendUid);
+                        addYourSelfAsAFriend(friendUid);
                     }
                 }
             }
         });
-
-
-
-
-
     }
 
 
-    private void addFriend(User userFriend, String friendUid){
-        DocumentReference addFriend = fStore.collection("friends").document(currentUID)
+    private void addYourSelfAsAFriend(final String friendUid){
+        DocumentReference getInfoFromYourself = fStore.collection("users").document(currentUID);
+
+        getInfoFromYourself.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>()
+        {
+            @Override
+            public void onComplete(@NonNull Task<DocumentSnapshot> task)
+            {
+                if(task.isSuccessful()){
+                    DocumentSnapshot documentSnapshot = task.getResult();
+                    if(documentSnapshot.exists()){
+                        User user = documentSnapshot.toObject(User.class);
+
+                        addFriend(friendUid, user, currentUID);
+
+                    }
+                }
+            }
+        }).addOnFailureListener(new OnFailureListener()
+        {
+            @Override
+            public void onFailure(@NonNull Exception e)
+            {
+                Toast.makeText(getApplicationContext(), "Error, try again later", Toast.LENGTH_SHORT).show();
+
+            }
+        });
+    }
+
+
+    private void addFriend(String firstUid, User userFriend, String friendUid){
+        DocumentReference addFriend = fStore.collection("friends").document(firstUid)
                 .collection("userFriends").document(friendUid);
 
         Map<String, Object> friendMap = new HashMap<>();
@@ -161,7 +203,7 @@ public class FriendRequestActivity extends AppCompatActivity implements FriendRe
             @Override
             public void onSuccess(Void aVoid)
             {
-                Toast.makeText(getApplicationContext(), "Now is your friend", Toast.LENGTH_SHORT).show();
+                Toast.makeText(getApplicationContext(), "Now both of you are friends", Toast.LENGTH_SHORT).show();
             }
         }).addOnFailureListener(new OnFailureListener()
         {
@@ -172,7 +214,19 @@ public class FriendRequestActivity extends AppCompatActivity implements FriendRe
 
             }
         });
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item)
+    {
+        int itemID = item.getItemId();
+        switch(itemID){
+            case android.R.id.home:
+                finish();
+                break;
+        }
 
 
+        return super.onOptionsItemSelected(item);
     }
 }
