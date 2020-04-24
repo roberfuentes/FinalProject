@@ -17,19 +17,27 @@
             android:layout_marginTop="5dp"
             />
 
+        <de.hdodenhof.circleimageview.CircleImageView
+            android:layout_marginTop="25dp"
+            android:id="@+id/friend_request_picture"
+            android:layout_width="70dp"
+            android:layout_height="70dp"
+            android:layout_marginLeft="10dp"/>
 
         <TextView
-            android:layout_marginTop="15dp"
+            android:layout_marginTop="40dp"
             android:id="@+id/friend_request_name"
-            android:layout_width="200dp"
+            android:layout_width="100dp"
             android:layout_height="wrap_content"
             android:textSize="16dp"
             android:textAlignment="center"
             android:textColor="@color/colorBlack"
+            android:layout_toEndOf="@+id/friend_request_picture"
+            android:layout_marginRight="5dp"
             />
 
         <Button
-            android:layout_marginTop="5dp"
+            android:layout_marginTop="25dp"
             android:id="@+id/friend_request_accept_button"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -39,12 +47,38 @@
             />
 
         <Button
-            android:layout_marginTop="5dp"
+            android:layout_marginTop="25dp"
+            android:id="@+id/friend_request_sent_button"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentRight="true"
+            android:layout_marginRight="50dp"
+            android:text="SENT"
+            android:visibility="invisible"
+            />
+
+
+
+        <Button
+            android:layout_marginTop="25dp"
             android:id="@+id/friend_request_decline_button"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_alignParentRight="true"
             android:text="Decline"
+            />
+
+        <TextView
+            android:id="@+id/friend_request_status"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textSize="16dp"
+            android:textAlignment="center"
+            android:layout_alignParentRight="true"
+            android:textColor="@color/colorGrayTextSpotify"
+            android:textStyle="italic"
+            android:layout_below="@id/friend_request_sent_button"
+            android:layout_marginRight="55dp"
             />
     </RelativeLayout>
 

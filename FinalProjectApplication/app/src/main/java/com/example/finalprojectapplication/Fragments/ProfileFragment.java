@@ -3,6 +3,7 @@ package com.example.finalprojectapplication.Fragments;
 
 import android.app.Activity;
 import android.app.AlertDialog;
+import android.content.Intent;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
@@ -10,6 +11,7 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.fragment.app.Fragment;
+import de.hdodenhof.circleimageview.CircleImageView;
 
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -41,16 +43,17 @@ import java.util.Map;
 /**
  * A simple {@link Fragment} subclass.
  */
-public class ProfileFragment extends Fragment implements MenuItem.OnMenuItemClickListener
+public class ProfileFragment extends Fragment implements MenuItem.OnMenuItemClickListener, View.OnClickListener
 {
 
-    private static final String KEY_NAME = "name";
-    private static final String KEY_EMAIL = "email";
-    private static final String KEY_PASSWORD = "password";
-    private static final String KEY_AGE = "age";
-    private static final String KEY_STATUS = "status";
-    private static final String KEY_LOCATION = "location";
+    private final String KEY_NAME = "name";
+    private final String KEY_EMAIL = "email";
+    private final String KEY_PASSWORD = "password";
+    private final String KEY_AGE = "age";
+    private final String KEY_STATUS = "status";
+    private final String KEY_LOCATION = "location";
 
+    private final int REQUEST_IMAGE = 1;
 
 
 
@@ -61,7 +64,7 @@ public class ProfileFragment extends Fragment implements MenuItem.OnMenuItemClic
 
     private TextView mProfileName, mProfileEmail, mProfilePassword,  mProfileLocation, mProfileAge, mProfileStatus;
     private EditText mProfileNameEdit, mProfileEmailEdit, mProfilePasswordEdit,  mProfileLocationEdit, mProfileAgeEdit, mProfileStatusEdit;
-    private ImageView mProfilePicture;
+    private CircleImageView mProfilePicture;
 
     private LinearLayout mContainerInfo, mContainerEditInfo;
 
@@ -98,7 +101,9 @@ public class ProfileFragment extends Fragment implements MenuItem.OnMenuItemClic
 
         setupFirebase();
         setupViewComponents();
+        setupListeners();
         getUserInformation();
+
     }
 
     public void setupViewComponents(){
@@ -124,13 +129,38 @@ public class ProfileFragment extends Fragment implements MenuItem.OnMenuItemClic
         mProfileLocationEdit = view.findViewById(R.id.profileEditLocation);
     }
 
+    private void setupListeners(){
+        mProfilePicture.setOnClickListener(this);
+    }
+
+    @Override
+    public void onClick(View v)
+    {
+        int viewID = v.getId();
+        Toast.makeText(getContext(), "ID:" + viewID, Toast.LENGTH_SHORT).show();
+        switch(viewID){
+            case R.id.profilePicture:
+                openImage();
+                break;
+        }
+    }
+
+    private void openImage()
+    {
+        Toast.makeText(getContext(), "Try to open", Toast.LENGTH_SHORT).show();
+        Intent intent = new Intent();
+        intent.setType("image/*");
+        intent.setAction(Intent.ACTION_GET_CONTENT);
+        getActivity().startActivityForResult(intent, REQUEST_IMAGE);
+    }
+
     private void setupFirebase(){
         fstore = FirebaseFirestore.getInstance();
         fAuth = FirebaseAuth.getInstance();
         userID = fAuth.getCurrentUser().getUid();
     }
 
-    private void getUserInformation(){
+    public void getUserInformation(){
         DocumentReference userRef = fstore.collection("users").document(userID);
 
         userRef.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>()

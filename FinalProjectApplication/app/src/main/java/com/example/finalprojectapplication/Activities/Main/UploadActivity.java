@@ -65,7 +65,6 @@ public class UploadActivity extends AppCompatActivity
     private FirebaseFirestore fStore;
     private FirebaseStorage fStorage;
     private FirebaseAuth fAuth;
-    private StorageReference fStorageRef;
 
     private Uri mFileUri;
     private CharSequence[] chooseType = new CharSequence[]{
@@ -242,8 +241,6 @@ public class UploadActivity extends AppCompatActivity
 
     private void uploadImage()
     {
-
-
         if (mFileUri != null && mImageUpload.getDrawable() != null)
         {
             final FileDetail fileDetail = getFileDetails(mFileUri);
@@ -342,7 +339,7 @@ public class UploadActivity extends AppCompatActivity
             {
                 fileDetail.setType(type);
                 cutType(fileDetail);
-            }
+        }
         }
         return fileDetail;
     }

@@ -6,7 +6,7 @@ public class Friend
     String name;
     String profilePictureUrl;
     String status;
-    String uid;
+    String uidFriend;
 
 
     public Friend()
@@ -43,13 +43,14 @@ public class Friend
         this.status = status;
     }
 
-    public String getUid()
+
+    public String getUidFriend()
     {
-        return uid;
+        return uidFriend;
     }
 
-    public void setUid(String uid)
+    public void setUidFriend(String uidFriend)
     {
-        this.uid = uid;
+        this.uidFriend = uidFriend;
     }
 }

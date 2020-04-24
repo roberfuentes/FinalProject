@@ -12,6 +12,7 @@ public class User
     String location;
     String age;
     String profilePictureUrl;
+    String uid;
     String status;
 
     public User(){
@@ -91,31 +92,16 @@ public class User
     {
         this.status = status;
     }
-    //Parcelling part
 
-    /*public User(Parcel in){
-        this.name = in.readString();
-    }
-    @Override
-    public int describeContents()
+    public String getUid()
     {
-        return 0;
+        return uid;
     }
 
-    @Override
-    public void writeToParcel(Parcel dest, int flags)
+    public void setUid(String uid)
     {
-        dest.writeString(name);
+        this.uid = uid;
     }
-
-    public static final Parcelable.Creator<User> CREATOR = new Parcelable.Creator<User>(){
-        public User createFromParcel(Parcel in){
-            return new User(in);
-        }
-        public User[] newArray(int size){
-            return new User[size];
-        }
-    };*/
 
     @Override
     public String toString()

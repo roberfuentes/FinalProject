@@ -8,6 +8,7 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import android.os.Bundle;
+import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.Toast;
@@ -28,6 +29,7 @@ import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.Query;
 
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -73,11 +75,14 @@ public class FriendRequestActivity extends AppCompatActivity implements FriendRe
     }
 
     private void setAdapter(){
+        Query query = fStore.collection("friendRequests").document(currentUID)
+                .collection("userFriendRequest")
+                .whereIn("status", Arrays.asList("pending", "sent"));
+                //.whereArrayContains("status", "sent");
 
-        Query query = fStore.collection("friendRequests").document(currentUID).collection("userFriendRequest")
-                .whereEqualTo("status", "received");
 
-        FirestoreRecyclerOptions<FriendRequest> options = new FirestoreRecyclerOptions.Builder<FriendRequest>().setLifecycleOwner(this).setQuery(query, FriendRequest.class).build();
+        FirestoreRecyclerOptions<FriendRequest> options = new FirestoreRecyclerOptions.Builder<FriendRequest>()
+                .setLifecycleOwner(this).setQuery(query, FriendRequest.class).build();
 
         adapter = new FriendRequestAdapter(options, getApplicationContext(), this);
 
@@ -160,6 +165,20 @@ public class FriendRequestActivity extends AppCompatActivity implements FriendRe
     private void addYourSelfAsAFriend(final String friendUid){
         DocumentReference getInfoFromYourself = fStore.collection("users").document(currentUID);
 
+        DocumentReference friendRequestRef = fStore.collection("friendRequests")
+                .document(currentUID)
+                .collection("userFriendRequest")
+                .document(friendUid);
+
+                friendRequestRef.delete().addOnSuccessListener(new OnSuccessListener<Void>()
+                {
+                    @Override
+                    public void onSuccess(Void aVoid)
+                    {
+                        System.out.println("Deleted");
+                    }
+                });
+
         getInfoFromYourself.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>()
         {
             @Override
@@ -225,8 +244,16 @@ public class FriendRequestActivity extends AppCompatActivity implements FriendRe
                 finish();
                 break;
         }
-
-
         return super.onOptionsItemSelected(item);
+    }
+
+    @Override
+    public boolean onKeyDown(int keyCode, KeyEvent event)
+    {
+        if(keyCode == KeyEvent.KEYCODE_BACK){
+            finish();
+        }
+
+        return super.onKeyDown(keyCode, event);
     }
 }

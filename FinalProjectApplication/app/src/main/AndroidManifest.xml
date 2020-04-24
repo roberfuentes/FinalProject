@@ -13,7 +13,8 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name=".Activities.Main.ChatMessageActivity"></activity>
+        <activity android:name=".Activities.Main.SearchUserActivity"></activity>
+        <activity android:name=".Activities.Main.ChatMessageActivity" />
         <activity android:name=".Activities.Main.FriendListActivity" />
         <activity android:name=".Activities.Main.FriendRequestActivity" />
         <activity android:name=".Activities.Main.FileViewerActivity" />

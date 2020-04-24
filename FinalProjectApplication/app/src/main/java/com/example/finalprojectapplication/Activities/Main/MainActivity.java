@@ -1,31 +1,54 @@
 package com.example.finalprojectapplication.Activities.Main;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 
 import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
+import android.view.View;
 import android.widget.FrameLayout;
+import android.widget.ImageView;
+import android.widget.Toast;
 
 import com.example.finalprojectapplication.Activities.Login.LoginActivity;
 import com.example.finalprojectapplication.Fragments.ChatFragment;
 import com.example.finalprojectapplication.Fragments.HomeFragment;
 import com.example.finalprojectapplication.Fragments.ProfileFragment;
 import com.example.finalprojectapplication.R;
+import com.google.android.gms.tasks.Continuation;
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.android.gms.tasks.Task;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.firestore.DocumentReference;
+import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageReference;
+import com.google.firebase.storage.UploadTask;
+import com.squareup.picasso.Picasso;
+
+import java.util.HashMap;
+import java.util.Map;
 
 public class MainActivity extends AppCompatActivity
 {
 
-    /*FirebaseAuth fAuth;
+    private static final int REQUEST_IMAGE = 1;
+    FirebaseAuth fAuth;
+    String currentUID;
     FirebaseFirestore fStore;
-    String userID;*/
+    FirebaseStorage fStorage;
+
     final Fragment homeFragment= new HomeFragment();
     final Fragment chatFragment = new ChatFragment();
     final Fragment profileFragment = new ProfileFragment();
@@ -34,6 +57,8 @@ public class MainActivity extends AppCompatActivity
     Fragment selectedFragment = null;
 
     BottomNavigationView bottomNavigationView;
+
+    private Uri mFileUri;
 
 
 
@@ -51,8 +76,7 @@ public class MainActivity extends AppCompatActivity
 
 
         setupFragments();
-
-
+        setupFirebase();
 
     }
 
@@ -96,12 +120,10 @@ public class MainActivity extends AppCompatActivity
                 finish();
                 FirebaseAuth.getInstance().signOut();
                 startActivity(new Intent(MainActivity.this, LoginActivity.class));
-
                 break;
         }
         return true;
     }
-
 
     private void setupFragments(){
 
@@ -112,5 +134,88 @@ public class MainActivity extends AppCompatActivity
         selectedFragment = homeFragment;
     }
 
+    private void setupFirebase(){
+        fStore = FirebaseFirestore.getInstance();
+        fAuth = FirebaseAuth.getInstance();
+        fStorage = FirebaseStorage.getInstance();
+        currentUID = fAuth.getCurrentUser().getUid();
+    }
 
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data)
+    {
+        if (resultCode == RESULT_OK){
+            if(data.getData() == null){
+            Log.i("MainActivity", "Uri's file is null");
+            return;
+            }
+
+            mFileUri = data.getData();
+            if(resultCode == RESULT_OK){
+                switch(requestCode){
+                    case REQUEST_IMAGE:
+                        uploadImage();
+                        break;
+                }
+            }
+        }
+        super.onActivityResult(requestCode, resultCode, data);
+    }
+
+    private void uploadImage(){
+        Toast.makeText(MainActivity.this, "Let's upload!", Toast.LENGTH_SHORT).show();
+        if(mFileUri == null){
+            return;
+        }
+
+
+        final StorageReference imageRef = fStorage.getReference("PROFILE_PICTURE").child(System.currentTimeMillis() + "");
+
+        UploadTask uploadTask = imageRef.putFile(mFileUri);
+
+        uploadTask.continueWithTask(new Continuation<UploadTask.TaskSnapshot, Task<Uri>>()
+        {
+            @Override
+            public Task<Uri> then(@NonNull Task<UploadTask.TaskSnapshot> task) throws Exception
+            {
+                if(!task.isSuccessful()){
+                    throw task.getException();
+                }
+                return imageRef.getDownloadUrl();
+            }
+        }).addOnCompleteListener(new OnCompleteListener<Uri>()
+        {
+            @Override
+            public void onComplete(@NonNull Task<Uri> task)
+            {
+                setPictureOnFirestoreProfile(task.getResult().toString());
+                ImageView mProfilePicture
+                        =profileFragment.getView().findViewById(R.id.profilePicture);
+                Picasso.with(MainActivity.this).load(task.getResult()).into(mProfilePicture);
+            }
+        });
+    }
+
+    private void setPictureOnFirestoreProfile(String url){
+        DocumentReference documentReference = fStore.collection("users").document(currentUID);
+
+        Map<String, Object> userMap = new HashMap<>();
+        userMap.put("profilePictureUrl", url);
+
+        documentReference.set(userMap).addOnSuccessListener(new OnSuccessListener<Void>()
+        {
+            @Override
+            public void onSuccess(Void aVoid)
+            {
+                Toast.makeText(MainActivity.this, "Your profile picture has been updated!", Toast.LENGTH_SHORT).show();
+            }
+        }).addOnFailureListener(new OnFailureListener()
+        {
+            @Override
+            public void onFailure(@NonNull Exception e)
+            {
+                Toast.makeText(MainActivity.this, "Your profile picture couldn't be updated, try again later.", Toast.LENGTH_SHORT).show();
+            }
+        });
+    }
 }

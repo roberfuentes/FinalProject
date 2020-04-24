@@ -58,7 +58,7 @@ public class ChatAdapter extends FirestoreRecyclerAdapter<Chat, ChatAdapter.Chat
         return new ChatHolder(v);
     }
 
-    public class ChatHolder extends RecyclerView.ViewHolder implements View.OnClickListener
+    public class ChatHolder extends RecyclerView.ViewHolder implements View.OnClickListener, View.OnLongClickListener
     {
 
         private TextView chatName;
@@ -71,6 +71,7 @@ public class ChatAdapter extends FirestoreRecyclerAdapter<Chat, ChatAdapter.Chat
             chatPicture = itemView.findViewById(R.id.chat_picture);
 
             itemView.setOnClickListener(this);
+            itemView.setOnLongClickListener(this);
         }
 
         @Override
@@ -78,9 +79,18 @@ public class ChatAdapter extends FirestoreRecyclerAdapter<Chat, ChatAdapter.Chat
         {
             onClickChat.onClickChat(getSnapshots().getSnapshot(getAdapterPosition()).getReference().getId());
         }
+
+        @Override
+        public boolean onLongClick(View v)
+        {
+            onClickChat.onLongClickChat(getSnapshots().getSnapshot(getAdapterPosition()).getReference().getId());
+            return true;
+        }
+
     }
 
     public interface OnClickChat{
         void onClickChat(String chatID);
+        void onLongClickChat(String chatID);
     }
 }

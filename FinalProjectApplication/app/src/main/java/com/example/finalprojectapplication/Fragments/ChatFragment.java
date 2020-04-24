@@ -1,11 +1,13 @@
 package com.example.finalprojectapplication.Fragments;
 
 
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.fragment.app.Fragment;
@@ -24,13 +26,16 @@ import android.widget.Toast;
 import com.example.finalprojectapplication.Activities.Main.ChatMessageActivity;
 import com.example.finalprojectapplication.Activities.Main.FriendListActivity;
 import com.example.finalprojectapplication.Activities.Main.FriendRequestActivity;
+import com.example.finalprojectapplication.Activities.Main.SearchUserActivity;
 import com.example.finalprojectapplication.Adapters.ChatAdapter;
 import com.example.finalprojectapplication.Model.Chat;
 import com.example.finalprojectapplication.R;
 import com.firebase.ui.firestore.FirestoreRecyclerAdapter;
 import com.firebase.ui.firestore.FirestoreRecyclerOptions;
 import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
+import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.DocumentReference;
@@ -54,7 +59,7 @@ public class ChatFragment extends Fragment implements  View.OnClickListener, Cha
 
     Toolbar mToolbar;
     RecyclerView mRecyclerView;
-    FloatingActionButton floatingActionButtonOptions, floatingActionButtonListFriends, floatingActionButtonAddFriends;
+    FloatingActionButton floatingActionButtonOptions, floatingActionButtonListFriends, floatingActionButtonAddFriends, floatingActionButtonSearchFriends;
 
     public ChatFragment()
     {
@@ -112,18 +117,22 @@ public class ChatFragment extends Fragment implements  View.OnClickListener, Cha
         floatingActionButtonOptions = v.findViewById(R.id.floating_button_options);
         floatingActionButtonListFriends = v.findViewById(R.id.floating_button_list_friends);
         floatingActionButtonAddFriends = v.findViewById(R.id.floating_button_add_friends);
+        floatingActionButtonSearchFriends = v.findViewById(R.id.floating_button_search_friends);
     }
 
     private void animateFloatings(){
         floatingActionButtonListFriends.animate().translationY(floatingActionButtonListFriends.getHeight()).setDuration(2000);
 
         floatingActionButtonAddFriends.animate().translationY(floatingActionButtonListFriends.getHeight());
+        floatingActionButtonSearchFriends.animate().translationY(floatingActionButtonListFriends.getHeight());
+
     }
 
     private void setupListeners(){
         floatingActionButtonAddFriends.setOnClickListener(this);
         floatingActionButtonListFriends.setOnClickListener(this);
         floatingActionButtonOptions.setOnClickListener(this);
+        floatingActionButtonSearchFriends.setOnClickListener(this);
         mRecyclerView.setOnClickListener(this);
     }
 
@@ -142,6 +151,9 @@ public class ChatFragment extends Fragment implements  View.OnClickListener, Cha
             case R.id.floating_button_list_friends:
                 goToFriendsList();
                 break;
+            case R.id.floating_button_search_friends:
+                goToSearchUserActivity();
+                break;
         }
     }
 
@@ -149,9 +161,11 @@ public class ChatFragment extends Fragment implements  View.OnClickListener, Cha
         if(floatingActionButtonListFriends.getVisibility() == View.INVISIBLE){
             floatingActionButtonListFriends.setVisibility(View.VISIBLE);
             floatingActionButtonAddFriends.setVisibility(View.VISIBLE);
+            floatingActionButtonSearchFriends.setVisibility(View.VISIBLE);
         }else{
             floatingActionButtonListFriends.setVisibility(View.INVISIBLE);
             floatingActionButtonAddFriends.setVisibility(View.INVISIBLE);
+            floatingActionButtonSearchFriends.setVisibility(View.INVISIBLE);
         }
     }
 
@@ -163,6 +177,11 @@ public class ChatFragment extends Fragment implements  View.OnClickListener, Cha
     private void goToFriendsList(){
         Intent friendList = new Intent(getContext(), FriendListActivity.class);
         startActivity(friendList);
+    }
+
+    private void goToSearchUserActivity(){
+        Intent searchUser = new Intent(getContext(), SearchUserActivity.class);
+        startActivity(searchUser);
     }
 
     @Override
@@ -197,5 +216,94 @@ public class ChatFragment extends Fragment implements  View.OnClickListener, Cha
         intent.putExtra("friendID", friendID);
 
         startActivity(intent);
+    }
+
+    @Override
+    public void onLongClickChat(final String chatID)
+    {
+        MaterialAlertDialogBuilder builder = new MaterialAlertDialogBuilder(getContext());
+        builder.setTitle("Do you want to delete this chat?")
+                .setPositiveButton("Yes", new DialogInterface.OnClickListener()
+                {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which)
+                    {
+                        deleteChat(chatID);
+                    }
+                });
+        builder.setCancelable(true);
+        builder.setNegativeButton("No", new DialogInterface.OnClickListener()
+        {
+            @Override
+            public void onClick(DialogInterface dialog, int which)
+            {
+
+            }
+        });
+        builder.show();
+
+
+    }
+
+    private void deleteChat(final String chatID){
+
+        final DocumentReference chatRef = fStore.collection("chats")
+                .document(currentUserID)
+                .collection("userChat")
+                .document(chatID);
+
+        chatRef.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>()
+        {
+            @Override
+            public void onComplete(@NonNull Task<DocumentSnapshot> task)
+            {
+                if(task.isSuccessful()){
+                    DocumentSnapshot documentSnapshot = task.getResult();
+                    if(documentSnapshot.exists()){
+                        Chat chat = documentSnapshot.toObject(Chat.class);
+                        deleteChatUser(chatID, chat.getUid());
+                        chatRef.delete().addOnSuccessListener(new OnSuccessListener<Void>()
+                        {
+                            @Override
+                            public void onSuccess(Void aVoid)
+                            {
+                                Toast.makeText(getContext(), "Chat deleted", Toast.LENGTH_SHORT).show();
+                            }
+                        });
+                        deleteMessagesChat(chatID);
+                    }
+                }
+            }
+        });
+    }
+
+    private void deleteChatUser(String chatID, String userID){
+
+        DocumentReference chatRef = fStore.collection("chats")
+                .document(userID)
+                .collection("userChat")
+                .document(chatID);
+
+        chatRef.delete().addOnSuccessListener(new OnSuccessListener<Void>()
+        {
+            @Override
+            public void onSuccess(Void aVoid)
+            {
+
+            }
+        });
+    }
+
+    private void deleteMessagesChat(String chatID){
+        DocumentReference chatRef = fStore.collection("messages").document(chatID);
+
+        chatRef.delete().addOnSuccessListener(new OnSuccessListener<Void>()
+        {
+            @Override
+            public void onSuccess(Void aVoid)
+            {
+                Toast.makeText(getContext(), "Messages have been deleted", Toast.LENGTH_SHORT).show();
+            }
+        });
     }
 }

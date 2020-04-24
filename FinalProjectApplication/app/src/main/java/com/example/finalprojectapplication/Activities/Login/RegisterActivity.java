@@ -35,6 +35,9 @@ public class RegisterActivity extends AppCompatActivity
     private static final String KEY_LOCATION = "location";
     private static final String KEY_AGE = "age";
     private static final String KEY_PROFILE = "profilePictureUrl";
+    private static final String KEY_STATUS = "status";
+    private static final String KEY_UID = "uid";
+
 
 
     private FirebaseAuth fAuth;
@@ -144,7 +147,8 @@ public class RegisterActivity extends AppCompatActivity
         user.put(KEY_LOCATION, "");
         user.put(KEY_AGE, "");
         user.put(KEY_PROFILE, "");
-        user.put("status", "");
+        user.put(KEY_UID, userID);
+        user.put(KEY_STATUS, "");
 
         System.out.println("There we go");
 
