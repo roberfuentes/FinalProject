@@ -36,6 +36,7 @@ public class RegisterActivity extends AppCompatActivity
     private static final String KEY_AGE = "age";
     private static final String KEY_PROFILE = "profilePictureUrl";
     private static final String KEY_STATUS = "status";
+    private final String KEY_IS_GOOGLE_SIGN = "isGoogleSign";
     private static final String KEY_UID = "uid";
 
 
@@ -149,6 +150,8 @@ public class RegisterActivity extends AppCompatActivity
         user.put(KEY_PROFILE, "");
         user.put(KEY_UID, userID);
         user.put(KEY_STATUS, "");
+        user.put(KEY_IS_GOOGLE_SIGN, false);
+
 
         System.out.println("There we go");
 

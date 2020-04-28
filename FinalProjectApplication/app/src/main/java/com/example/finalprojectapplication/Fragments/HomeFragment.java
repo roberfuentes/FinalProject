@@ -9,6 +9,8 @@ import android.os.Bundle;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
@@ -17,6 +19,9 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Toast;
@@ -39,7 +44,7 @@ import com.google.firebase.storage.FirebaseStorage;
 /**
  * A simple {@link Fragment} subclass.
  */
-public class HomeFragment extends Fragment implements DataAdapter.OnFileListener
+public class HomeFragment extends Fragment implements DataAdapter.OnFileListener, MenuItem.OnMenuItemClickListener
 {
 
 
@@ -60,6 +65,10 @@ public class HomeFragment extends Fragment implements DataAdapter.OnFileListener
     private RecyclerView recyclerView;
     private View view;
 
+    Toolbar mToolbar;
+    Menu menu;
+    MenuItem mLogoutItem;
+
     FloatingActionButton uploadButton;
 
     private CharSequence[] chooseOption = new CharSequence[]{
@@ -70,12 +79,15 @@ public class HomeFragment extends Fragment implements DataAdapter.OnFileListener
 
     public HomeFragment()
     {
-        setRetainInstance(true);
-
+        //setRetainInstance(true);
     }
 
-
-
+    @Override
+    public void onCreate(Bundle savedInstanceState)
+    {
+        super.onCreate(savedInstanceState);
+        setHasOptionsMenu(true);
+    }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -108,6 +120,8 @@ public class HomeFragment extends Fragment implements DataAdapter.OnFileListener
 
     public void setComponents()
     {
+        /*mToolbar = view.findViewById(R.id.home_toolbar);
+        ((AppCompatActivity)getActivity()).setSupportActionBar(mToolbar);*/
         uploadButton = view.findViewById(R.id.uploadButton);
 
 
@@ -115,6 +129,7 @@ public class HomeFragment extends Fragment implements DataAdapter.OnFileListener
 
     public void setListeners()
     {
+
         uploadButton.setOnClickListener(new View.OnClickListener()
         {
             @Override
@@ -141,11 +156,7 @@ public class HomeFragment extends Fragment implements DataAdapter.OnFileListener
         fStore = FirebaseFirestore.getInstance();
         userID = fAuth.getCurrentUser().getUid();
         fStorage = FirebaseStorage.getInstance();
-
-
-
     }
-
 
     private void setupData(){
         Query query = fStore.collection("data").document(userID).collection("userData");
@@ -242,6 +253,33 @@ public class HomeFragment extends Fragment implements DataAdapter.OnFileListener
         {
             openUploadDialog();
         }
+    }
+
+    @Override
+    public void onCreateOptionsMenu(@NonNull Menu menu, @NonNull MenuInflater inflater)
+    {
+        inflater.inflate(R.menu.home_toolbar, menu);
+        super.onCreateOptionsMenu(menu, inflater);
+
+        this.menu = menu;
+
+        mLogoutItem = this.menu.findItem(R.id.home_toolbar_logout);
+        mLogoutItem.setOnMenuItemClickListener(this);
+    }
+
+    @Override
+    public boolean onMenuItemClick(MenuItem item)
+    {
+
+        switch(item.getItemId()){
+            case R.id.home_toolbar_logout:
+                fAuth.signOut();
+                getActivity().finish();
+                break;
+
+        }
+
+        return true;
     }
 
 }

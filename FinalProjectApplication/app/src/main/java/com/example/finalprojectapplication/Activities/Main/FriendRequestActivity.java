@@ -53,10 +53,10 @@ public class FriendRequestActivity extends AppCompatActivity implements FriendRe
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_friend_request);
 
-        mToolbar = findViewById(R.id.friend_request_toolbar);
+        //mToolbar = findViewById(R.id.friend_request_toolbar);
         mRecyclerView = findViewById(R.id.friend_request_recycler);
 
-        setSupportActionBar(mToolbar);
+        //setSupportActionBar(mToolbar);
 
         ActionBar mActionBar= getSupportActionBar();
         //mActionBar.setIcon(R.drawable.ic_left_arrow_filled);

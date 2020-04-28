@@ -35,7 +35,6 @@ public class ChatAdapter extends FirestoreRecyclerAdapter<Chat, ChatAdapter.Chat
         this.onClickChat = onClickChat;
     }
 
-
     @Override
     protected void onBindViewHolder(@NonNull ChatHolder holder, int position, @NonNull Chat model)
     {
@@ -45,7 +44,6 @@ public class ChatAdapter extends FirestoreRecyclerAdapter<Chat, ChatAdapter.Chat
         }else{
             Picasso.with(mContext).load(model.getPicture()).into(holder.chatPicture);
         }
-
         uid.add(model.getUid());
         System.out.println("UID SIZE" + uid.size());
     }
@@ -86,7 +84,6 @@ public class ChatAdapter extends FirestoreRecyclerAdapter<Chat, ChatAdapter.Chat
             onClickChat.onLongClickChat(getSnapshots().getSnapshot(getAdapterPosition()).getReference().getId());
             return true;
         }
-
     }
 
     public interface OnClickChat{

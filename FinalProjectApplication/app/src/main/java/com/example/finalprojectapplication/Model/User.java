@@ -14,6 +14,7 @@ public class User
     String profilePictureUrl;
     String uid;
     String status;
+    Boolean isGoogleSign;
 
     public User(){
 
@@ -101,6 +102,16 @@ public class User
     public void setUid(String uid)
     {
         this.uid = uid;
+    }
+
+    public Boolean getIsGoogleSign()
+    {
+        return isGoogleSign;
+    }
+
+    public void setIsGoogleSign(Boolean isGoogleSign)
+    {
+        this.isGoogleSign = isGoogleSign;
     }
 
     @Override

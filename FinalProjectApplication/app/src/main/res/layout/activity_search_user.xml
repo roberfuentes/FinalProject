@@ -16,7 +16,7 @@
             app:contentInsetStart="0dp">
             <androidx.appcompat.widget.Toolbar
                 android:id="@+id/search_user_toolbar"
-                android:layout_width="200dp"
+                android:layout_width="match_parent"
                 android:layout_height="match_parent"/>
 
         </com.google.android.material.appbar.MaterialToolbar>

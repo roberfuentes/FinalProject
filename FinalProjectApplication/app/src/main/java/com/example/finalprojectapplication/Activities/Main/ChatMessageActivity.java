@@ -75,7 +75,7 @@ public class ChatMessageActivity extends AppCompatActivity implements View.OnCli
 
     private void setupComponents(){
 
-        mToolbar = findViewById(R.id.chat_message_toolbar);
+        //mToolbar = findViewById(R.id.chat_message_toolbar);
         mRecyclerView = findViewById(R.id.chat_message_recycler);
         mBackArrow = findViewById(R.id.chat_message_back_arrow);
         mProfilePicture = findViewById(R.id.chat_message_profile_picture);
@@ -84,7 +84,7 @@ public class ChatMessageActivity extends AppCompatActivity implements View.OnCli
 
 
         mSendButton.setOnClickListener(this);
-        setSupportActionBar(mToolbar);
+        //setSupportActionBar(mToolbar);
 
         actionBar = getSupportActionBar();
     }

@@ -111,8 +111,8 @@ public class ChatFragment extends Fragment implements  View.OnClickListener, Cha
     private void setupComponents(){
 
 
-        mToolbar = v.findViewById(R.id.chat_toolbar);
-        ((AppCompatActivity)getActivity()).setSupportActionBar(mToolbar);
+        /*mToolbar = v.findViewById(R.id.chat_toolbar);
+        ((AppCompatActivity)getActivity()).setSupportActionBar(mToolbar);*/
         mRecyclerView = v.findViewById(R.id.chat_recycler_list);
         floatingActionButtonOptions = v.findViewById(R.id.floating_button_options);
         floatingActionButtonListFriends = v.findViewById(R.id.floating_button_list_friends);

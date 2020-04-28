@@ -64,9 +64,9 @@ public class InfoActivity extends AppCompatActivity
         mInfoCardView = findViewById(R.id.infoCardView);
         mInfoEditableCardView = findViewById(R.id.infoEditableCardView);
 
-        mToolbarEdit = findViewById(R.id.info_editToolbar);
+        //mToolbarEdit = findViewById(R.id.info_editToolbar);
 
-        setSupportActionBar(mToolbarEdit);
+        //setSupportActionBar(mToolbarEdit);
 
         setupFirebase();
         setupInfoData();

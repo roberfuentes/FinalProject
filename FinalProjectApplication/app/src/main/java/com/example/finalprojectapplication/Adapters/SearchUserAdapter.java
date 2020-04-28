@@ -8,6 +8,7 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.example.finalprojectapplication.Model.User;
 import com.example.finalprojectapplication.R;
@@ -43,6 +44,14 @@ public class SearchUserAdapter extends FirestoreRecyclerAdapter<User, SearchUser
         this.currentFriendRequests = currentFriendRequests;
         this.currentFriendRequestsStatus = currentFriendRequestsStatus;
         this.currentUID = currentUID;
+        this.mContext = mContext;
+    }
+
+    public SearchUserAdapter(@NonNull FirestoreRecyclerOptions<User> options, FirebaseFirestore fStore, Context mContext)
+    {
+        super(options);
+        this.fStore = fStore;
+        this.mContext = mContext;
     }
 
     @NonNull
@@ -58,7 +67,7 @@ public class SearchUserAdapter extends FirestoreRecyclerAdapter<User, SearchUser
     protected void onBindViewHolder(@NonNull SearchUserHolder holder, int position, @NonNull User model)
     {
         System.out.println("currentFriends" + currentFriends);
-
+        System.out.println("Checking if you go through here");
         //Profile Picture
         String profilePicture = model.getProfilePictureUrl();
         if(profilePicture.equals("")){
@@ -69,31 +78,35 @@ public class SearchUserAdapter extends FirestoreRecyclerAdapter<User, SearchUser
         //Name
         holder.mName.setText(model.getName());
 
-        //Button
-        int result = currentFriends.indexOf(model.getUid());
-        System.out.println("result" + result);
-        if(result == -1){
-            System.out.println("check again" + result);
-            result = currentFriendRequests.indexOf(model.getUid());
-            if(result != -1){
-                String status = currentFriendRequestsStatus.get(result);
-                holder.mAddButton.setText(status.toUpperCase());
-                holder.mAddButton.setEnabled(false);
-                holder.mAddButton.setBackgroundColor(Color.parseColor("#888888"));
-            }
-        }else{
-            if(currentUID.equals(model.getUid()))
-            {
-                holder.mAddButton.setText("YOU");
-                holder.mAddButton.setEnabled(false);
-                holder.mAddButton.setBackgroundColor(Color.parseColor("#888888"));
-            }else{
-                holder.mAddButton.setText("ADDED");
-                holder.mAddButton.setEnabled(false);
-                holder.mAddButton.setBackgroundColor(Color.parseColor("#888888"));
-            }
 
+        //Button
+        if(currentFriends != null){
+            int result = currentFriends.indexOf(model.getUid());
+            System.out.println("result" + result);
+            if(result == -1){
+                System.out.println("check again" + result);
+                result = currentFriendRequests.indexOf(model.getUid());
+                if(result != -1 && currentFriendRequests != null && currentFriendRequestsStatus != null){
+                    String status = currentFriendRequestsStatus.get(result);
+                    holder.mAddButton.setText(status.toUpperCase());
+                    holder.mAddButton.setEnabled(false);
+                    holder.mAddButton.setBackgroundColor(Color.parseColor("#888888"));
+                }
+            }else{
+                if(currentUID.equals(model.getUid()))
+                {
+                    holder.mAddButton.setText("YOU");
+                    holder.mAddButton.setEnabled(false);
+                    holder.mAddButton.setBackgroundColor(Color.parseColor("#888888"));
+                }else{
+                    System.out.println("This user should be dispalyed" + model.getName());
+                    holder.mAddButton.setText("ADDED");
+                    holder.mAddButton.setEnabled(false);
+                    holder.mAddButton.setBackgroundColor(Color.parseColor("#888888"));
+                }
+            }
         }
+
     }
 
 

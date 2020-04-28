@@ -68,9 +68,10 @@ public class SearchUserActivity extends AppCompatActivity implements SearchUserA
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_search_user);
 
-        mToolbar = findViewById(R.id.search_user_toolbar);
+        /*mToolbar = findViewById(R.id.search_user_toolbar);
         setSupportActionBar(mToolbar);
         actionBar = getSupportActionBar();
+        actionBar.setTitle("Search user");*/
 
         mRecyclerView = findViewById(R.id.search_user_recycler);
         currentFriends = new ArrayList<>();
@@ -142,21 +143,14 @@ public class SearchUserActivity extends AppCompatActivity implements SearchUserA
                                         currentFriendRequests.add(friendRequest.getFromUid());
                                         currentFriendRequestsStatus.add(friendRequest.getStatus());
                                     }
-                                    currentFriends.add(currentUID);
 
-                                    adapter = new SearchUserAdapter(options, getApplicationContext(), fStore, currentFriends,currentFriendRequests, currentFriendRequestsStatus, SearchUserActivity.this, currentUID);
-
-                                    mRecyclerView.setLayoutManager(new LinearLayoutManager(getApplicationContext()));
-
-                                    mRecyclerView.setAdapter(adapter);
-                                }else{
-                                    currentFriends.add(currentUID);
-                                    adapter = new SearchUserAdapter(options, getApplicationContext(), fStore, currentFriends,currentFriendRequests, currentFriendRequestsStatus, SearchUserActivity.this, currentUID);
-
-                                    mRecyclerView.setLayoutManager(new LinearLayoutManager(getApplicationContext()));
-
-                                    mRecyclerView.setAdapter(adapter);
                                 }
+                                currentFriends.add(currentUID);
+                                adapter = new SearchUserAdapter(options, SearchUserActivity.this, fStore, currentFriends,currentFriendRequests, currentFriendRequestsStatus, SearchUserActivity.this, currentUID);
+
+                                mRecyclerView.setLayoutManager(new LinearLayoutManager(SearchUserActivity.this));
+
+                                mRecyclerView.setAdapter(adapter);
                             }
                         }
                     });
@@ -174,6 +168,35 @@ public class SearchUserActivity extends AppCompatActivity implements SearchUserA
         MenuItem menuItem = menu.findItem(R.id.searcher_search_user);
         mSearchView = (SearchView) menuItem.getActionView();
 
+        mSearchView.setOnQueryTextListener(new SearchView.OnQueryTextListener()
+        {
+            @Override
+            public boolean onQueryTextSubmit(String searchQuery)
+            {
+
+                return false;
+            }
+
+            @Override
+            public boolean onQueryTextChange(String newText)
+            {
+                Query query = fStore.collection("users").orderBy("name").startAt(newText).endAt(newText+"\uf8ff");
+
+                FirestoreRecyclerOptions<User> options = new FirestoreRecyclerOptions.Builder<User>()
+                        .setLifecycleOwner(SearchUserActivity.this)
+                        .setQuery(query, User.class)
+                        .build();
+
+                adapter = new SearchUserAdapter(options, fStore, SearchUserActivity.this);
+
+                mRecyclerView.setLayoutManager(new LinearLayoutManager(getApplicationContext()));
+
+                mRecyclerView.setAdapter(adapter);
+                Toast.makeText(getApplicationContext(), "This should be working ok?", Toast.LENGTH_SHORT).show();
+
+                return false;
+            }
+        });
 
         //mSearchView.setOnQueryTextListener(this);
 

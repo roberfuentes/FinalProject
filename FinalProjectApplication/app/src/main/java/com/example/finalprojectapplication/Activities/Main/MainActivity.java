@@ -22,6 +22,7 @@ import com.example.finalprojectapplication.Activities.Login.LoginActivity;
 import com.example.finalprojectapplication.Fragments.ChatFragment;
 import com.example.finalprojectapplication.Fragments.HomeFragment;
 import com.example.finalprojectapplication.Fragments.ProfileFragment;
+import com.example.finalprojectapplication.Model.User;
 import com.example.finalprojectapplication.R;
 import com.google.android.gms.tasks.Continuation;
 import com.google.android.gms.tasks.OnCompleteListener;
@@ -31,6 +32,7 @@ import com.google.android.gms.tasks.Task;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.DocumentReference;
+import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
@@ -44,6 +46,19 @@ public class MainActivity extends AppCompatActivity
 {
 
     private static final int REQUEST_IMAGE = 1;
+
+    private static final String TAG = "RegisterActivity";
+    private static final String KEY_NAME = "name";
+    private static final String KEY_EMAIL = "email";
+    private static final String KEY_PASSWORD = "password";
+    private static final String KEY_LOCATION = "location";
+    private static final String KEY_AGE = "age";
+    private static final String KEY_PROFILE = "profilePictureUrl";
+    private static final String KEY_STATUS = "status";
+    private static final String KEY_UID = "uid";
+
+
+
     FirebaseAuth fAuth;
     String currentUID;
     FirebaseFirestore fStore;
@@ -168,7 +183,6 @@ public class MainActivity extends AppCompatActivity
             return;
         }
 
-
         final StorageReference imageRef = fStorage.getReference("PROFILE_PICTURE").child(System.currentTimeMillis() + "");
 
         UploadTask uploadTask = imageRef.putFile(mFileUri);
@@ -188,7 +202,7 @@ public class MainActivity extends AppCompatActivity
             @Override
             public void onComplete(@NonNull Task<Uri> task)
             {
-                setPictureOnFirestoreProfile(task.getResult().toString());
+                userToSetPictureProfile(task.getResult().toString());
                 ImageView mProfilePicture
                         =profileFragment.getView().findViewById(R.id.profilePicture);
                 Picasso.with(MainActivity.this).load(task.getResult()).into(mProfilePicture);
@@ -196,11 +210,45 @@ public class MainActivity extends AppCompatActivity
         });
     }
 
-    private void setPictureOnFirestoreProfile(String url){
+    private void userToSetPictureProfile(final String url){
+        //Get user information;
+        DocumentReference userRef = fStore.collection("users").document(currentUID);
+
+        userRef.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>()
+        {
+            @Override
+            public void onComplete(@NonNull Task<DocumentSnapshot> task)
+            {
+                if(task.isSuccessful()){
+                    DocumentSnapshot documentSnapshot = task.getResult();
+                    if(documentSnapshot.exists()){
+                        User user = documentSnapshot.toObject(User.class);
+                        setPictureProfile(url, user);
+                    }
+                }
+            }
+        }).addOnFailureListener(new OnFailureListener()
+        {
+            @Override
+            public void onFailure(@NonNull Exception e)
+            {
+                Toast.makeText(MainActivity.this, "Sorry, picture couldn't be set, try again later", Toast.LENGTH_SHORT).show();
+            }
+        });
+    }
+
+    private void setPictureProfile(String url, User user){
         DocumentReference documentReference = fStore.collection("users").document(currentUID);
 
         Map<String, Object> userMap = new HashMap<>();
-        userMap.put("profilePictureUrl", url);
+        userMap.put(KEY_NAME, user.getName());
+        userMap.put(KEY_EMAIL, user.getEmail());
+        userMap.put(KEY_PASSWORD, user.getPassword());
+        userMap.put(KEY_LOCATION, user.getLocation());
+        userMap.put(KEY_AGE, user.getAge());
+        userMap.put(KEY_PROFILE, url);
+        userMap.put(KEY_UID, user.getUid());
+        userMap.put(KEY_STATUS, user.getStatus());
 
         documentReference.set(userMap).addOnSuccessListener(new OnSuccessListener<Void>()
         {

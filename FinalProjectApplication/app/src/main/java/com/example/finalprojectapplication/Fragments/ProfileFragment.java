@@ -52,15 +52,17 @@ public class ProfileFragment extends Fragment implements MenuItem.OnMenuItemClic
     private final String KEY_AGE = "age";
     private final String KEY_STATUS = "status";
     private final String KEY_LOCATION = "location";
+    private final String KEY_IS_GOOGLE_SIGN = "isGoogleSign";
+
 
     private final int REQUEST_IMAGE = 1;
-
 
 
     private FirebaseFirestore fstore;
     private FirebaseAuth fAuth;
 
     private String userID;
+    private Boolean isGoogleSign;
 
     private TextView mProfileName, mProfileEmail, mProfilePassword,  mProfileLocation, mProfileAge, mProfileStatus;
     private EditText mProfileNameEdit, mProfileEmailEdit, mProfilePasswordEdit,  mProfileLocationEdit, mProfileAgeEdit, mProfileStatusEdit;
@@ -107,8 +109,8 @@ public class ProfileFragment extends Fragment implements MenuItem.OnMenuItemClic
     }
 
     public void setupViewComponents(){
-        mToolbarEdit = view.findViewById(R.id.profile_editToolbar);
-        ((AppCompatActivity)getActivity()).setSupportActionBar(mToolbarEdit);
+        /*mToolbarEdit = view.findViewById(R.id.profile_editToolbar);
+        ((AppCompatActivity)getActivity()).setSupportActionBar(mToolbarEdit);*/
 
         mContainerInfo = view.findViewById(R.id.containerInformation);
         mContainerEditInfo = view.findViewById(R.id.containerEditInformation);
@@ -160,7 +162,7 @@ public class ProfileFragment extends Fragment implements MenuItem.OnMenuItemClic
         userID = fAuth.getCurrentUser().getUid();
     }
 
-    public void getUserInformation(){
+    private void getUserInformation(){
         DocumentReference userRef = fstore.collection("users").document(userID);
 
         userRef.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>()
@@ -173,7 +175,17 @@ public class ProfileFragment extends Fragment implements MenuItem.OnMenuItemClic
                     if(documentSnapshot.exists()){
                         User user = documentSnapshot.toObject(User.class);
 
+                        System.out.println(user.getUid() + " and " + user.getIsGoogleSign());
+
                         if(user!=null){
+                            if(user.getIsGoogleSign()){
+                                isGoogleSign = true;
+                                mProfileEmailEdit.setEnabled(false);
+                                mProfilePasswordEdit.setEnabled(false);
+                            }else{
+                                isGoogleSign = false;
+                            }
+
                             if(user.getProfilePictureUrl().equals("")){
                                     mProfilePicture.setImageResource(R.drawable.ic_profile_identity_gray);
                             }else{
@@ -265,6 +277,7 @@ public class ProfileFragment extends Fragment implements MenuItem.OnMenuItemClic
         final String location = mProfileLocationEdit.getText().toString();
         final String status = mProfileStatusEdit.getText().toString();
 
+
         if(name.equals("") || email.equals("") || password.equals("") || age.equals("") || location.equals("")){
            Toast.makeText(getContext(), "Fields can't be empty", Toast.LENGTH_SHORT).show();
         }else if(password.length() < 6){
@@ -277,6 +290,8 @@ public class ProfileFragment extends Fragment implements MenuItem.OnMenuItemClic
             user.put(KEY_AGE, age);
             user.put(KEY_LOCATION, location);
             user.put(KEY_STATUS, status);
+            user.put(KEY_IS_GOOGLE_SIGN, isGoogleSign);
+
 
             DocumentReference userRef = fstore.collection("users").document(userID);
 

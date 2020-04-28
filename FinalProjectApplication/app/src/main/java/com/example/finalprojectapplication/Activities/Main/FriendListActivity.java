@@ -2,7 +2,9 @@ package com.example.finalprojectapplication.Activities.Main;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -50,12 +52,18 @@ public class FriendListActivity extends AppCompatActivity implements FriendAdapt
     FirebaseFirestore fStore;
     FirebaseAuth fAuth;
     String currentUID;
+    Toolbar mToolbar;
 
     @Override
     protected void onCreate(Bundle savedInstanceState)
     {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_friend_list);
+
+        mToolbar = findViewById(R.id.friend_list_toolbar);
+        /*setSupportActionBar(mToolbar);
+        getSupportActionBar().setTitle("Friends list");*/
+
 
         mRecyclerView = findViewById(R.id.friend_list_recycler);
 

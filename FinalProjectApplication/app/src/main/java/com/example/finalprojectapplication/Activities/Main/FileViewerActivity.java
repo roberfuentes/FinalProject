@@ -4,6 +4,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 
 import android.content.Intent;
+import android.graphics.Color;
 import android.media.MediaPlayer;
 import android.net.Uri;
 import android.os.AsyncTask;
@@ -13,11 +14,11 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.ImageView;
+import android.widget.RelativeLayout;
 import android.widget.SeekBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.example.finalprojectapplication.Model.Data;
 import com.example.finalprojectapplication.R;
 
 import com.github.barteksc.pdfviewer.PDFView;
@@ -52,6 +53,8 @@ public class FileViewerActivity extends AppCompatActivity implements View.OnClic
 
     Toolbar toolbar;
 
+    RelativeLayout mainLayout;
+
 
 
     @Override
@@ -70,8 +73,10 @@ public class FileViewerActivity extends AppCompatActivity implements View.OnClic
 
         mPlayerView = findViewById(R.id.exoPlayer);
 
-        toolbar = findViewById(R.id.fileviewer_toolbar);
-        setSupportActionBar(toolbar);
+        /*toolbar = findViewById(R.id.fileviewer_toolbar);
+        setSupportActionBar(toolbar);*/
+
+        mainLayout = findViewById(R.id.mainLayout);
 
 
 
@@ -96,28 +101,31 @@ public class FileViewerActivity extends AppCompatActivity implements View.OnClic
 
 
     }
-    private void typeAction(String type, String url){
-        switch(type){
-            case "image":
-                readImage(url);
-                break;
-            case "pdf":
-                readPdf(url);
-                break;
-            case "audio":
-                readAudio(url);
-                break;
-            case "video":
-                readVideo(url);
-                break;
+        private void typeAction(String type, String url){
+            switch(type){
+                case "image":
+                    readImage(url);
+                    break;
+                case "pdf":
+                    readPdf(url);
+                    break;
+                case "audio":
+                    readAudio(url);
+                    break;
+                case "video":
+                    readVideo(url);
+                    break;
         }
     }
 
     private void readImage(String url){
         toolbar.setVisibility(View.VISIBLE);
         mImageView.setVisibility(View.VISIBLE);
+        mainLayout.setBackgroundColor(Color.BLACK);
         Toast.makeText(FileViewerActivity.this, "Image", Toast.LENGTH_SHORT).show();
-        Picasso.with(FileViewerActivity.this).load(url).resize(1920, 1280).centerInside().into(mImageView);
+        //Picasso.with(FileViewerActivity.this).load(url).resize(1920, 1280).centerInside().into(mImageView);
+        Picasso.with(FileViewerActivity.this).load(url).fit().centerInside().into(mImageView);
+
 
     }
     private void readPdf(String url){
