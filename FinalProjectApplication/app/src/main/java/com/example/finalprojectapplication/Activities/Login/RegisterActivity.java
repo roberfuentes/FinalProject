@@ -73,7 +73,7 @@ public class RegisterActivity extends AppCompatActivity
             }
         });
 
-
+        this.setTitle("Sign up");
     }
 
 

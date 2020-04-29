@@ -57,6 +57,7 @@ public class ChatFragment extends Fragment implements  View.OnClickListener, Cha
     View v;
     String currentUserID;
 
+
     Toolbar mToolbar;
     RecyclerView mRecyclerView;
     FloatingActionButton floatingActionButtonOptions, floatingActionButtonListFriends, floatingActionButtonAddFriends, floatingActionButtonSearchFriends;
@@ -118,6 +119,7 @@ public class ChatFragment extends Fragment implements  View.OnClickListener, Cha
         floatingActionButtonListFriends = v.findViewById(R.id.floating_button_list_friends);
         floatingActionButtonAddFriends = v.findViewById(R.id.floating_button_add_friends);
         floatingActionButtonSearchFriends = v.findViewById(R.id.floating_button_search_friends);
+
     }
 
     private void animateFloatings(){

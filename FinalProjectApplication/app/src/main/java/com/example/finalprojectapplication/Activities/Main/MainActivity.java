@@ -10,6 +10,7 @@ import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -76,9 +77,6 @@ public class MainActivity extends AppCompatActivity
     private Uri mFileUri;
 
 
-
-    //TextView txtId;
-
     @Override
     protected void onCreate(Bundle savedInstanceState)
     {
@@ -90,6 +88,7 @@ public class MainActivity extends AppCompatActivity
         bottomNavigationView.setOnNavigationItemSelectedListener(bottomNavSelect);
 
 
+        this.setTitle("Save your data");
         setupFragments();
         setupFirebase();
 
@@ -265,5 +264,20 @@ public class MainActivity extends AppCompatActivity
                 Toast.makeText(MainActivity.this, "Your profile picture couldn't be updated, try again later.", Toast.LENGTH_SHORT).show();
             }
         });
+    }
+
+    @Override
+    public boolean onKeyDown(int keyCode, KeyEvent event)
+    {
+        if(keyCode == KeyEvent.KEYCODE_BACK){
+            if(LoginActivity.isGoogleSign){
+                LoginActivity.mGoogleSignIn.signOut();
+            }else{
+                fAuth.signOut();
+            }
+            finish();
+        }
+
+        return super.onKeyDown(keyCode, event);
     }
 }

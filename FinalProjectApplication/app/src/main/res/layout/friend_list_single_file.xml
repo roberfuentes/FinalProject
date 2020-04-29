@@ -8,15 +8,6 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
 
-        <View
-            android:id="@+id/friend_request__horizontal_separator"
-            android:layout_width="match_parent"
-            android:layout_height="1dp"
-            android:background="@color/colorBlack"
-            android:layout_marginTop="5dp"
-            />
-
-
         <de.hdodenhof.circleimageview.CircleImageView
             android:id="@+id/friend_list_profile_picture"
             android:layout_width="80dp"
@@ -44,6 +35,15 @@
             android:textStyle="italic"
             android:textColor="@color/colorBlack"
             android:textSize="14dp"/>
+
+        <View
+            android:id="@+id/friend_request__horizontal_separator"
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:background="@color/colorBlack"
+            android:layout_marginTop="5dp"
+            android:layout_below="@+id/friend_list_profile_picture"
+            />
     </RelativeLayout>
 
 

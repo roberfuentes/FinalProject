@@ -7,7 +7,7 @@
     tools:context=".Activities.Main.InfoActivity">
 
 
-    <com.google.android.material.appbar.MaterialToolbar
+    <!--<com.google.android.material.appbar.MaterialToolbar
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         app:contentInsetStart="0dp">
@@ -18,7 +18,7 @@
             android:layout_height="?attr/actionBarSize"
             android:background="@color/colorWhite" />
 
-    </com.google.android.material.appbar.MaterialToolbar>
+    </com.google.android.material.appbar.MaterialToolbar>-->
 
     <LinearLayout
         android:id="@+id/topLinear"
@@ -26,7 +26,6 @@
         android:layout_height="220dp"
         android:layout_alignParentStart="true"
         android:layout_alignParentTop="true"
-        android:layout_marginTop="?attr/actionBarSize"
         android:background="@color/colorBlueLight"
         android:gravity="center_horizontal"
         android:orientation="horizontal">

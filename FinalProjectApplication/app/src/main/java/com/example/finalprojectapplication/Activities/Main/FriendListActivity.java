@@ -60,7 +60,7 @@ public class FriendListActivity extends AppCompatActivity implements FriendAdapt
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_friend_list);
 
-        mToolbar = findViewById(R.id.friend_list_toolbar);
+        //mToolbar = findViewById(R.id.friend_list_toolbar);
         /*setSupportActionBar(mToolbar);
         getSupportActionBar().setTitle("Friends list");*/
 
@@ -70,6 +70,7 @@ public class FriendListActivity extends AppCompatActivity implements FriendAdapt
         setupFirebase();
         setAdapter();
 
+        this.setTitle("Friend list");
     }
 
     private void setupFirebase(){

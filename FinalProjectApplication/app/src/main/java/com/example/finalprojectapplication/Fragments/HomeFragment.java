@@ -26,6 +26,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Toast;
 
+import com.example.finalprojectapplication.Activities.Login.LoginActivity;
 import com.example.finalprojectapplication.Activities.Main.InfoActivity;
 import com.example.finalprojectapplication.Activities.Main.MainActivity;
 import com.example.finalprojectapplication.Activities.Main.UploadActivity;
@@ -33,6 +34,9 @@ import com.example.finalprojectapplication.Adapters.DataAdapter;
 import com.example.finalprojectapplication.Model.Data;
 import com.example.finalprojectapplication.R;
 import com.firebase.ui.firestore.FirestoreRecyclerOptions;
+import com.google.android.gms.auth.api.Auth;
+import com.google.android.gms.auth.api.signin.GoogleSignIn;
+import com.google.android.gms.auth.api.signin.GoogleSignInClient;
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.firebase.auth.FirebaseAuth;
@@ -58,7 +62,7 @@ public class HomeFragment extends Fragment implements DataAdapter.OnFileListener
     private String userID;
     private DataAdapter adapter;
     private FirebaseStorage fStorage;
-
+    private GoogleSignInClient mGoogleSignInClient;
 
 
 
@@ -125,6 +129,7 @@ public class HomeFragment extends Fragment implements DataAdapter.OnFileListener
         uploadButton = view.findViewById(R.id.uploadButton);
 
 
+
     }
 
     public void setListeners()
@@ -156,6 +161,8 @@ public class HomeFragment extends Fragment implements DataAdapter.OnFileListener
         fStore = FirebaseFirestore.getInstance();
         userID = fAuth.getCurrentUser().getUid();
         fStorage = FirebaseStorage.getInstance();
+
+
     }
 
     private void setupData(){
@@ -273,7 +280,12 @@ public class HomeFragment extends Fragment implements DataAdapter.OnFileListener
 
         switch(item.getItemId()){
             case R.id.home_toolbar_logout:
-                fAuth.signOut();
+                if(LoginActivity.isGoogleSign){
+                    LoginActivity.mGoogleSignIn.signOut();
+                }else{
+                    fAuth.signOut();
+                }
+
                 getActivity().finish();
                 break;
 

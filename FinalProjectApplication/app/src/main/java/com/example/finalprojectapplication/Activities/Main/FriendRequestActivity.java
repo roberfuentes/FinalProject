@@ -58,11 +58,11 @@ public class FriendRequestActivity extends AppCompatActivity implements FriendRe
 
         //setSupportActionBar(mToolbar);
 
-        ActionBar mActionBar= getSupportActionBar();
+        /*ActionBar mActionBar= getSupportActionBar();
         //mActionBar.setIcon(R.drawable.ic_left_arrow_filled);
         mActionBar.setTitle("  Friend requests");
         mActionBar.setDisplayHomeAsUpEnabled(true);
-        mActionBar.setHomeAsUpIndicator(R.drawable.ic_left_arrow_filled);
+        mActionBar.setHomeAsUpIndicator(R.drawable.ic_left_arrow_filled);*/
 
 
 
@@ -70,6 +70,7 @@ public class FriendRequestActivity extends AppCompatActivity implements FriendRe
         setupFirebase();
         setAdapter();
 
+        this.setTitle("Friends requests");
 
 
     }

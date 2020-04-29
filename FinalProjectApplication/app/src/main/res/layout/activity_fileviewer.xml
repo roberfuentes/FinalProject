@@ -9,7 +9,7 @@
     >
 
 
-    <com.google.android.material.appbar.MaterialToolbar
+    <!--<com.google.android.material.appbar.MaterialToolbar
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         app:contentInsetStart="0dp">
@@ -21,7 +21,7 @@
             android:visibility="invisible"
             />
 
-    </com.google.android.material.appbar.MaterialToolbar>
+    </com.google.android.material.appbar.MaterialToolbar>-->
 
     <com.github.barteksc.pdfviewer.PDFView
         android:id="@+id/pdfView"

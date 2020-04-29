@@ -27,6 +27,7 @@ import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.squareup.picasso.Picasso;
 
+import java.text.DecimalFormat;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -120,7 +121,13 @@ public class InfoActivity extends AppCompatActivity
 
                                 mInfoName.setText(data.getName());
                                 mInfoExtraType.setText(data.getType());
-                                mInfoExtraSize.setText(data.getSize()/1000 +" MB");
+                                String size = String.valueOf(data.getSize());
+
+
+                                mInfoExtraSize.setText(readableFileSize(data.getSize()));
+
+
+
 
                                 mInfoPicture.getLayoutParams().height = 600;
                                 mInfoPicture.getLayoutParams().width = 600;
@@ -133,6 +140,14 @@ public class InfoActivity extends AppCompatActivity
         }else{
             Toast.makeText(InfoActivity.this, "Couldn't retrieve the information, try again later", Toast.LENGTH_SHORT).show();
         }
+    }
+
+    //Ty stackoverflow
+    private String readableFileSize(long size) {
+        if(size <= 0) return "0";
+        final String[] units = new String[] { "B", "kB", "MB", "GB", "TB" };
+        int digitGroups = (int) (Math.log10(size)/Math.log10(1024));
+        return new DecimalFormat("#,##0.#").format(size/Math.pow(1024, digitGroups)) + " " + units[digitGroups];
     }
 
     public DocumentReference getInfoDataFromCloud()

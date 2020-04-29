@@ -56,7 +56,6 @@ public class FileViewerActivity extends AppCompatActivity implements View.OnClic
     RelativeLayout mainLayout;
 
 
-
     @Override
     protected void onCreate(Bundle savedInstanceState)
     {
@@ -79,47 +78,49 @@ public class FileViewerActivity extends AppCompatActivity implements View.OnClic
         mainLayout = findViewById(R.id.mainLayout);
 
 
-
-
         mToggleAction.setOnClickListener(this);
         mProgressAudio.setOnSeekBarChangeListener(this);
 
 
-
-
-
-
-        if(getIntent()!= null){
+        if (getIntent() != null)
+        {
             String type = getIntent().getStringExtra("type");
             String url = getIntent().getStringExtra("url");
-            if(type!=null && url != null){
+            if (type != null && url != null)
+            {
                 typeAction(type, url);
             }
-        }else{
+        } else
+        {
             Toast.makeText(FileViewerActivity.this, "Couldn't retrieve the file", Toast.LENGTH_SHORT).show();
         }
 
 
     }
-        private void typeAction(String type, String url){
-            switch(type){
-                case "image":
-                    readImage(url);
-                    break;
-                case "pdf":
-                    readPdf(url);
-                    break;
-                case "audio":
-                    readAudio(url);
-                    break;
-                case "video":
-                    readVideo(url);
-                    break;
+
+    private void typeAction(String type, String url)
+    {
+        switch (type)
+        {
+            case "image":
+                readImage(url);
+                break;
+            case "pdf":
+                readPdf(url);
+                break;
+            case "audio":
+                readAudio(url);
+                break;
+            case "video":
+                readVideo(url);
+                break;
         }
     }
 
-    private void readImage(String url){
-        toolbar.setVisibility(View.VISIBLE);
+    private void readImage(String url)
+    {
+        //toolbar.setVisibility(View.VISIBLE);
+        this.setTitle("Image");
         mImageView.setVisibility(View.VISIBLE);
         mainLayout.setBackgroundColor(Color.BLACK);
         Toast.makeText(FileViewerActivity.this, "Image", Toast.LENGTH_SHORT).show();
@@ -128,23 +129,31 @@ public class FileViewerActivity extends AppCompatActivity implements View.OnClic
 
 
     }
-    private void readPdf(String url){
+
+    private void readPdf(String url)
+    {
+
+        this.setTitle("PDF");
         mPdfView.setVisibility(View.VISIBLE);
         new RetrievePDFStream().execute(url);
 
 
     }
-    private void readAudio(String url){
-        toolbar.setVisibility(View.VISIBLE);
+
+    private void readAudio(String url)
+    {
+        //toolbar.setVisibility(View.VISIBLE);
+        this.setTitle("Audio");
 
         Toast.makeText(FileViewerActivity.this, "Audio", Toast.LENGTH_SHORT).show();
         mp = new MediaPlayer();
-        try{
+        try
+        {
             mp.setDataSource(url);
             mp.prepare();
 
             mImageView.setImageResource(R.drawable.ic_audio_outlined);
-            mImageView.getLayoutParams().width= 1280;
+            mImageView.getLayoutParams().width = 1280;
             mImageView.getLayoutParams().height = 700;
             mToggleAction.setImageResource(R.drawable.ic_play_filled);
 
@@ -157,19 +166,20 @@ public class FileViewerActivity extends AppCompatActivity implements View.OnClic
 
             int durationFile = mp.getDuration();
             mTimeAudio.setText("00:00");
-            mProgressAudio.setMax(durationFile/1000);
+            mProgressAudio.setMax(durationFile / 1000);
 
 
-
-
-        }catch(Exception e){
+        } catch (Exception e)
+        {
             e.printStackTrace();
         }
 
 
-
     }
-    private void readVideo(String url){
+
+    private void readVideo(String url)
+    {
+        getSupportActionBar().hide();
         Toast.makeText(FileViewerActivity.this, "Video", Toast.LENGTH_SHORT).show();
         mPlayerView.setVisibility(View.VISIBLE);
         simpleExoPlayer = new SimpleExoPlayer.Builder(FileViewerActivity.this).build();
@@ -189,7 +199,8 @@ public class FileViewerActivity extends AppCompatActivity implements View.OnClic
     public void onClick(View v)
     {
 
-        switch(v.getId()){
+        switch (v.getId())
+        {
             case R.id.toggleAction:
                 playAction();
         }
@@ -198,8 +209,9 @@ public class FileViewerActivity extends AppCompatActivity implements View.OnClic
     @Override
     public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser)
     {
-        if(mp!=null && fromUser){
-            mp.seekTo(progress*1000);
+        if (mp != null && fromUser)
+        {
+            mp.seekTo(progress * 1000);
         }
     }
 
@@ -215,12 +227,15 @@ public class FileViewerActivity extends AppCompatActivity implements View.OnClic
 
     }
 
-    private void playAction(){
+    private void playAction()
+    {
 
-        if(mp.isPlaying()){
+        if (mp.isPlaying())
+        {
             mp.pause();
             mToggleAction.setImageResource(R.drawable.ic_play_filled);
-        }else{
+        } else
+        {
             mp.start();
             mToggleAction.setImageResource(R.drawable.ic_pause_filled);
 
@@ -231,26 +246,30 @@ public class FileViewerActivity extends AppCompatActivity implements View.OnClic
                 public void run()
                 {
 
-                    mProgressAudio.setMax(mp.getDuration()/1000);
-                    int mCurrentPosition = mp.getCurrentPosition()/1000;
-                    int min = mCurrentPosition /60;
-                    int sec = mCurrentPosition - (min*60);
+                    mProgressAudio.setMax(mp.getDuration() / 1000);
+                    int mCurrentPosition = mp.getCurrentPosition() / 1000;
+                    int min = mCurrentPosition / 60;
+                    int sec = mCurrentPosition - (min * 60);
 
 
                     String strMin = "";
                     String strSec = "";
                     mProgressAudio.setProgress(mCurrentPosition);
-                    if(min<10){
+                    if (min < 10)
+                    {
                         strMin = "0" + min;
-                    }else{
-                        strMin = ""+min;
+                    } else
+                    {
+                        strMin = "" + min;
                     }
-                    if(sec<10){
-                        strSec = "0"+sec;
-                    }else{
-                        strSec = ""+sec;
+                    if (sec < 10)
+                    {
+                        strSec = "0" + sec;
+                    } else
+                    {
+                        strSec = "" + sec;
                     }
-                    mTimeAudio.setText(strMin+":"+strSec);
+                    mTimeAudio.setText(strMin + ":" + strSec);
 
 
                     mHandler.postDelayed(this, 1000);
@@ -273,7 +292,8 @@ public class FileViewerActivity extends AppCompatActivity implements View.OnClic
     @Override
     public boolean onOptionsItemSelected(MenuItem item)
     {
-        switch(item.getItemId()){
+        switch (item.getItemId())
+        {
             case R.id.viewer_info_action:
                 goToInfoActivity();
                 break;
@@ -281,10 +301,12 @@ public class FileViewerActivity extends AppCompatActivity implements View.OnClic
         return false;
     }
 
-    public void goToInfoActivity(){
+    public void goToInfoActivity()
+    {
 
-        String fileRef= getIntent().getStringExtra("fileRef");
-        if(fileRef!=null){
+        String fileRef = getIntent().getStringExtra("fileRef");
+        if (fileRef != null)
+        {
             Intent intent = new Intent(FileViewerActivity.this, InfoActivity.class);
             intent.putExtra("fileRef", fileRef);
             startActivity(intent);
@@ -293,19 +315,23 @@ public class FileViewerActivity extends AppCompatActivity implements View.OnClic
 
     }
 
-    class RetrievePDFStream extends AsyncTask<String, Void, InputStream>{
+    class RetrievePDFStream extends AsyncTask<String, Void, InputStream>
+    {
 
         @Override
         protected InputStream doInBackground(String... strings)
         {
             InputStream inputStream = null;
-            try{
+            try
+            {
                 URL url = new URL(strings[0]);
-                HttpURLConnection httpURLConnection = (HttpURLConnection)url.openConnection();
-                if(httpURLConnection.getResponseCode() == 200){
+                HttpURLConnection httpURLConnection = (HttpURLConnection) url.openConnection();
+                if (httpURLConnection.getResponseCode() == 200)
+                {
                     inputStream = new BufferedInputStream(httpURLConnection.getInputStream());
                 }
-            }catch(Exception e){
+            } catch (Exception e)
+            {
                 e.printStackTrace();
             }
 

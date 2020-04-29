@@ -80,6 +80,7 @@ public class SearchUserActivity extends AppCompatActivity implements SearchUserA
 
         setupFirebase();
         setAdapter();
+        this.setTitle("Add friends");
     }
 
     private void setupFirebase(){

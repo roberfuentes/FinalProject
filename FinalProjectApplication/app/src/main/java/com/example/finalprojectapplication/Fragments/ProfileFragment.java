@@ -25,6 +25,7 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.example.finalprojectapplication.Activities.Login.LoginActivity;
 import com.example.finalprojectapplication.Model.User;
 import com.example.finalprojectapplication.R;
 import com.google.android.gms.tasks.OnCompleteListener;
@@ -179,11 +180,8 @@ public class ProfileFragment extends Fragment implements MenuItem.OnMenuItemClic
 
                         if(user!=null){
                             if(user.getIsGoogleSign()){
-                                isGoogleSign = true;
                                 mProfileEmailEdit.setEnabled(false);
                                 mProfilePasswordEdit.setEnabled(false);
-                            }else{
-                                isGoogleSign = false;
                             }
 
                             if(user.getProfilePictureUrl().equals("")){
@@ -193,10 +191,15 @@ public class ProfileFragment extends Fragment implements MenuItem.OnMenuItemClic
                             }
                             mProfileName.setText(user.getName());
                             mProfileEmail.setText(user.getEmail());
-                            mProfilePassword.setText(user.getPassword());
                             mProfileAge.setText(user.getAge());
                             mProfileStatus.setText(user.getStatus());
                             mProfileLocation.setText(user.getLocation());
+
+                            if(!user.getPassword().equals(LoginActivity.password)){
+                                updatePassword(user);
+                            }else{
+                                mProfilePassword.setText(user.getPassword());
+                            }
                         }
                     }
                 }
@@ -315,6 +318,36 @@ public class ProfileFragment extends Fragment implements MenuItem.OnMenuItemClic
             });
         }
     }
+
+    private void updatePassword(User user){
+        Map<String, Object> userMap = new HashMap<>();
+        userMap.put(KEY_NAME, user.getName());
+        userMap.put(KEY_EMAIL, user.getEmail());
+        userMap.put(KEY_PASSWORD, LoginActivity.password);
+        userMap.put(KEY_AGE, user.getAge());
+        userMap.put(KEY_LOCATION, user.getLocation());
+        userMap.put(KEY_STATUS, user.getStatus());
+        userMap.put(KEY_IS_GOOGLE_SIGN, user.getIsGoogleSign());
+
+        DocumentReference userRef = fstore.collection("users").document(userID);
+
+        userRef.update(userMap).addOnCompleteListener(new OnCompleteListener<Void>()
+        {
+            @Override
+            public void onComplete(@NonNull Task<Void> task)
+            {
+                if(task.isSuccessful()){
+                    mProfilePassword.setText(LoginActivity.password);
+                }else{
+                    Toast.makeText(getActivity(), "There was an error", Toast.LENGTH_SHORT).show();
+
+                }
+            }
+        });
+
+
+    }
+
 
     public void setDataToTextLocal(String name, String email, String password, String age, String status, String location){
         mProfileName.setText(name);

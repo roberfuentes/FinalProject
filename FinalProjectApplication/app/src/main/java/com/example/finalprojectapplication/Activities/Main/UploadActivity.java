@@ -60,7 +60,6 @@ public class UploadActivity extends AppCompatActivity
     private Button mUploadButton;
     private EditText mFileName;
 
-    private Button mBtnTest;
 
     private FirebaseFirestore fStore;
     private FirebaseStorage fStorage;
@@ -89,7 +88,7 @@ public class UploadActivity extends AppCompatActivity
         mImageUpload = findViewById(R.id.imageToUpload);
         mFileName = findViewById(R.id.fileName);
 
-        mBtnTest = findViewById(R.id.btnTest);
+        this.setTitle("Upload a file");
 
 
         setupComponents();
@@ -339,7 +338,7 @@ public class UploadActivity extends AppCompatActivity
             {
                 fileDetail.setType(type);
                 cutType(fileDetail);
-        }
+            }
         }
         return fileDetail;
     }
@@ -427,14 +426,16 @@ public class UploadActivity extends AppCompatActivity
             }
         });
 
-        mBtnTest.setOnClickListener(new View.OnClickListener()
+        mCancelButton.setOnClickListener(new View.OnClickListener()
         {
             @Override
             public void onClick(View v)
             {
-                startActivity(new Intent(UploadActivity.this, FileViewerActivity.class));
+                finish();
             }
         });
+
+
     }
 
 
@@ -459,8 +460,8 @@ public class UploadActivity extends AppCompatActivity
     }
 
 
-
-    public void testDeleteFile(){
+    public void testDeleteFile()
+    {
         StorageReference storageReference = fStorage.getReferenceFromUrl("https://firebasestorage.googleapis.com/v0/b/finalprojectapplication-c06eb.appspot.com/o/I%2F1586968891235?alt=media&token=ff74ae6a-bd54-42be-8ec6-7324761028dc");
         storageReference.delete().addOnSuccessListener(new OnSuccessListener<Void>()
         {

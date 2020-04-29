@@ -4,20 +4,11 @@
     android:background="?android:attr/selectableItemBackground"
     >
 
-    <View
-        android:id="@+id/chat_horizontal_separator"
-        android:layout_width="match_parent"
-        android:layout_height="1dp"
-        android:background="@color/colorBlack"
-        android:layout_marginTop="5dp"
-        />
-
 
     <de.hdodenhof.circleimageview.CircleImageView
         android:id="@+id/chat_picture"
         android:layout_width="80dp"
         android:layout_height="70dp"
-        android:layout_below="@+id/chat_horizontal_separator"
         android:layout_marginTop="10dp"
         />
     <TextView
@@ -29,6 +20,16 @@
         android:textColor="@color/colorBlack"
         android:textSize="16dp"
         android:layout_marginLeft="15dp"
+        />
+
+
+    <View
+        android:id="@+id/chat_horizontal_separator"
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:background="@color/colorBlack"
+        android:layout_marginTop="5dp"
+        android:layout_below="@+id/chat_picture"
         />
 
 </RelativeLayout>

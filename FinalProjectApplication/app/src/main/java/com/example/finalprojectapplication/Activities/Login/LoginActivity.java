@@ -9,10 +9,12 @@ import android.app.Dialog;
 import android.content.Intent;
 import android.os.Bundle;
 import android.text.InputType;
+import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.finalprojectapplication.Activities.Main.MainActivity;
@@ -68,7 +70,12 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
 
     Button mBtnRegisterEmail, mBtnRegisterGoogleSignUp;
     Button mBtnLogin;
-    GoogleSignInClient mGoogleSignIn;
+    TextView mTvForgotPassowrd;
+
+
+    public static GoogleSignInClient mGoogleSignIn;
+    public static boolean isGoogleSign = false;
+    public static String password = "";
 
     FirebaseFirestore fStore;
 
@@ -79,11 +86,10 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
 
-
         setupComponents();
+        this.setTitle("Login");
 
     }
-
 
     private void setupComponents(){
         //Firebase
@@ -100,17 +106,19 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
         mBtnLogin = findViewById(R.id.btnLogin);
         mBtnRegisterEmail = findViewById(R.id.btnRegisterEmail);
         mBtnRegisterGoogleSignUp = findViewById(R.id.btnRegisterGoogle);
+        mTvForgotPassowrd = findViewById(R.id.tvPassword);
 
         mBtnLogin.setOnClickListener(this);
         mBtnRegisterEmail.setOnClickListener(this);
         mBtnRegisterGoogleSignUp.setOnClickListener(this);
+        mTvForgotPassowrd.setOnClickListener(this);
 
     }
 
 
     private void login(){
         String email = mEtEmail.getText().toString();
-        String password = mEtPassword.getText().toString();
+        final String password = mEtPassword.getText().toString();
 
         if(checkFields(email, password)){
             mAuth.signInWithEmailAndPassword(email, password).addOnCompleteListener(LoginActivity.this, new OnCompleteListener<AuthResult>()
@@ -119,6 +127,7 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
                 public void onComplete(@NonNull Task<AuthResult> task)
                 {
                     if(task.isSuccessful()){
+                        LoginActivity.password = password;
                         Toast.makeText(LoginActivity.this, "Logged in!", Toast.LENGTH_SHORT).show();
                         goToMainActivity();
                     }else{
@@ -128,12 +137,11 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
                 }
             });
         }
-
     }
 
 
-    //INTENTS
 
+    //INTENTS
     private void goToMainActivity(){
         Intent intent = new Intent(LoginActivity.this, MainActivity.class);
         startActivity(intent);
@@ -143,7 +151,6 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
         Intent intent = new Intent(LoginActivity.this, RegisterActivity.class);
         startActivity(intent);
     }
-
 
     private boolean checkFields(String email, String password){
         if(!email.equals("") && !password.equals("")){
@@ -172,6 +179,10 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
                 Toast.makeText(LoginActivity.this, "click works", Toast.LENGTH_SHORT).show();
                 createRequest();
                 break;
+            case R.id.tvPassword:
+                forgotPassword();
+                break;
+
         }
     }
 
@@ -237,7 +248,8 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
                                                     Toast.makeText(LoginActivity.this, "We found one equal!", Toast.LENGTH_SHORT).show();
 
                                                     goToMainActivity();
-                                                    break;
+                                                    isGoogleSign = true;
+                                                    return;
                                                 }
                                             }
                                             final EditText nameInput = new EditText(LoginActivity.this);
@@ -307,5 +319,25 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
                         }
                     }
                 });
+    }
+
+    private void forgotPassword(){
+        String email = mEtEmail.getText().toString();
+
+        if(!TextUtils.isEmpty(email)){
+            mAuth.sendPasswordResetEmail(email).addOnCompleteListener(new OnCompleteListener<Void>()
+            {
+                @Override
+                public void onComplete(@NonNull Task<Void> task)
+                {
+                    if(task.isSuccessful()){
+                        Toast.makeText(LoginActivity.this, "We've sent to your email if there's any in the database", Toast.LENGTH_SHORT).show();
+                    }else{
+                        String exception = task.getException().getMessage();
+                        Toast.makeText(LoginActivity.this, exception, Toast.LENGTH_SHORT).show();
+                    }
+                }
+            });
+        }
     }
 }
