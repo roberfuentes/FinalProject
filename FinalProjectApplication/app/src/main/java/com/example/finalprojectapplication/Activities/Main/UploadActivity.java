@@ -238,7 +238,7 @@ public class UploadActivity extends AppCompatActivity
     }
 
 
-    private void uploadImage()
+    private void uploadFile()
     {
         if (mFileUri != null && mImageUpload.getDrawable() != null)
         {
@@ -286,6 +286,7 @@ public class UploadActivity extends AppCompatActivity
                             {
                                 Toast.makeText(getApplicationContext(), "File added succesfully", Toast.LENGTH_SHORT).show();
                                 startActivity(new Intent(UploadActivity.this, MainActivity.class));
+                                finish();
                             }
                         }).addOnFailureListener(new OnFailureListener()
                         {
@@ -421,7 +422,7 @@ public class UploadActivity extends AppCompatActivity
             @Override
             public void onClick(View v)
             {
-                uploadImage();
+                uploadFile();
 
             }
         });
@@ -437,8 +438,6 @@ public class UploadActivity extends AppCompatActivity
 
 
     }
-
-
     /**
      * @param height of the View
      * @param width  of the View
@@ -457,27 +456,5 @@ public class UploadActivity extends AppCompatActivity
             view.getLayoutParams().width = width;
 
         }
-    }
-
-
-    public void testDeleteFile()
-    {
-        StorageReference storageReference = fStorage.getReferenceFromUrl("https://firebasestorage.googleapis.com/v0/b/finalprojectapplication-c06eb.appspot.com/o/I%2F1586968891235?alt=media&token=ff74ae6a-bd54-42be-8ec6-7324761028dc");
-        storageReference.delete().addOnSuccessListener(new OnSuccessListener<Void>()
-        {
-            @Override
-            public void onSuccess(Void aVoid)
-            {
-                Toast.makeText(UploadActivity.this, "Works delete", Toast.LENGTH_SHORT).show();
-            }
-        }).addOnFailureListener(new OnFailureListener()
-        {
-            @Override
-            public void onFailure(@NonNull Exception e)
-            {
-                Toast.makeText(UploadActivity.this, "NOT delete", Toast.LENGTH_SHORT).show();
-            }
-        });
-
     }
 }

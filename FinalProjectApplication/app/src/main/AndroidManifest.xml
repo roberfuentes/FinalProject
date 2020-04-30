@@ -14,7 +14,7 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
         <activity android:name=".Activities.Main.SearchUserActivity" android:screenOrientation="portrait"></activity>
-        <activity android:name=".Activities.Main.ChatMessageActivity" android:screenOrientation="portrait"/>
+        <activity android:name=".Activities.Main.ChatMessageActivity" android:screenOrientation="portrait" android:theme="@style/Theme.AppCompat.Light.NoActionBar"/>
         <activity android:name=".Activities.Main.FriendListActivity" android:screenOrientation="portrait"/>
         <activity android:name=".Activities.Main.FriendRequestActivity" android:screenOrientation="portrait"/>
         <activity android:name=".Activities.Main.FileViewerActivity" />

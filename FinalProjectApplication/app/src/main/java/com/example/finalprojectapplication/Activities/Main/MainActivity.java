@@ -57,6 +57,7 @@ public class MainActivity extends AppCompatActivity
     private static final String KEY_PROFILE = "profilePictureUrl";
     private static final String KEY_STATUS = "status";
     private static final String KEY_UID = "uid";
+    private final String KEY_IS_GOOGLE_SIGN = "isGoogleSign";
 
 
 
@@ -88,7 +89,7 @@ public class MainActivity extends AppCompatActivity
         bottomNavigationView.setOnNavigationItemSelectedListener(bottomNavSelect);
 
 
-        this.setTitle("Save your data");
+        this.setTitle("Save and share your data");
         setupFragments();
         setupFirebase();
 
@@ -248,6 +249,8 @@ public class MainActivity extends AppCompatActivity
         userMap.put(KEY_PROFILE, url);
         userMap.put(KEY_UID, user.getUid());
         userMap.put(KEY_STATUS, user.getStatus());
+        userMap.put(KEY_IS_GOOGLE_SIGN, user.getIsGoogleSign());
+
 
         documentReference.set(userMap).addOnSuccessListener(new OnSuccessListener<Void>()
         {

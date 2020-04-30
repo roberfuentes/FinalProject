@@ -113,17 +113,20 @@ public class FriendListActivity extends AppCompatActivity implements FriendAdapt
                     @Override
                     public void onEvent(@Nullable QuerySnapshot queryDocumentSnapshots, @Nullable FirebaseFirestoreException e)
                     {
-                        if(queryDocumentSnapshots.size() > 1){
-                            Toast.makeText(FriendListActivity.this, "There was " + queryDocumentSnapshots.size() + " rooms", Toast.LENGTH_SHORT).show();
-                        }else if(queryDocumentSnapshots.size() == 0){
-                            createChat(friendID);
-                        }else{
-                            List<DocumentSnapshot>  documentSnapshots= queryDocumentSnapshots.getDocuments();
-                            for(DocumentSnapshot documentSnapshot:documentSnapshots){
-                                Chat chat = documentSnapshot.toObject(Chat.class);
-                                goToChat(chat.getRoom(), chat.getUid());
+                        if (queryDocumentSnapshots!=null){
+                            if(queryDocumentSnapshots.size() > 1){
+                                Toast.makeText(FriendListActivity.this, "There was " + queryDocumentSnapshots.size() + " rooms", Toast.LENGTH_SHORT).show();
+                            }else if(queryDocumentSnapshots.size() == 0){
+                                createChat(friendID);
+                            }else{
+                                List<DocumentSnapshot>  documentSnapshots= queryDocumentSnapshots.getDocuments();
+                                for(DocumentSnapshot documentSnapshot:documentSnapshots){
+                                    Chat chat = documentSnapshot.toObject(Chat.class);
+                                    goToChat(chat.getRoom(), chat.getUid());
+                                }
                             }
                         }
+
                     }
                 });
     }
