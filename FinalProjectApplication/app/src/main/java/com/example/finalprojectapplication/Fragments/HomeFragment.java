@@ -78,6 +78,7 @@ public class HomeFragment extends Fragment implements DataAdapter.OnFileListener
     private CharSequence[] chooseOption = new CharSequence[]{
             "Download",
             "Details",
+            "Share",
             "Delete",
     };
 
@@ -219,8 +220,12 @@ public class HomeFragment extends Fragment implements DataAdapter.OnFileListener
                         startActivity(intent);
                         dialog.dismiss();
                         break;
-
                     case 2:
+                        adapter.shareFile(position);
+                        dialog.dismiss();
+                        Toast.makeText(getContext(), "This should delete", Toast.LENGTH_SHORT).show();
+                        break;
+                    case 3:
                         adapter.deleteFile(position);
                         dialog.dismiss();
                         Toast.makeText(getContext(), "This should delete", Toast.LENGTH_SHORT).show();

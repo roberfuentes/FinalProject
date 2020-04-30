@@ -302,6 +302,8 @@ public class UploadActivity extends AppCompatActivity
                     }
                 }
             });
+        }else{
+            Toast.makeText(UploadActivity.this, "Please, press on the cloud and add a file to upload", Toast.LENGTH_SHORT).show();
         }
     }
 

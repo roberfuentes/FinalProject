@@ -7,6 +7,9 @@ public class ChatMessage
     String fromUid;
     String messageText;
     Date sentAt;
+    Boolean isFile;
+    String url;
+    String type;
 
     public ChatMessage()
     {
@@ -40,5 +43,35 @@ public class ChatMessage
     public void setSentAt(Date sentAt)
     {
         this.sentAt = sentAt;
+    }
+
+    public Boolean getIsFile()
+    {
+        return isFile;
+    }
+
+    public void setIsFile(Boolean isFile)
+    {
+        this.isFile = isFile;
+    }
+
+    public String getUrl()
+    {
+        return url;
+    }
+
+    public void setUrl(String url)
+    {
+        this.url = url;
+    }
+
+    public String getType()
+    {
+        return type;
+    }
+
+    public void setType(String type)
+    {
+        this.type = type;
     }
 }

@@ -7,6 +7,7 @@ import androidx.appcompat.widget.Toolbar;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.EditText;
@@ -35,11 +36,14 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
-public class ChatMessageActivity extends AppCompatActivity implements View.OnClickListener
+public class ChatMessageActivity extends AppCompatActivity implements View.OnClickListener, ChatMessageAdapter.OnMessageListener
 {
     private static final String KEY_UID= "fromUid";
     private static final String KEY_SENTAT= "sentAt";
     private static final String KEY_MESSAGE= "messageText";
+    private static final String KEY_URL= "url";
+    private static final String KEY_TYPE= "type";
+    private static final String KEY_ISFILE= "isFile";
 
     FirebaseFirestore fStore;
     FirebaseAuth fAuth;
@@ -120,7 +124,7 @@ public class ChatMessageActivity extends AppCompatActivity implements View.OnCli
         FirestoreRecyclerOptions<ChatMessage> options = new FirestoreRecyclerOptions.Builder<ChatMessage>()
                 .setQuery(query, ChatMessage.class).setLifecycleOwner(this).build();
 
-        adapter = new ChatMessageAdapter(options, currentID, friendID);
+        adapter = new ChatMessageAdapter(options, currentID, friendID, this);
 
         mRecyclerView.setLayoutManager(new LinearLayoutManager(getApplicationContext()));
 
@@ -172,6 +176,9 @@ public class ChatMessageActivity extends AppCompatActivity implements View.OnCli
             messageMap.put(KEY_UID, currentID);
             messageMap.put(KEY_MESSAGE, message);
             messageMap.put(KEY_SENTAT, new Date());
+            messageMap.put(KEY_ISFILE, false);
+            messageMap.put(KEY_URL, "");
+            messageMap.put(KEY_TYPE, "");
             messageReference.set(messageMap).addOnSuccessListener(new OnSuccessListener<Void>()
             {
                 @Override
@@ -188,5 +195,22 @@ public class ChatMessageActivity extends AppCompatActivity implements View.OnCli
                 }
             });
         }
+    }
+
+    @Override
+    public void onMessageClick(String url, String type)
+    {
+        System.out.println("You coming to message?");
+        if(url.equals("")){
+            return;
+        }
+        Intent intent = new Intent(ChatMessageActivity.this, FileViewerActivity.class);
+        intent.putExtra("url", url);
+        intent.putExtra("type", type);
+        intent.putExtra("toolbar", "hide");
+        startActivity(intent);
+
+
+        Toast.makeText(ChatMessageActivity.this, url + " and type:"+type, Toast.LENGTH_SHORT).show();
     }
 }

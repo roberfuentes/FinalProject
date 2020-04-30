@@ -2,17 +2,15 @@ package com.example.finalprojectapplication.Activities.Main;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.appcompat.widget.Toolbar;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import android.content.Intent;
 import android.os.Bundle;
 import android.widget.Toast;
 
-import com.example.finalprojectapplication.Adapters.FriendAdapter;
+
+import com.example.finalprojectapplication.Adapters.ShareAdapter;
 import com.example.finalprojectapplication.Model.Chat;
 import com.example.finalprojectapplication.Model.Friend;
 import com.example.finalprojectapplication.Model.User;
@@ -32,107 +30,111 @@ import com.google.firebase.firestore.FirebaseFirestoreException;
 import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.QuerySnapshot;
 
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class FriendListActivity extends AppCompatActivity implements FriendAdapter.onFriendListener
+public class ShareFileActivity extends AppCompatActivity implements ShareAdapter.onShareListener
 {
+
+    private static final String KEY_UID= "fromUid";
+    private static final String KEY_SENTAT= "sentAt";
+    private static final String KEY_MESSAGE= "messageText";
+    private static final String KEY_URL= "url";
+    private static final String KEY_TYPE= "type";
+    private static final String KEY_ISFILE= "isFile";
 
     private static final String KEY_NAME= "name";
     private static final String KEY_PICTURE= "picture";
     private static final String KEY_ROOM = "room";
-    private static final String KEY_UID = "uid";
-
+    private static final String KEY_UID_CHAT = "uid";
 
     RecyclerView mRecyclerView;
-
-    FirestoreRecyclerAdapter adapter;
-
     FirebaseFirestore fStore;
     FirebaseAuth fAuth;
-    String currentUID;
-    Toolbar mToolbar;
+    FirestoreRecyclerAdapter adapter;
+    String currentUserID;
+
+    String url;
+    String type;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState)
     {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_friend_list);
+        setContentView(R.layout.activity_share_file);
 
-        //mToolbar = findViewById(R.id.friend_list_toolbar);
-        /*setSupportActionBar(mToolbar);
-        getSupportActionBar().setTitle("Friends list");*/
-
-
-        mRecyclerView = findViewById(R.id.friend_list_recycler);
+        mRecyclerView = findViewById(R.id.share_file_recycler);
 
         setupFirebase();
+
+        if (getIntent() != null)
+        {
+            type = getIntent().getStringExtra("type");
+            url = getIntent().getStringExtra("url");
+            Toast.makeText(ShareFileActivity.this, "We got the intent", Toast.LENGTH_SHORT).show();
+
+
+        } else
+        {
+            Toast.makeText(ShareFileActivity.this, "Couldn't get it", Toast.LENGTH_SHORT).show();
+        }
         setAdapter();
-
-        this.setTitle("Friend list");
-    }
-
-    private void setupFirebase(){
-        fStore = FirebaseFirestore.getInstance();
-        fAuth = FirebaseAuth.getInstance();
-
-        currentUID = fAuth.getCurrentUser().getUid();
     }
 
     private void setAdapter(){
-
-        Query query = fStore.collection("friends").document(currentUID)
+        Query query = fStore.collection("friends").document(currentUserID)
                 .collection("userFriends");
 
         FirestoreRecyclerOptions<Friend> options = new FirestoreRecyclerOptions.Builder<Friend>().setLifecycleOwner(this)
                 .setQuery(query, Friend.class).build();
 
-        adapter = new FriendAdapter(options, this, this);
+        adapter = new ShareAdapter(options, ShareFileActivity.this, this);
 
         mRecyclerView.setLayoutManager(new LinearLayoutManager(this));
 
         mRecyclerView.setAdapter(adapter);
     }
 
+    private void setupFirebase(){
+        fStore = FirebaseFirestore.getInstance();
+        fAuth = FirebaseAuth.getInstance();
+        currentUserID = fAuth.getCurrentUser().getUid();
+    }
+
     @Override
-    public void onFriendClick(String friendID)
+    public void onFriendClick(final String friendID)
     {
-        checkIfChat(friendID);
-    }
+        Query query = fStore.collection("chats")
+                .document(currentUserID)
+                .collection("userChat").whereEqualTo("uid", friendID);
 
-    private void checkIfChat(final String friendID){
-
-        fStore.collection("chats").document(currentUID)
-                .collection("userChat").whereEqualTo("uid", friendID).
-                        addSnapshotListener(new EventListener<QuerySnapshot>()
-                {
-                    @Override
-                    public void onEvent(@Nullable QuerySnapshot queryDocumentSnapshots, @Nullable FirebaseFirestoreException e)
-                    {
-                        if (queryDocumentSnapshots!=null){
-                            if(queryDocumentSnapshots.size() > 1){
-                                Toast.makeText(FriendListActivity.this, "There was " + queryDocumentSnapshots.size() + " rooms", Toast.LENGTH_SHORT).show();
-                            }else if(queryDocumentSnapshots.size() == 0){
-                                createChat(friendID);
-                            }else{
-                                List<DocumentSnapshot>  documentSnapshots= queryDocumentSnapshots.getDocuments();
-                                for(DocumentSnapshot documentSnapshot:documentSnapshots){
-                                    Chat chat = documentSnapshot.toObject(Chat.class);
-                                    goToChat(chat.getRoom(), chat.getUid());
-                                }
+        query.get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>()
+        {
+            @Override
+            public void onComplete(@NonNull Task<QuerySnapshot> task)
+            {
+                if(task.isSuccessful()){
+                    QuerySnapshot querySnapshot = task.getResult();
+                    if(querySnapshot!=null){
+                        System.out.println("NO ES NULL");
+                        if(!querySnapshot.isEmpty()){
+                            System.out.println("NO ES EMPTY");
+                            List<Chat> rooms = querySnapshot.toObjects(Chat.class);
+                            for(Chat chat: rooms){
+                                String room = chat.getRoom();
+                                setMessage(room);
                             }
+                        }else{
+                            createChat(friendID);
                         }
-
                     }
-                });
-    }
 
-    private void goToChat(String room, String friendID){
-        Intent intent = new Intent(FriendListActivity.this, ChatMessageActivity.class);
-        intent.putExtra("room", room);
-        intent.putExtra("friendID", friendID);
-        startActivity(intent);
+                }
+            }
+        });
     }
 
     private void createChat(final String friendID){
@@ -149,7 +151,7 @@ public class FriendListActivity extends AppCompatActivity implements FriendAdapt
                     if(documentSnapshot.exists()){
                         User user = documentSnapshot.toObject(User.class);
 
-                        DocumentReference chatRef = fStore.collection("chats").document(currentUID)
+                        DocumentReference chatRef = fStore.collection("chats").document(currentUserID)
                                 .collection("userChat").document();
 
 
@@ -157,7 +159,7 @@ public class FriendListActivity extends AppCompatActivity implements FriendAdapt
                         chatMap.put(KEY_NAME, user.getName());
                         chatMap.put(KEY_PICTURE, user.getProfilePictureUrl());
                         chatMap.put(KEY_ROOM, chatRef.getId());
-                        chatMap.put(KEY_UID, friendID);
+                        chatMap.put(KEY_UID_CHAT, friendID);
 
                         chatRef.set(chatMap).addOnSuccessListener(new OnSuccessListener<Void>()
                         {
@@ -171,7 +173,7 @@ public class FriendListActivity extends AppCompatActivity implements FriendAdapt
                             @Override
                             public void onFailure(@NonNull Exception e)
                             {
-                                Toast.makeText(FriendListActivity.this, "We couldn't add user data to create a room", Toast.LENGTH_SHORT).show();
+                                Toast.makeText(ShareFileActivity.this, "We couldn't add user data to create a room", Toast.LENGTH_SHORT).show();
 
                             }
                         });
@@ -184,17 +186,13 @@ public class FriendListActivity extends AppCompatActivity implements FriendAdapt
             @Override
             public void onFailure(@NonNull Exception e)
             {
-                Toast.makeText(FriendListActivity.this, "We couldn't retrieve the user data to create a room", Toast.LENGTH_SHORT).show();
+                Toast.makeText(ShareFileActivity.this, "We couldn't retrieve the user data to create a room", Toast.LENGTH_SHORT).show();
             }
         });
-
-
-
-
     }
 
     private void createChatFriend(final String friendID){
-        final Query query = fStore.collection("chats").document(currentUID)
+        final Query query = fStore.collection("chats").document(currentUserID)
                 .collection("userChat").whereEqualTo("uid", friendID);
 
         query.get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>()
@@ -203,7 +201,7 @@ public class FriendListActivity extends AppCompatActivity implements FriendAdapt
             public void onComplete(@NonNull Task<QuerySnapshot> task)
             {
                 QuerySnapshot querySnapshot = task.getResult();
-                Toast.makeText(FriendListActivity.this, "Is empty?" + querySnapshot.isEmpty(), Toast.LENGTH_SHORT).show();
+                Toast.makeText(ShareFileActivity.this, "Is empty?" + querySnapshot.isEmpty(), Toast.LENGTH_SHORT).show();
                 if(!querySnapshot.isEmpty()){
                     List<DocumentSnapshot> documentSnapshots= querySnapshot.getDocuments();
                     System.out.println("Size document:" + documentSnapshots.size());
@@ -212,7 +210,7 @@ public class FriendListActivity extends AppCompatActivity implements FriendAdapt
                             Chat chat = documentSnapshot.toObject(Chat.class);
                             final String chatID = chat.getRoom();
 
-                            DocumentReference userRef = fStore.collection("users").document(currentUID);
+                            DocumentReference userRef = fStore.collection("users").document(currentUserID);
 
                             userRef.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>()
                             {
@@ -230,7 +228,7 @@ public class FriendListActivity extends AppCompatActivity implements FriendAdapt
                                             Map<String, Object> chatMap = new HashMap<>();
 
                                             chatMap.put(KEY_NAME, user.getName());
-                                            chatMap.put(KEY_UID, currentUID);
+                                            chatMap.put(KEY_UID, currentUserID);
                                             chatMap.put(KEY_ROOM, chatID);
                                             chatMap.put(KEY_PICTURE, user.getProfilePictureUrl());
 
@@ -239,14 +237,14 @@ public class FriendListActivity extends AppCompatActivity implements FriendAdapt
                                                 @Override
                                                 public void onSuccess(Void aVoid)
                                                 {
-
+                                                    setMessage(chatID);
                                                 }
                                             }).addOnFailureListener(new OnFailureListener()
                                             {
                                                 @Override
                                                 public void onFailure(@NonNull Exception e)
                                                 {
-                                                    Toast.makeText(FriendListActivity.this, "We couldn't add user data to create a room", Toast.LENGTH_SHORT).show();
+                                                    Toast.makeText(ShareFileActivity.this, "We couldn't add user data to create a room", Toast.LENGTH_SHORT).show();
 
                                                 }
                                             });
@@ -258,8 +256,7 @@ public class FriendListActivity extends AppCompatActivity implements FriendAdapt
                                 @Override
                                 public void onFailure(@NonNull Exception e)
                                 {
-                                    Toast.makeText(FriendListActivity.this, "We couldn't retrieve the user data to create a room", Toast.LENGTH_SHORT).show();
-
+                                    Toast.makeText(ShareFileActivity.this, "We couldn't retrieve the user data to create a room", Toast.LENGTH_SHORT).show();
                                 }
                             });
 
@@ -271,5 +268,38 @@ public class FriendListActivity extends AppCompatActivity implements FriendAdapt
         });
     }
 
+    private void setMessage(String room){
+        String message = "File:"+System.currentTimeMillis();
+        if(url != null){
+            if(!message.equals("")){
+                DocumentReference messageReference = fStore.collection("messages").document(room)
+                        .collection("roomMessages").document();
 
+                Map<String, Object> messageMap = new HashMap<>();
+                messageMap.put(KEY_UID, currentUserID);
+                messageMap.put(KEY_MESSAGE, message);
+                messageMap.put(KEY_SENTAT, new Date());
+                messageMap.put(KEY_ISFILE, true);
+                messageMap.put(KEY_URL, url);
+                messageMap.put(KEY_TYPE, type);
+                messageReference.set(messageMap).addOnSuccessListener(new OnSuccessListener<Void>()
+                {
+                    @Override
+                    public void onSuccess(Void aVoid)
+                    {
+                        Toast.makeText(ShareFileActivity.this, "File has been shared!", Toast.LENGTH_SHORT).show();
+                        finish();
+
+                    }
+                }).addOnFailureListener(new OnFailureListener()
+                {
+                    @Override
+                    public void onFailure(@NonNull Exception e)
+                    {
+                        Toast.makeText(ShareFileActivity.this, "Message couldn't be sent, try again later", Toast.LENGTH_SHORT).show();
+                    }
+                });
+            }
+        }
+    }
 }

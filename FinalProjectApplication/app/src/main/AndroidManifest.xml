@@ -13,22 +13,42 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name=".Activities.Main.SearchUserActivity" android:screenOrientation="portrait"></activity>
-        <activity android:name=".Activities.Main.ChatMessageActivity" android:screenOrientation="portrait" android:theme="@style/Theme.AppCompat.Light.NoActionBar"/>
-        <activity android:name=".Activities.Main.FriendListActivity" android:screenOrientation="portrait"/>
-        <activity android:name=".Activities.Main.FriendRequestActivity" android:screenOrientation="portrait"/>
+        <activity android:name=".Activities.Main.ShareFileActivity"></activity>
+        <activity
+            android:name=".Activities.Main.SearchUserActivity"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".Activities.Main.ChatMessageActivity"
+            android:screenOrientation="portrait"
+            android:theme="@style/Theme.AppCompat.Light.NoActionBar" />
+        <activity
+            android:name=".Activities.Main.FriendListActivity"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".Activities.Main.FriendRequestActivity"
+            android:screenOrientation="portrait" />
         <activity android:name=".Activities.Main.FileViewerActivity" />
-        <activity android:name=".Activities.Main.InfoActivity" android:screenOrientation="portrait"/>
-        <activity android:name=".Activities.Main.UploadActivity" android:screenOrientation="portrait"/>
-        <activity android:name=".Activities.Login.RegisterActivity" android:screenOrientation="portrait"/>
-        <activity android:name=".Activities.Login.LoginActivity" android:screenOrientation="portrait">
+        <activity
+            android:name=".Activities.Main.InfoActivity"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".Activities.Main.UploadActivity"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".Activities.Login.RegisterActivity"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".Activities.Login.LoginActivity"
+            android:screenOrientation="portrait">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".Activities.Main.MainActivity" android:screenOrientation="portrait"/>
+        <activity
+            android:name=".Activities.Main.MainActivity"
+            android:screenOrientation="portrait" />
     </application>
 
 </manifest>

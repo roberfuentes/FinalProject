@@ -57,7 +57,7 @@ public class MainActivity extends AppCompatActivity
     private static final String KEY_PROFILE = "profilePictureUrl";
     private static final String KEY_STATUS = "status";
     private static final String KEY_UID = "uid";
-    private final String KEY_IS_GOOGLE_SIGN = "isGoogleSign";
+    private static final String KEY_IS_GOOGLE_SIGN = "isGoogleSign";
 
 
 

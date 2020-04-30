@@ -10,6 +10,7 @@ import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
+import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -86,6 +87,11 @@ public class FileViewerActivity extends AppCompatActivity implements View.OnClic
         {
             String type = getIntent().getStringExtra("type");
             String url = getIntent().getStringExtra("url");
+            String current = getIntent().getStringExtra("toolbar");
+
+            if(current.equals("hide")){
+                hideToolbar();
+            }
             if (type != null && url != null)
             {
                 typeAction(type, url);
@@ -179,7 +185,7 @@ public class FileViewerActivity extends AppCompatActivity implements View.OnClic
 
     private void readVideo(String url)
     {
-        getSupportActionBar().hide();
+        hideToolbar();
         Toast.makeText(FileViewerActivity.this, "Video", Toast.LENGTH_SHORT).show();
         mPlayerView.setVisibility(View.VISIBLE);
         simpleExoPlayer = new SimpleExoPlayer.Builder(FileViewerActivity.this).build();
@@ -344,4 +350,19 @@ public class FileViewerActivity extends AppCompatActivity implements View.OnClic
             mPdfView.fromStream(inputStream).load();
         }
     }
+
+    @Override
+    public boolean onKeyDown(int keyCode, KeyEvent event)
+    {
+        if(keyCode == KeyEvent.KEYCODE_BACK){
+            finish();
+        }
+
+        return super.onKeyDown(keyCode, event);
+    }
+
+    private void hideToolbar(){
+        getSupportActionBar().hide();
+    }
 }
+

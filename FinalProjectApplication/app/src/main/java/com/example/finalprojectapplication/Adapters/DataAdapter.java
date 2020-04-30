@@ -14,6 +14,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.finalprojectapplication.Activities.Main.FileViewerActivity;
+import com.example.finalprojectapplication.Activities.Main.ShareFileActivity;
 import com.example.finalprojectapplication.Model.Data;
 import com.example.finalprojectapplication.R;
 import com.google.android.gms.tasks.OnCompleteListener;
@@ -216,11 +217,8 @@ public class DataAdapter extends FirestoreRecyclerAdapter<Data, DataAdapter.Data
 
 
     public void readFile(int position){
-
         String type = fileType.get(position);
         String url = fileUrl.get(position);
-
-
 
         if(type==null || url == null || type.equals("") || url.equals("")){
             Toast.makeText(mContext, "Couldn't retrieve the file try again later", Toast.LENGTH_SHORT).show();
@@ -230,12 +228,30 @@ public class DataAdapter extends FirestoreRecyclerAdapter<Data, DataAdapter.Data
 
             DocumentReference fileRef = getInfoFile(position);
 
-
             Intent intent = new Intent(mContext, FileViewerActivity.class);
             intent.putExtra("url", url);
             intent.putExtra("type", type);
             intent.putExtra("fileRef", fileRef.getId());
+            intent.putExtra("toolbar", "expose");
 
+
+            mContext.startActivity(intent);
+        }
+    }
+
+    public void shareFile(int position){
+        String type = fileType.get(position);
+        String url = fileUrl.get(position);
+
+        if(type==null || url == null || type.equals("") || url.equals("")){
+            Toast.makeText(mContext, "Couldn't retrieve the file try again later", Toast.LENGTH_SHORT).show();
+        }else{
+            fileUrl.clear();
+            fileType.clear();
+            
+            Intent intent = new Intent(mContext, ShareFileActivity.class);
+            intent.putExtra("url", url);
+            intent.putExtra("type", type);
             mContext.startActivity(intent);
         }
     }

@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical" android:layout_width="match_parent"
+    android:layout_height="wrap_content">
+
+    <RelativeLayout
+        android:layout_marginTop="5dp"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <de.hdodenhof.circleimageview.CircleImageView
+            android:id="@+id/share_file_profile_picture"
+            android:layout_width="80dp"
+            android:layout_height="70dp"
+            android:layout_marginTop="10dp"
+            />
+
+        <TextView
+            android:layout_marginLeft="10dp"
+            android:id="@+id/share_file_name"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_toEndOf="@id/share_file_profile_picture"
+            android:textSize="16dp"
+            android:textColor="@color/colorBlack"
+            android:layout_marginTop="25dp"/>
+
+        <View
+            android:id="@+id/sharte_file_horizontal_separator"
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:background="@color/colorBlack"
+            android:layout_marginTop="5dp"
+            android:layout_below="@+id/share_file_profile_picture"
+            />
+    </RelativeLayout>
+
+</RelativeLayout>
