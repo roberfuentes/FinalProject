@@ -13,6 +13,7 @@ import android.os.Bundle;
 import android.widget.Toast;
 
 import com.example.finalprojectapplication.Adapters.FriendAdapter;
+import com.example.finalprojectapplication.Keys.ChatKey;
 import com.example.finalprojectapplication.Model.Chat;
 import com.example.finalprojectapplication.Model.Friend;
 import com.example.finalprojectapplication.Model.User;
@@ -38,21 +39,16 @@ import java.util.Map;
 
 public class FriendListActivity extends AppCompatActivity implements FriendAdapter.onFriendListener
 {
+    private RecyclerView mRecyclerView;
 
-    private static final String KEY_NAME= "name";
-    private static final String KEY_PICTURE= "picture";
-    private static final String KEY_ROOM = "room";
-    private static final String KEY_UID = "uid";
+    private FriendAdapter adapter;
 
+    private FirebaseFirestore fStore;
+    private FirebaseAuth fAuth;
+    private String currentUID;
 
-    RecyclerView mRecyclerView;
+    private ChatKey chatKey;
 
-    FirestoreRecyclerAdapter adapter;
-
-    FirebaseFirestore fStore;
-    FirebaseAuth fAuth;
-    String currentUID;
-    Toolbar mToolbar;
 
     @Override
     protected void onCreate(Bundle savedInstanceState)
@@ -60,15 +56,12 @@ public class FriendListActivity extends AppCompatActivity implements FriendAdapt
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_friend_list);
 
-        //mToolbar = findViewById(R.id.friend_list_toolbar);
-        /*setSupportActionBar(mToolbar);
-        getSupportActionBar().setTitle("Friends list");*/
-
-
         mRecyclerView = findViewById(R.id.friend_list_recycler);
 
+        chatKey = new ChatKey();
+
         setupFirebase();
-        setAdapter();
+        setFriendList();
 
         this.setTitle("Friend list");
     }
@@ -80,7 +73,7 @@ public class FriendListActivity extends AppCompatActivity implements FriendAdapt
         currentUID = fAuth.getCurrentUser().getUid();
     }
 
-    private void setAdapter(){
+    private void setFriendList(){
 
         Query query = fStore.collection("friends").document(currentUID)
                 .collection("userFriends");
@@ -154,10 +147,10 @@ public class FriendListActivity extends AppCompatActivity implements FriendAdapt
 
 
                         Map<String, Object> chatMap = new HashMap<>();
-                        chatMap.put(KEY_NAME, user.getName());
-                        chatMap.put(KEY_PICTURE, user.getProfilePictureUrl());
-                        chatMap.put(KEY_ROOM, chatRef.getId());
-                        chatMap.put(KEY_UID, friendID);
+                        chatMap.put(chatKey.KEY_NAME, user.getName());
+                        chatMap.put(chatKey.KEY_PICTURE, user.getProfilePictureUrl());
+                        chatMap.put(chatKey.KEY_ROOM, chatRef.getId());
+                        chatMap.put(chatKey.KEY_UID, friendID);
 
                         chatRef.set(chatMap).addOnSuccessListener(new OnSuccessListener<Void>()
                         {
@@ -229,10 +222,10 @@ public class FriendListActivity extends AppCompatActivity implements FriendAdapt
 
                                             Map<String, Object> chatMap = new HashMap<>();
 
-                                            chatMap.put(KEY_NAME, user.getName());
-                                            chatMap.put(KEY_UID, currentUID);
-                                            chatMap.put(KEY_ROOM, chatID);
-                                            chatMap.put(KEY_PICTURE, user.getProfilePictureUrl());
+                                            chatMap.put(chatKey.KEY_NAME, user.getName());
+                                            chatMap.put(chatKey.KEY_UID, currentUID);
+                                            chatMap.put(chatKey.KEY_ROOM, chatID);
+                                            chatMap.put(chatKey.KEY_PICTURE, user.getProfilePictureUrl());
 
                                             chatRef.set(chatMap).addOnSuccessListener(new OnSuccessListener<Void>()
                                             {
@@ -270,6 +263,4 @@ public class FriendListActivity extends AppCompatActivity implements FriendAdapt
             }
         });
     }
-
-
 }

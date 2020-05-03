@@ -16,6 +16,8 @@ import android.view.ViewGroup;
 import android.widget.Toast;
 
 import com.example.finalprojectapplication.Adapters.SearchUserAdapter;
+import com.example.finalprojectapplication.Keys.ChatKey;
+import com.example.finalprojectapplication.Keys.FriendRequestKey;
 import com.example.finalprojectapplication.Model.Friend;
 import com.example.finalprojectapplication.Model.FriendRequest;
 import com.example.finalprojectapplication.Model.User;
@@ -42,25 +44,19 @@ import java.util.Map;
 
 public class SearchUserActivity extends AppCompatActivity implements SearchUserAdapter.OnClickUser
 {
+    private SearchUserAdapter adapter;
+    private FirebaseFirestore fStore;
+    private FirebaseAuth fAuth;
+    private String currentUID;
 
-    private static final String KEY_NAME = "name";
-    private static final String KEY_UID = "fromUid";
-    private static final String KEY_PROFILE_PICTURE_URL = "profilePictureUrl";
-    private static final String KEY_STATUS = "status";
+    private SearchView mSearchView;
 
-    FirestoreRecyclerAdapter adapter;
-    FirebaseFirestore fStore;
-    FirebaseAuth fAuth;
-    String currentUID;
+    private RecyclerView mRecyclerView;
+    private ArrayList<String> currentFriends;
+    private ArrayList<String> currentFriendRequests;
+    private ArrayList<String> currentFriendRequestsStatus;
 
-    Toolbar mToolbar;
-    ActionBar actionBar;
-    SearchView mSearchView;
-
-    RecyclerView mRecyclerView;
-    ArrayList<String> currentFriends;
-    ArrayList<String> currentFriendRequests;
-    ArrayList<String> currentFriendRequestsStatus;
+    private FriendRequestKey friendRequestKey;
 
     @Override
     protected void onCreate(Bundle savedInstanceState)
@@ -68,10 +64,7 @@ public class SearchUserActivity extends AppCompatActivity implements SearchUserA
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_search_user);
 
-        /*mToolbar = findViewById(R.id.search_user_toolbar);
-        setSupportActionBar(mToolbar);
-        actionBar = getSupportActionBar();
-        actionBar.setTitle("Search user");*/
+        friendRequestKey = new FriendRequestKey();
 
         mRecyclerView = findViewById(R.id.search_user_recycler);
         currentFriends = new ArrayList<>();
@@ -79,7 +72,7 @@ public class SearchUserActivity extends AppCompatActivity implements SearchUserA
         currentFriendRequestsStatus = new ArrayList<>();
 
         setupFirebase();
-        setAdapter();
+        setUsers();
         this.setTitle("Add friends");
     }
 
@@ -87,19 +80,15 @@ public class SearchUserActivity extends AppCompatActivity implements SearchUserA
         fStore = FirebaseFirestore.getInstance();
         fAuth = FirebaseAuth.getInstance();
         currentUID = fAuth.getCurrentUser().getUid();
-
     }
 
-    private void setAdapter(){
+    private void setUsers(){
         Query query = fStore.collection("users");
 
         FirestoreRecyclerOptions<User> options = new FirestoreRecyclerOptions.Builder<User>().setLifecycleOwner(this)
                 .setQuery(query, User.class).build();
 
         getFriends(options);
-
-
-
     }
 
     private void getFriends(final FirestoreRecyclerOptions<User> options){
@@ -121,7 +110,6 @@ public class SearchUserActivity extends AppCompatActivity implements SearchUserA
                             currentFriends.add(friend.getUidFriend());
                         }
                     }
-
                     fStore.collection("friendRequests")
                             .document(currentUID)
                             .collection("userFriendRequest")
@@ -144,7 +132,6 @@ public class SearchUserActivity extends AppCompatActivity implements SearchUserA
                                         currentFriendRequests.add(friendRequest.getFromUid());
                                         currentFriendRequestsStatus.add(friendRequest.getStatus());
                                     }
-
                                 }
                                 currentFriends.add(currentUID);
                                 adapter = new SearchUserAdapter(options, SearchUserActivity.this, fStore, currentFriends,currentFriendRequests, currentFriendRequestsStatus, SearchUserActivity.this, currentUID);
@@ -155,7 +142,6 @@ public class SearchUserActivity extends AppCompatActivity implements SearchUserA
                             }
                         }
                     });
-
                 }
             }
         });
@@ -188,23 +174,13 @@ public class SearchUserActivity extends AppCompatActivity implements SearchUserA
                         .setQuery(query, User.class)
                         .build();
 
-                adapter = new SearchUserAdapter(options, fStore, SearchUserActivity.this);
-
-                mRecyclerView.setLayoutManager(new LinearLayoutManager(getApplicationContext()));
-
-                mRecyclerView.setAdapter(adapter);
-                Toast.makeText(getApplicationContext(), "This should be working ok?", Toast.LENGTH_SHORT).show();
-
+                getFriends(options);
                 return false;
             }
         });
 
-        //mSearchView.setOnQueryTextListener(this);
-
         return super.onCreateOptionsMenu(menu);
     }
-
-
 
     @Override
     public void onClickAddUser(String userFriendID)
@@ -259,10 +235,10 @@ public class SearchUserActivity extends AppCompatActivity implements SearchUserA
 
         Map<String, Object> friendRequestMap = new HashMap<>();
 
-        friendRequestMap.put(KEY_NAME, user.getName());
-        friendRequestMap.put(KEY_STATUS, "sent");
-        friendRequestMap.put(KEY_PROFILE_PICTURE_URL, user.getProfilePictureUrl());
-        friendRequestMap.put(KEY_UID, user.getUid());
+        friendRequestMap.put(friendRequestKey.KEY_NAME, user.getName());
+        friendRequestMap.put(friendRequestKey.KEY_STATUS, "sent");
+        friendRequestMap.put(friendRequestKey.KEY_PROFILE_PICTURE_URL, user.getProfilePictureUrl());
+        friendRequestMap.put(friendRequestKey.KEY_UID, user.getUid());
 
         friendRequestRef.set(friendRequestMap).addOnSuccessListener(new OnSuccessListener<Void>()
         {
@@ -281,10 +257,10 @@ public class SearchUserActivity extends AppCompatActivity implements SearchUserA
 
         Map<String, Object> friendRequestMap = new HashMap<>();
 
-        friendRequestMap.put(KEY_NAME, user.getName());
-        friendRequestMap.put(KEY_STATUS, "pending");
-        friendRequestMap.put(KEY_UID, user.getUid());
-        friendRequestMap.put(KEY_PROFILE_PICTURE_URL, user.getProfilePictureUrl());
+        friendRequestMap.put(friendRequestKey.KEY_NAME, user.getName());
+        friendRequestMap.put(friendRequestKey.KEY_STATUS, "pending");
+        friendRequestMap.put(friendRequestKey.KEY_UID, user.getUid());
+        friendRequestMap.put(friendRequestKey.KEY_PROFILE_PICTURE_URL, user.getProfilePictureUrl());
 
         friendRequestRef.set(friendRequestMap).addOnSuccessListener(new OnSuccessListener<Void>()
         {

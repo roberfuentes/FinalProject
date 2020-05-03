@@ -23,6 +23,7 @@ import com.example.finalprojectapplication.Activities.Login.LoginActivity;
 import com.example.finalprojectapplication.Fragments.ChatFragment;
 import com.example.finalprojectapplication.Fragments.HomeFragment;
 import com.example.finalprojectapplication.Fragments.ProfileFragment;
+import com.example.finalprojectapplication.Keys.UserKey;
 import com.example.finalprojectapplication.Model.User;
 import com.example.finalprojectapplication.R;
 import com.google.android.gms.tasks.Continuation;
@@ -48,32 +49,22 @@ public class MainActivity extends AppCompatActivity
 
     private static final int REQUEST_IMAGE = 1;
 
-    private static final String TAG = "RegisterActivity";
-    private static final String KEY_NAME = "name";
-    private static final String KEY_EMAIL = "email";
-    private static final String KEY_PASSWORD = "password";
-    private static final String KEY_LOCATION = "location";
-    private static final String KEY_AGE = "age";
-    private static final String KEY_PROFILE = "profilePictureUrl";
-    private static final String KEY_STATUS = "status";
-    private static final String KEY_UID = "uid";
-    private static final String KEY_IS_GOOGLE_SIGN = "isGoogleSign";
+    private UserKey userKey;
 
 
+    private FirebaseAuth fAuth;
+    private String currentUID;
+    private FirebaseFirestore fStore;
+    private FirebaseStorage fStorage;
 
-    FirebaseAuth fAuth;
-    String currentUID;
-    FirebaseFirestore fStore;
-    FirebaseStorage fStorage;
+    private final Fragment homeFragment= new HomeFragment();
+    private final Fragment chatFragment = new ChatFragment();
+    private final Fragment profileFragment = new ProfileFragment();
+    private final FragmentManager fm = getSupportFragmentManager();
 
-    final Fragment homeFragment= new HomeFragment();
-    final Fragment chatFragment = new ChatFragment();
-    final Fragment profileFragment = new ProfileFragment();
-    final FragmentManager fm = getSupportFragmentManager();
+    private Fragment selectedFragment = null;
 
-    Fragment selectedFragment = null;
-
-    BottomNavigationView bottomNavigationView;
+    private BottomNavigationView bottomNavigationView;
 
     private Uri mFileUri;
 
@@ -83,6 +74,7 @@ public class MainActivity extends AppCompatActivity
     {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        userKey = new UserKey();
 
 
         bottomNavigationView = findViewById(R.id.bottomNavigationView);
@@ -241,15 +233,15 @@ public class MainActivity extends AppCompatActivity
         DocumentReference documentReference = fStore.collection("users").document(currentUID);
 
         Map<String, Object> userMap = new HashMap<>();
-        userMap.put(KEY_NAME, user.getName());
-        userMap.put(KEY_EMAIL, user.getEmail());
-        userMap.put(KEY_PASSWORD, user.getPassword());
-        userMap.put(KEY_LOCATION, user.getLocation());
-        userMap.put(KEY_AGE, user.getAge());
-        userMap.put(KEY_PROFILE, url);
-        userMap.put(KEY_UID, user.getUid());
-        userMap.put(KEY_STATUS, user.getStatus());
-        userMap.put(KEY_IS_GOOGLE_SIGN, user.getIsGoogleSign());
+        userMap.put(userKey.KEY_NAME, user.getName());
+        userMap.put(userKey.KEY_EMAIL, user.getEmail());
+        userMap.put(userKey.KEY_PASSWORD, user.getPassword());
+        userMap.put(userKey.KEY_LOCATION, user.getLocation());
+        userMap.put(userKey.KEY_AGE, user.getAge());
+        userMap.put(userKey.KEY_PROFILE, url);
+        userMap.put(userKey.KEY_UID, user.getUid());
+        userMap.put(userKey.KEY_STATUS, user.getStatus());
+        userMap.put(userKey.KEY_IS_GOOGLE_SIGN, user.getIsGoogleSign());
 
 
         documentReference.set(userMap).addOnSuccessListener(new OnSuccessListener<Void>()

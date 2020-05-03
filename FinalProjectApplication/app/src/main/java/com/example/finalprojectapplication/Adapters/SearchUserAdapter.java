@@ -128,6 +128,7 @@ public class SearchUserAdapter extends FirestoreRecyclerAdapter<User, SearchUser
         @Override
         public void onClick(View v)
         {
+            System.out.println(getAdapterPosition()+" position:");
             onClickUser.onClickAddUser(getSnapshots().getSnapshot(getAdapterPosition()).getReference().getId());
         }
     }

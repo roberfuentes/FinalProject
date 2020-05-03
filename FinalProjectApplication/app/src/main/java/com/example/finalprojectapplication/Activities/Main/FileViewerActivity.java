@@ -40,22 +40,17 @@ import java.net.URL;
 public class FileViewerActivity extends AppCompatActivity implements View.OnClickListener, SeekBar.OnSeekBarChangeListener
 {
 
-    PDFView mPdfView;
-    ImageView mImageView, mToggleAction;
+    private PDFView mPdfView;
+    private ImageView mImageView, mToggleAction;
 
+    private MediaPlayer mp;
+    private SeekBar mProgressAudio;
+    private TextView mTimeAudio;
 
-    MediaPlayer mp;
-    SeekBar mProgressAudio;
-    TextView mTimeAudio;
+    private PlayerView mPlayerView;
+    private SimpleExoPlayer simpleExoPlayer;
 
-    PlayerView mPlayerView;
-    SimpleExoPlayer simpleExoPlayer;
-
-
-    Toolbar toolbar;
-
-    RelativeLayout mainLayout;
-
+    private RelativeLayout mainLayout;
 
     @Override
     protected void onCreate(Bundle savedInstanceState)
@@ -73,15 +68,10 @@ public class FileViewerActivity extends AppCompatActivity implements View.OnClic
 
         mPlayerView = findViewById(R.id.exoPlayer);
 
-        /*toolbar = findViewById(R.id.fileviewer_toolbar);
-        setSupportActionBar(toolbar);*/
-
         mainLayout = findViewById(R.id.mainLayout);
-
 
         mToggleAction.setOnClickListener(this);
         mProgressAudio.setOnSeekBarChangeListener(this);
-
 
         if (getIntent() != null)
         {
@@ -100,8 +90,6 @@ public class FileViewerActivity extends AppCompatActivity implements View.OnClic
         {
             Toast.makeText(FileViewerActivity.this, "Couldn't retrieve the file", Toast.LENGTH_SHORT).show();
         }
-
-
     }
 
     private void typeAction(String type, String url)
@@ -132,18 +120,13 @@ public class FileViewerActivity extends AppCompatActivity implements View.OnClic
         Toast.makeText(FileViewerActivity.this, "Image", Toast.LENGTH_SHORT).show();
         //Picasso.with(FileViewerActivity.this).load(url).resize(1920, 1280).centerInside().into(mImageView);
         Picasso.with(FileViewerActivity.this).load(url).fit().centerInside().into(mImageView);
-
-
     }
 
     private void readPdf(String url)
     {
-
         this.setTitle("PDF");
         mPdfView.setVisibility(View.VISIBLE);
         new RetrievePDFStream().execute(url);
-
-
     }
 
     private void readAudio(String url)
@@ -163,24 +146,18 @@ public class FileViewerActivity extends AppCompatActivity implements View.OnClic
             mImageView.getLayoutParams().height = 700;
             mToggleAction.setImageResource(R.drawable.ic_play_filled);
 
-
             mImageView.setVisibility(View.VISIBLE);
             mTimeAudio.setVisibility(View.VISIBLE);
             mProgressAudio.setVisibility(View.VISIBLE);
             mToggleAction.setVisibility(View.VISIBLE);
 
-
             int durationFile = mp.getDuration();
             mTimeAudio.setText("00:00");
             mProgressAudio.setMax(durationFile / 1000);
-
-
         } catch (Exception e)
         {
             e.printStackTrace();
         }
-
-
     }
 
     private void readVideo(String url)
@@ -224,7 +201,6 @@ public class FileViewerActivity extends AppCompatActivity implements View.OnClic
     @Override
     public void onStartTrackingTouch(SeekBar seekBar)
     {
-
     }
 
     @Override
@@ -235,7 +211,6 @@ public class FileViewerActivity extends AppCompatActivity implements View.OnClic
 
     private void playAction()
     {
-
         if (mp.isPlaying())
         {
             mp.pause();
@@ -283,7 +258,6 @@ public class FileViewerActivity extends AppCompatActivity implements View.OnClic
                 }
             });
         }
-
     }
 
 
@@ -291,7 +265,6 @@ public class FileViewerActivity extends AppCompatActivity implements View.OnClic
     public boolean onCreateOptionsMenu(Menu menu)
     {
         getMenuInflater().inflate(R.menu.viewer_toolbar, menu);
-
         return true;
     }
 
@@ -316,14 +289,11 @@ public class FileViewerActivity extends AppCompatActivity implements View.OnClic
             Intent intent = new Intent(FileViewerActivity.this, InfoActivity.class);
             intent.putExtra("fileRef", fileRef);
             startActivity(intent);
-
         }
-
     }
 
     class RetrievePDFStream extends AsyncTask<String, Void, InputStream>
     {
-
         @Override
         protected InputStream doInBackground(String... strings)
         {
@@ -357,10 +327,8 @@ public class FileViewerActivity extends AppCompatActivity implements View.OnClic
         if(keyCode == KeyEvent.KEYCODE_BACK){
             finish();
         }
-
         return super.onKeyDown(keyCode, event);
     }
-
     private void hideToolbar(){
         getSupportActionBar().hide();
     }

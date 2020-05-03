@@ -9,7 +9,6 @@ import android.os.Bundle;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
@@ -17,7 +16,6 @@ import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -28,15 +26,11 @@ import android.widget.Toast;
 
 import com.example.finalprojectapplication.Activities.Login.LoginActivity;
 import com.example.finalprojectapplication.Activities.Main.InfoActivity;
-import com.example.finalprojectapplication.Activities.Main.MainActivity;
 import com.example.finalprojectapplication.Activities.Main.UploadActivity;
 import com.example.finalprojectapplication.Adapters.DataAdapter;
 import com.example.finalprojectapplication.Model.Data;
 import com.example.finalprojectapplication.R;
 import com.firebase.ui.firestore.FirestoreRecyclerOptions;
-import com.google.android.gms.auth.api.Auth;
-import com.google.android.gms.auth.api.signin.GoogleSignIn;
-import com.google.android.gms.auth.api.signin.GoogleSignInClient;
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.firebase.auth.FirebaseAuth;
@@ -62,14 +56,12 @@ public class HomeFragment extends Fragment implements DataAdapter.OnFileListener
     private String userID;
     private DataAdapter adapter;
     private FirebaseStorage fStorage;
-    private GoogleSignInClient mGoogleSignInClient;
 
 
 
     private RecyclerView recyclerView;
     private View view;
 
-    Toolbar mToolbar;
     Menu menu;
     MenuItem mLogoutItem;
 
@@ -112,25 +104,15 @@ public class HomeFragment extends Fragment implements DataAdapter.OnFileListener
         setupFirebase();
         setupData();
 
-        //setupDataInRecycerView();
-
-        //setup Components and listeners
         setComponents();
         setListeners();
-
     }
-
-
-    //SETUP
 
     public void setComponents()
     {
         /*mToolbar = view.findViewById(R.id.home_toolbar);
         ((AppCompatActivity)getActivity()).setSupportActionBar(mToolbar);*/
         uploadButton = view.findViewById(R.id.uploadButton);
-
-
-
     }
 
     public void setListeners()
@@ -141,14 +123,10 @@ public class HomeFragment extends Fragment implements DataAdapter.OnFileListener
             @Override
             public void onClick(View v)
             {
-
-
                 openUploadDialog();
-
             }
         });
     }
-
 
     public void setupRecyclerView()
     {
@@ -162,16 +140,12 @@ public class HomeFragment extends Fragment implements DataAdapter.OnFileListener
         fStore = FirebaseFirestore.getInstance();
         userID = fAuth.getCurrentUser().getUid();
         fStorage = FirebaseStorage.getInstance();
-
-
     }
 
     private void setupData(){
         Query query = fStore.collection("data").document(userID).collection("userData");
 
         FirestoreRecyclerOptions<Data> options = new FirestoreRecyclerOptions.Builder<Data>().setLifecycleOwner(getActivity()).setQuery(query, Data.class).build();
-
-        //FirestoreRecyclerOptions<Image> options = new FirestoreRecyclerOptions.Builder<Image>().setLifecycleOwner(this).setQuery(query,Image.class ).build();
 
         adapter = new DataAdapter(options, getContext(), this, fStore, fAuth, fStorage);
 
@@ -184,9 +158,6 @@ public class HomeFragment extends Fragment implements DataAdapter.OnFileListener
     {
         adapter.readFile(position);
         System.out.println("The position is:" + position);
-
-        //adapter.deleteItem(position);
-        //Picture
     }
 
     @Override
@@ -211,7 +182,6 @@ public class HomeFragment extends Fragment implements DataAdapter.OnFileListener
                         Data data = new Data();
                         data.setUrl(fileRef.getId());
 
-
                         Bundle bundle = new Bundle();
                         bundle.putParcelable("data", data);
 
@@ -233,7 +203,6 @@ public class HomeFragment extends Fragment implements DataAdapter.OnFileListener
                 }
             }
         });
-
         builder.show();
     }
 
@@ -247,8 +216,6 @@ public class HomeFragment extends Fragment implements DataAdapter.OnFileListener
         if (ContextCompat.checkSelfPermission(getContext(), permissions[0]) == PackageManager.PERMISSION_GRANTED
                 && ContextCompat.checkSelfPermission(getContext(), permissions[1]) == PackageManager.PERMISSION_GRANTED)
         {
-
-
             Intent intent = new Intent(getActivity(), UploadActivity.class);
             startActivity(intent);
 
@@ -290,12 +257,9 @@ public class HomeFragment extends Fragment implements DataAdapter.OnFileListener
                 }else{
                     fAuth.signOut();
                 }
-
                 getActivity().finish();
                 break;
-
         }
-
         return true;
     }
 

@@ -26,6 +26,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.finalprojectapplication.Activities.Login.LoginActivity;
+import com.example.finalprojectapplication.Keys.UserKey;
 import com.example.finalprojectapplication.Model.User;
 import com.example.finalprojectapplication.R;
 import com.google.android.gms.tasks.OnCompleteListener;
@@ -46,34 +47,23 @@ import java.util.Map;
  */
 public class ProfileFragment extends Fragment implements MenuItem.OnMenuItemClickListener, View.OnClickListener
 {
-
-    private final String KEY_NAME = "name";
-    private final String KEY_EMAIL = "email";
-    private final String KEY_PASSWORD = "password";
-    private final String KEY_AGE = "age";
-    private final String KEY_STATUS = "status";
-    private final String KEY_LOCATION = "location";
-    private final String KEY_IS_GOOGLE_SIGN = "isGoogleSign";
-
-
     private final int REQUEST_IMAGE = 1;
 
-
+    UserKey userKey;
     private FirebaseFirestore fstore;
     private FirebaseAuth fAuth;
 
     private String userID;
-    private Boolean isGoogleSign;
 
     private TextView mProfileName, mProfileEmail, mProfilePassword, mProfileLocation, mProfileAge, mProfileStatus;
     private EditText mProfileNameEdit, mProfileEmailEdit, mProfilePasswordEdit, mProfileLocationEdit, mProfileAgeEdit, mProfileStatusEdit;
     private CircleImageView mProfilePicture;
 
     private LinearLayout mContainerInfo, mContainerEditInfo;
+    private Boolean isGoogleSign;
+
 
     private View view;
-    private Toolbar mToolbarEdit;
-    Menu menu;
 
     MenuItem editItem, checkItem, cancelItem;
 
@@ -87,6 +77,7 @@ public class ProfileFragment extends Fragment implements MenuItem.OnMenuItemClic
     {
         super.onCreate(savedInstanceState);
         setHasOptionsMenu(true);
+        userKey = new UserKey();
     }
 
     @Override
@@ -109,11 +100,8 @@ public class ProfileFragment extends Fragment implements MenuItem.OnMenuItemClic
 
     }
 
-    public void setupViewComponents()
+    private void setupViewComponents()
     {
-        /*mToolbarEdit = view.findViewById(R.id.profile_editToolbar);
-        ((AppCompatActivity)getActivity()).setSupportActionBar(mToolbarEdit);*/
-
         mContainerInfo = view.findViewById(R.id.containerInformation);
         mContainerEditInfo = view.findViewById(R.id.containerEditInformation);
 
@@ -192,6 +180,7 @@ public class ProfileFragment extends Fragment implements MenuItem.OnMenuItemClic
                                 mProfileEmailEdit.setEnabled(false);
                                 mProfilePasswordEdit.setEnabled(false);
                             }
+                            isGoogleSign = user.getIsGoogleSign();
 
                             if (user.getProfilePictureUrl().equals(""))
                             {
@@ -253,7 +242,7 @@ public class ProfileFragment extends Fragment implements MenuItem.OnMenuItemClic
         return true;
     }
 
-    public void activeEditMode()
+    private void activeEditMode()
     {
         editItem.setVisible(false);
         cancelItem.setVisible(true);
@@ -265,7 +254,7 @@ public class ProfileFragment extends Fragment implements MenuItem.OnMenuItemClic
         mContainerInfo.setVisibility(View.INVISIBLE);
     }
 
-    public void containerInEditMode()
+    private void containerInEditMode()
     {
         mProfileNameEdit.setText(mProfileName.getText());
         mProfileEmailEdit.setText(mProfileEmail.getText());
@@ -275,7 +264,7 @@ public class ProfileFragment extends Fragment implements MenuItem.OnMenuItemClic
         mProfileLocationEdit.setText(mProfileLocation.getText());
     }
 
-    public void containerInTextMode()
+    private void containerInTextMode()
     {
         editItem.setVisible(true);
         cancelItem.setVisible(false);
@@ -285,12 +274,12 @@ public class ProfileFragment extends Fragment implements MenuItem.OnMenuItemClic
         mContainerInfo.setVisibility(View.VISIBLE);
     }
 
-    public void updateData()
+    private void updateData()
     {
         updateDataInCloud();
     }
 
-    public void updateDataInCloud()
+    private void updateDataInCloud()
     {
         final String name = mProfileNameEdit.getText().toString();
         final String email = mProfileEmailEdit.getText().toString();
@@ -309,17 +298,15 @@ public class ProfileFragment extends Fragment implements MenuItem.OnMenuItemClic
         } else
         {
             Map<String, Object> user = new HashMap<>();
-            user.put(KEY_NAME, name);
-            user.put(KEY_EMAIL, email);
-            user.put(KEY_PASSWORD, password);
-            user.put(KEY_AGE, age);
-            user.put(KEY_LOCATION, location);
-            user.put(KEY_STATUS, status);
-            user.put(KEY_IS_GOOGLE_SIGN, isGoogleSign);
-
+            user.put(userKey.KEY_NAME, name);
+            user.put(userKey.KEY_EMAIL, email);
+            user.put(userKey.KEY_PASSWORD, password);
+            user.put(userKey.KEY_AGE, age);
+            user.put(userKey.KEY_LOCATION, location);
+            user.put(userKey.KEY_STATUS, status);
+            user.put(userKey.KEY_IS_GOOGLE_SIGN, isGoogleSign);
 
             DocumentReference userRef = fstore.collection("users").document(userID);
-
 
             userRef.update(user).addOnSuccessListener(new OnSuccessListener<Void>()
             {
@@ -344,13 +331,13 @@ public class ProfileFragment extends Fragment implements MenuItem.OnMenuItemClic
     private void updatePassword(User user)
     {
         Map<String, Object> userMap = new HashMap<>();
-        userMap.put(KEY_NAME, user.getName());
-        userMap.put(KEY_EMAIL, user.getEmail());
-        userMap.put(KEY_PASSWORD, LoginActivity.password);
-        userMap.put(KEY_AGE, user.getAge());
-        userMap.put(KEY_LOCATION, user.getLocation());
-        userMap.put(KEY_STATUS, user.getStatus());
-        userMap.put(KEY_IS_GOOGLE_SIGN, user.getIsGoogleSign());
+        userMap.put(userKey.KEY_NAME, user.getName());
+        userMap.put(userKey.KEY_EMAIL, user.getEmail());
+        userMap.put(userKey.KEY_PASSWORD, LoginActivity.password);
+        userMap.put(userKey.KEY_AGE, user.getAge());
+        userMap.put(userKey.KEY_LOCATION, user.getLocation());
+        userMap.put(userKey.KEY_STATUS, user.getStatus());
+        userMap.put(userKey.KEY_IS_GOOGLE_SIGN, user.getIsGoogleSign());
 
         DocumentReference userRef = fstore.collection("users").document(userID);
 
@@ -369,12 +356,8 @@ public class ProfileFragment extends Fragment implements MenuItem.OnMenuItemClic
                 }
             }
         });
-
-
     }
-
-
-    public void setDataToTextLocal(String name, String email, String password, String age, String status, String location)
+    private void setDataToTextLocal(String name, String email, String password, String age, String status, String location)
     {
         mProfileName.setText(name);
         mProfileEmail.setText(email);

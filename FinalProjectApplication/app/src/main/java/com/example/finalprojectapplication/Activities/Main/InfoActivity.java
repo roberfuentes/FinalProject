@@ -34,22 +34,20 @@ import java.util.Map;
 public class InfoActivity extends AppCompatActivity
 {
 
-    ImageView mInfoPicture;
-    TextView mInfoName, mInfoExtraSize, mInfoExtraType;
-    EditText mInfoEditName;
+    private ImageView mInfoPicture;
+    private TextView mInfoName, mInfoExtraSize, mInfoExtraType;
+    private EditText mInfoEditName;
 
-    CardView mInfoCardView, mInfoEditableCardView;
-
-
-    FirebaseFirestore fStore;
-    FirebaseAuth fAuth;
+    private CardView mInfoCardView, mInfoEditableCardView;
 
 
-    private Toolbar mToolbarEdit;
-    Menu menu;
+    private FirebaseFirestore fStore;
+    private FirebaseAuth fAuth;
 
-    Data data;
-    String urlData;
+    private Menu menu;
+
+    private Data data;
+    private String urlData;
     @Override
     protected void onCreate(Bundle savedInstanceState)
     {
@@ -65,18 +63,9 @@ public class InfoActivity extends AppCompatActivity
         mInfoCardView = findViewById(R.id.infoCardView);
         mInfoEditableCardView = findViewById(R.id.infoEditableCardView);
 
-        //mToolbarEdit = findViewById(R.id.info_editToolbar);
-
-        //setSupportActionBar(mToolbarEdit);
-
         setupFirebase();
         setupInfoData();
-
-
-
     }
-
-
 
     public boolean getInfoDataBundle(){
         data = getIntent().getExtras().getParcelable("data");
@@ -88,11 +77,9 @@ public class InfoActivity extends AppCompatActivity
                 }else{
                     return true;
                 }
-
             }else{
                 return true;
             }
-
     }
     public void setupInfoData(){
         if(getInfoDataBundle()){
@@ -117,17 +104,11 @@ public class InfoActivity extends AppCompatActivity
                                 }else if(data.getType().equals("audio")){
                                     mInfoPicture.setImageResource(R.drawable.ic_audio_outlined);
                                 }
-
-
                                 mInfoName.setText(data.getName());
                                 mInfoExtraType.setText(data.getType());
                                 String size = String.valueOf(data.getSize());
 
-
                                 mInfoExtraSize.setText(readableFileSize(data.getSize()));
-
-
-
 
                                 mInfoPicture.getLayoutParams().height = 600;
                                 mInfoPicture.getLayoutParams().width = 600;
@@ -163,7 +144,7 @@ public class InfoActivity extends AppCompatActivity
         }
     }
 
-    public void setupFirebase(){
+    private void setupFirebase(){
         fStore = FirebaseFirestore.getInstance();
         fAuth = FirebaseAuth.getInstance();
     }

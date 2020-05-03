@@ -35,17 +35,13 @@ import java.util.Map;
 
 public class FriendRequestActivity extends AppCompatActivity implements FriendRequestAdapter.onRequestListener
 {
+    private RecyclerView mRecyclerView;
 
+    private FriendRequestAdapter adapter;
+    private FirebaseFirestore fStore;
+    private FirebaseAuth fAuth;
 
-    RecyclerView mRecyclerView;
-
-    FirestoreRecyclerAdapter adapter;
-    FirebaseFirestore fStore;
-    FirebaseAuth fAuth;
-
-    String currentUID;
-
-    Toolbar mToolbar;
+    private String currentUID;
 
     @Override
     protected void onCreate(Bundle savedInstanceState)
@@ -53,29 +49,15 @@ public class FriendRequestActivity extends AppCompatActivity implements FriendRe
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_friend_request);
 
-        //mToolbar = findViewById(R.id.friend_request_toolbar);
         mRecyclerView = findViewById(R.id.friend_request_recycler);
 
-        //setSupportActionBar(mToolbar);
-
-        /*ActionBar mActionBar= getSupportActionBar();
-        //mActionBar.setIcon(R.drawable.ic_left_arrow_filled);
-        mActionBar.setTitle("  Friend requests");
-        mActionBar.setDisplayHomeAsUpEnabled(true);
-        mActionBar.setHomeAsUpIndicator(R.drawable.ic_left_arrow_filled);*/
-
-
-
-
         setupFirebase();
-        setAdapter();
+        setFriendRequests();
 
         this.setTitle("Friends requests");
-
-
     }
 
-    private void setAdapter(){
+    private void setFriendRequests(){
         Query query = fStore.collection("friendRequests").document(currentUID)
                 .collection("userFriendRequest")
                 .whereIn("status", Arrays.asList("pending", "sent"));

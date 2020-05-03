@@ -12,6 +12,7 @@ import android.widget.EditText;
 import android.widget.Toast;
 
 import com.example.finalprojectapplication.Activities.Main.MainActivity;
+import com.example.finalprojectapplication.Keys.UserKey;
 import com.example.finalprojectapplication.R;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
@@ -25,21 +26,12 @@ import com.google.firebase.firestore.FirebaseFirestore;
 import java.util.HashMap;
 import java.util.Map;
 
-public class RegisterActivity extends AppCompatActivity
+public class RegisterActivity extends AppCompatActivity implements View.OnClickListener
 {
 
     private static final String TAG = "RegisterActivity";
-    private static final String KEY_NAME = "name";
-    private static final String KEY_EMAIL = "email";
-    private static final String KEY_PASSWORD = "password";
-    private static final String KEY_LOCATION = "location";
-    private static final String KEY_AGE = "age";
-    private static final String KEY_PROFILE = "profilePictureUrl";
-    private static final String KEY_STATUS = "status";
-    private final String KEY_IS_GOOGLE_SIGN = "isGoogleSign";
-    private static final String KEY_UID = "uid";
 
-
+    private UserKey userKey;
 
     private FirebaseAuth fAuth;
     private FirebaseFirestore fStore;
@@ -56,6 +48,7 @@ public class RegisterActivity extends AppCompatActivity
 
         fAuth = FirebaseAuth.getInstance();
         fStore = FirebaseFirestore.getInstance();
+        userKey = new UserKey();
 
         mName = findViewById(R.id.etName);
         mEmail = findViewById(R.id.etEmail);
@@ -64,18 +57,20 @@ public class RegisterActivity extends AppCompatActivity
 
         mBtnSignUp = findViewById(R.id.btnSignUp);
 
-        mBtnSignUp.setOnClickListener(new View.OnClickListener()
-        {
-            @Override
-            public void onClick(View v)
-            {
-                registerAccount();
-            }
-        });
+        mBtnSignUp.setOnClickListener(this);
 
         this.setTitle("Sign up");
     }
 
+    @Override
+    public void onClick(View v)
+    {
+        switch(v.getId()){
+            case R.id.btnSignUp:
+                registerAccount();
+                break;
+        }
+    }
 
     private boolean checkFields(String name, String email, String password, String passwordRepeat)
     {
@@ -142,15 +137,15 @@ public class RegisterActivity extends AppCompatActivity
         String userID = fAuth.getCurrentUser().getUid();
         DocumentReference db = fStore.collection("users").document(userID);
         Map<String, Object> user = new HashMap<>();
-        user.put(KEY_NAME, name);
-        user.put(KEY_EMAIL, email);
-        user.put(KEY_PASSWORD, password);
-        user.put(KEY_LOCATION, "");
-        user.put(KEY_AGE, "");
-        user.put(KEY_PROFILE, "");
-        user.put(KEY_UID, userID);
-        user.put(KEY_STATUS, "");
-        user.put(KEY_IS_GOOGLE_SIGN, false);
+        user.put(userKey.KEY_NAME, name);
+        user.put(userKey.KEY_EMAIL, email);
+        user.put(userKey.KEY_PASSWORD, password);
+        user.put(userKey.KEY_LOCATION, "");
+        user.put(userKey.KEY_AGE, "");
+        user.put(userKey.KEY_PROFILE, "");
+        user.put(userKey.KEY_UID, userID);
+        user.put(userKey.KEY_STATUS, "");
+        user.put(userKey.KEY_IS_GOOGLE_SIGN, false);
 
 
         System.out.println("There we go");

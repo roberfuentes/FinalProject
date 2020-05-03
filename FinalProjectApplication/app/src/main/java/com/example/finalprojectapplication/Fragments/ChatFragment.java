@@ -49,18 +49,15 @@ import com.google.firebase.firestore.Query;
 public class ChatFragment extends Fragment implements  View.OnClickListener, ChatAdapter.OnClickChat
 {
 
-    FirebaseFirestore fStore;
-    FirebaseAuth fAuth;
-    FirestoreRecyclerAdapter adapter;
+    private FirebaseFirestore fStore;
+    private FirebaseAuth fAuth;
+    private ChatAdapter adapter;
 
+    private View view;
+    private String currentUserID;
 
-    View v;
-    String currentUserID;
-
-
-    Toolbar mToolbar;
-    RecyclerView mRecyclerView;
-    FloatingActionButton floatingActionButtonOptions, floatingActionButtonListFriends, floatingActionButtonAddFriends, floatingActionButtonSearchFriends;
+    private RecyclerView mRecyclerView;
+    private FloatingActionButton floatingActionButtonOptions, floatingActionButtonListFriends, floatingActionButtonAddFriends, floatingActionButtonSearchFriends;
 
     public ChatFragment()
     {
@@ -83,12 +80,12 @@ public class ChatFragment extends Fragment implements  View.OnClickListener, Cha
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState)
     {
-        v = view;
+        this.view = view;
         setupFirebase();
         setupComponents();
         setupListeners();
         animateFloatings();
-        setAdapter();
+        setChatList();
     }
 
     private void setupFirebase(){
@@ -98,7 +95,7 @@ public class ChatFragment extends Fragment implements  View.OnClickListener, Cha
     }
 
 
-    private void setAdapter(){
+    private void setChatList(){
         Query query = fStore.collection("chats").document(currentUserID).collection("userChat");
         FirestoreRecyclerOptions<Chat> options = new FirestoreRecyclerOptions.Builder<Chat>()
                 .setLifecycleOwner(getActivity()).setQuery(query, Chat.class).build();
@@ -110,24 +107,17 @@ public class ChatFragment extends Fragment implements  View.OnClickListener, Cha
     }
 
     private void setupComponents(){
-
-
-        /*mToolbar = v.findViewById(R.id.chat_toolbar);
-        ((AppCompatActivity)getActivity()).setSupportActionBar(mToolbar);*/
-        mRecyclerView = v.findViewById(R.id.chat_recycler_list);
-        floatingActionButtonOptions = v.findViewById(R.id.floating_button_options);
-        floatingActionButtonListFriends = v.findViewById(R.id.floating_button_list_friends);
-        floatingActionButtonAddFriends = v.findViewById(R.id.floating_button_add_friends);
-        floatingActionButtonSearchFriends = v.findViewById(R.id.floating_button_search_friends);
-
+        mRecyclerView = view.findViewById(R.id.chat_recycler_list);
+        floatingActionButtonOptions = view.findViewById(R.id.floating_button_options);
+        floatingActionButtonListFriends = view.findViewById(R.id.floating_button_list_friends);
+        floatingActionButtonAddFriends = view.findViewById(R.id.floating_button_add_friends);
+        floatingActionButtonSearchFriends = view.findViewById(R.id.floating_button_search_friends);
     }
 
     private void animateFloatings(){
         floatingActionButtonListFriends.animate().translationY(floatingActionButtonListFriends.getHeight()).setDuration(2000);
-
         floatingActionButtonAddFriends.animate().translationY(floatingActionButtonListFriends.getHeight());
         floatingActionButtonSearchFriends.animate().translationY(floatingActionButtonListFriends.getHeight());
-
     }
 
     private void setupListeners(){
@@ -239,7 +229,6 @@ public class ChatFragment extends Fragment implements  View.OnClickListener, Cha
             @Override
             public void onClick(DialogInterface dialog, int which)
             {
-
             }
         });
         builder.show();

@@ -1,7 +1,6 @@
 package com.example.finalprojectapplication.Activities.Main;
 
 import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -11,22 +10,25 @@ import android.widget.Toast;
 
 
 import com.example.finalprojectapplication.Adapters.ShareAdapter;
+import com.example.finalprojectapplication.Keys.ChatKey;
+import com.example.finalprojectapplication.Keys.ChatMessageKey;
 import com.example.finalprojectapplication.Model.Chat;
 import com.example.finalprojectapplication.Model.Friend;
 import com.example.finalprojectapplication.Model.User;
+
 import com.example.finalprojectapplication.R;
-import com.firebase.ui.firestore.FirestoreRecyclerAdapter;
+
 import com.firebase.ui.firestore.FirestoreRecyclerOptions;
+
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
+
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
-import com.google.firebase.firestore.EventListener;
 import com.google.firebase.firestore.FirebaseFirestore;
-import com.google.firebase.firestore.FirebaseFirestoreException;
 import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.QuerySnapshot;
 
@@ -37,28 +39,17 @@ import java.util.Map;
 
 public class ShareFileActivity extends AppCompatActivity implements ShareAdapter.onShareListener
 {
+    private ChatKey chatKey;
+    private ChatMessageKey chatMessageKey;
 
-    private static final String KEY_UID= "fromUid";
-    private static final String KEY_SENTAT= "sentAt";
-    private static final String KEY_MESSAGE= "messageText";
-    private static final String KEY_URL= "url";
-    private static final String KEY_TYPE= "type";
-    private static final String KEY_ISFILE= "isFile";
+    private RecyclerView mRecyclerView;
+    private FirebaseFirestore fStore;
+    private FirebaseAuth fAuth;
+    private ShareAdapter adapter;
+    private String currentUserID;
 
-    private static final String KEY_NAME= "name";
-    private static final String KEY_PICTURE= "picture";
-    private static final String KEY_ROOM = "room";
-    private static final String KEY_UID_CHAT = "uid";
-
-    RecyclerView mRecyclerView;
-    FirebaseFirestore fStore;
-    FirebaseAuth fAuth;
-    FirestoreRecyclerAdapter adapter;
-    String currentUserID;
-
-    String url;
-    String type;
-
+    private String url;
+    private String type;
 
     @Override
     protected void onCreate(Bundle savedInstanceState)
@@ -67,6 +58,8 @@ public class ShareFileActivity extends AppCompatActivity implements ShareAdapter
         setContentView(R.layout.activity_share_file);
 
         mRecyclerView = findViewById(R.id.share_file_recycler);
+        chatKey = new ChatKey();
+        chatMessageKey = new ChatMessageKey();
 
         setupFirebase();
 
@@ -81,10 +74,10 @@ public class ShareFileActivity extends AppCompatActivity implements ShareAdapter
         {
             Toast.makeText(ShareFileActivity.this, "Couldn't get it", Toast.LENGTH_SHORT).show();
         }
-        setAdapter();
+        setFriendList();
     }
 
-    private void setAdapter(){
+    private void setFriendList(){
         Query query = fStore.collection("friends").document(currentUserID)
                 .collection("userFriends");
 
@@ -156,10 +149,10 @@ public class ShareFileActivity extends AppCompatActivity implements ShareAdapter
 
 
                         Map<String, Object> chatMap = new HashMap<>();
-                        chatMap.put(KEY_NAME, user.getName());
-                        chatMap.put(KEY_PICTURE, user.getProfilePictureUrl());
-                        chatMap.put(KEY_ROOM, chatRef.getId());
-                        chatMap.put(KEY_UID_CHAT, friendID);
+                        chatMap.put(chatKey.KEY_NAME, user.getName());
+                        chatMap.put(chatKey.KEY_PICTURE, user.getProfilePictureUrl());
+                        chatMap.put(chatKey.KEY_ROOM, chatRef.getId());
+                        chatMap.put(chatKey.KEY_UID, friendID);
 
                         chatRef.set(chatMap).addOnSuccessListener(new OnSuccessListener<Void>()
                         {
@@ -227,10 +220,10 @@ public class ShareFileActivity extends AppCompatActivity implements ShareAdapter
 
                                             Map<String, Object> chatMap = new HashMap<>();
 
-                                            chatMap.put(KEY_NAME, user.getName());
-                                            chatMap.put(KEY_UID, currentUserID);
-                                            chatMap.put(KEY_ROOM, chatID);
-                                            chatMap.put(KEY_PICTURE, user.getProfilePictureUrl());
+                                            chatMap.put(chatKey.KEY_NAME, user.getName());
+                                            chatMap.put(chatKey.KEY_UID, currentUserID);
+                                            chatMap.put(chatKey.KEY_ROOM, chatID);
+                                            chatMap.put(chatKey.KEY_PICTURE, user.getProfilePictureUrl());
 
                                             chatRef.set(chatMap).addOnSuccessListener(new OnSuccessListener<Void>()
                                             {
@@ -276,12 +269,12 @@ public class ShareFileActivity extends AppCompatActivity implements ShareAdapter
                         .collection("roomMessages").document();
 
                 Map<String, Object> messageMap = new HashMap<>();
-                messageMap.put(KEY_UID, currentUserID);
-                messageMap.put(KEY_MESSAGE, message);
-                messageMap.put(KEY_SENTAT, new Date());
-                messageMap.put(KEY_ISFILE, true);
-                messageMap.put(KEY_URL, url);
-                messageMap.put(KEY_TYPE, type);
+                messageMap.put(chatMessageKey.KEY_UID, currentUserID);
+                messageMap.put(chatMessageKey.KEY_MESSAGE, message);
+                messageMap.put(chatMessageKey.KEY_SENTAT, new Date());
+                messageMap.put(chatMessageKey.KEY_ISFILE, true);
+                messageMap.put(chatMessageKey.KEY_URL, url);
+                messageMap.put(chatMessageKey.KEY_TYPE, type);
                 messageReference.set(messageMap).addOnSuccessListener(new OnSuccessListener<Void>()
                 {
                     @Override

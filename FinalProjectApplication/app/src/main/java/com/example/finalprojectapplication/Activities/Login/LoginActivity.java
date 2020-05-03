@@ -18,6 +18,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.finalprojectapplication.Activities.Main.MainActivity;
+import com.example.finalprojectapplication.Keys.UserKey;
 import com.example.finalprojectapplication.Model.User;
 import com.example.finalprojectapplication.R;
 import com.google.android.gms.auth.api.signin.GoogleSignIn;
@@ -48,23 +49,9 @@ import java.util.Map;
 public class LoginActivity extends AppCompatActivity implements View.OnClickListener
 {
 
-    private static final String TAG = "LoginActivity";
-    private static final int RC_SIGN_IN = 1;
+    private final String TAG = "LoginActivity";
+    private final int RC_SIGN_IN = 1;
 
-    private final String KEY_NAME = "name";
-    private final String KEY_EMAIL = "email";
-    private final String KEY_PASSWORD = "password";
-    private final String KEY_AGE = "age";
-    private final String KEY_STATUS = "status";
-    private final String KEY_LOCATION = "location";
-    private final String KEY_IS_GOOGLE_SIGN = "isGoogleSign";
-    private final String KEY_PROFILE = "profilePictureUrl";
-    private static final String KEY_UID = "uid";
-
-
-
-
-    private FirebaseAuth mAuth;
 
     EditText mEtEmail, mEtPassword;
 
@@ -77,7 +64,10 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
     public static boolean isGoogleSign = false;
     public static String password = "";
 
-    FirebaseFirestore fStore;
+    private FirebaseAuth fAuth;
+    private FirebaseFirestore fStore;
+
+    private UserKey userKey;
 
 
     @Override
@@ -93,8 +83,10 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
 
     private void setupComponents(){
         //Firebase
-        mAuth = FirebaseAuth.getInstance();
+        fAuth = FirebaseAuth.getInstance();
         fStore = FirebaseFirestore.getInstance();
+
+        userKey = new UserKey();
 
 
         //Views
@@ -119,7 +111,7 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
         final String password = mEtPassword.getText().toString();
 
         if(checkFields(email, password)){
-            mAuth.signInWithEmailAndPassword(email, password).addOnCompleteListener(LoginActivity.this, new OnCompleteListener<AuthResult>()
+            fAuth.signInWithEmailAndPassword(email, password).addOnCompleteListener(LoginActivity.this, new OnCompleteListener<AuthResult>()
             {
                 @Override
                 public void onComplete(@NonNull Task<AuthResult> task)
@@ -164,8 +156,6 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
     public void onClick(View v)
     {
         int id = v.getId();
-        Toast.makeText(LoginActivity.this, id + "", Toast.LENGTH_SHORT).show();
-
         switch(id){
             case R.id.btnLogin:
                 login();
@@ -219,14 +209,14 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
 
     private void firebaseAuthWithGoogle(final GoogleSignInAccount gsa){
         AuthCredential authCredential = GoogleAuthProvider.getCredential(gsa.getIdToken(), null);
-        mAuth.signInWithCredential(authCredential)
+        fAuth.signInWithCredential(authCredential)
                 .addOnCompleteListener(new OnCompleteListener<AuthResult>()
                 {
                     @Override
                     public void onComplete(@NonNull Task<AuthResult> task)
                     {
                         if(task.isSuccessful()){
-                            final String currentUID = mAuth.getCurrentUser().getUid();
+                            final String currentUID = fAuth.getCurrentUser().getUid();
                             CollectionReference collectionReference = fStore.collection("users");
 
                             collectionReference.get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>()
@@ -276,15 +266,15 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
                                                     String email = gsa.getEmail();
                                                     if(!name.equals("")){
                                                         Map<String, Object> userMap = new HashMap<>();
-                                                        userMap.put(KEY_NAME, name);
-                                                        userMap.put(KEY_UID, currentUID);
-                                                        userMap.put(KEY_EMAIL, gsa.getEmail());
-                                                        userMap.put(KEY_AGE, age);
-                                                        userMap.put(KEY_PASSWORD, "");
-                                                        userMap.put(KEY_STATUS, "");
-                                                        userMap.put(KEY_PROFILE, "");
-                                                        userMap.put(KEY_LOCATION, location);
-                                                        userMap.put(KEY_IS_GOOGLE_SIGN, true);
+                                                        userMap.put(userKey.KEY_NAME, name);
+                                                        userMap.put(userKey.KEY_UID, currentUID);
+                                                        userMap.put(userKey.KEY_EMAIL, gsa.getEmail());
+                                                        userMap.put(userKey.KEY_AGE, age);
+                                                        userMap.put(userKey.KEY_PASSWORD, "");
+                                                        userMap.put(userKey.KEY_STATUS, "");
+                                                        userMap.put(userKey.KEY_PROFILE, "");
+                                                        userMap.put(userKey.KEY_LOCATION, location);
+                                                        userMap.put(userKey.KEY_IS_GOOGLE_SIGN, true);
 
                                                         DocumentReference docRef = fStore.collection("users").document(currentUID);
 
@@ -323,7 +313,7 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
         String email = mEtEmail.getText().toString();
 
         if(!TextUtils.isEmpty(email)){
-            mAuth.sendPasswordResetEmail(email).addOnCompleteListener(new OnCompleteListener<Void>()
+            fAuth.sendPasswordResetEmail(email).addOnCompleteListener(new OnCompleteListener<Void>()
             {
                 @Override
                 public void onComplete(@NonNull Task<Void> task)

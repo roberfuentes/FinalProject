@@ -22,6 +22,7 @@ import android.widget.ImageView;
 import android.widget.Toast;
 
 
+import com.example.finalprojectapplication.Keys.RequestKey;
 import com.example.finalprojectapplication.Model.FileDetail;
 import com.example.finalprojectapplication.R;
 import com.google.android.gms.tasks.Continuation;
@@ -46,15 +47,6 @@ import java.util.Map;
 
 public class UploadActivity extends AppCompatActivity
 {
-
-    //private static final String KEY_
-
-    final static int REQUEST_IMAGE = 0;
-    final static int REQUEST_PDF = 1;
-    final static int REQUEST_AUDIO = 2;
-    final static int REQUEST_VIDEO = 3;
-
-
     private ImageView mImageUpload;
     private Button mCancelButton;
     private Button mUploadButton;
@@ -74,6 +66,8 @@ public class UploadActivity extends AppCompatActivity
     };
     private String userID;
 
+    private RequestKey requestKey;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState)
@@ -88,6 +82,8 @@ public class UploadActivity extends AppCompatActivity
         mImageUpload = findViewById(R.id.imageToUpload);
         mFileName = findViewById(R.id.fileName);
 
+        requestKey = new RequestKey();
+
         this.setTitle("Upload a file");
 
 
@@ -96,7 +92,6 @@ public class UploadActivity extends AppCompatActivity
 
 
     }
-
     private void buildDialogFileChooser()
     {
         MaterialAlertDialogBuilder builder = new MaterialAlertDialogBuilder(UploadActivity.this);
@@ -136,13 +131,12 @@ public class UploadActivity extends AppCompatActivity
         }
     }
 
-
     private void openImage()
     {
         Intent intent = new Intent();
         intent.setType("image/*");
         intent.setAction(Intent.ACTION_GET_CONTENT);
-        startActivityForResult(intent, REQUEST_IMAGE);
+        startActivityForResult(intent, requestKey.REQUEST_IMAGE);
     }
 
 
@@ -151,7 +145,7 @@ public class UploadActivity extends AppCompatActivity
         Intent intent = new Intent();
         intent.setType("application/pdf");
         intent.setAction(Intent.ACTION_GET_CONTENT);
-        startActivityForResult(intent, REQUEST_PDF);
+        startActivityForResult(intent, requestKey.REQUEST_PDF);
     }
 
     private void openAudio()
@@ -159,7 +153,7 @@ public class UploadActivity extends AppCompatActivity
         Intent intent = new Intent();
         intent.setType("audio/*");
         intent.setAction(Intent.ACTION_GET_CONTENT);
-        startActivityForResult(intent, REQUEST_AUDIO);
+        startActivityForResult(intent, requestKey.REQUEST_AUDIO);
     }
 
     private void openVideo()
@@ -167,7 +161,7 @@ public class UploadActivity extends AppCompatActivity
         Intent intent = new Intent();
         intent.setType("video/*");
         intent.setAction(Intent.ACTION_GET_CONTENT);
-        startActivityForResult(intent, REQUEST_VIDEO);
+        startActivityForResult(intent, requestKey.REQUEST_VIDEO);
     }
 
     private void setFileDetailsUI(int codeFile, Intent data)
@@ -179,36 +173,20 @@ public class UploadActivity extends AppCompatActivity
         }
         mFileUri = data.getData();
 
-        switch (codeFile)
-        {
-            case REQUEST_IMAGE:
-                Picasso.with(UploadActivity.this).load(mFileUri).into(mImageUpload);
-                FileDetail fileDetail = getFileDetails(data.getData());
-                mFileName.setText(fileDetail.getName());
-                System.out.println("type:" + fileDetail.getType());
-                break;
-            case REQUEST_PDF:
-                mImageUpload.setImageResource(R.drawable.ic_picture_as_pdf_outlined);
-                setWidthHeight(null, null, mImageUpload);
-                fileDetail = getFileDetails(data.getData());
-                mFileName.setText(fileDetail.getName());
-                System.out.println("type:" + fileDetail.getType());
-                break;
-            case REQUEST_AUDIO:
-                mImageUpload.setImageResource(R.drawable.ic_audio_outlined);
-                setWidthHeight(null, null, mImageUpload);
-                fileDetail = getFileDetails(data.getData());
-                mFileName.setText(fileDetail.getName());
-                System.out.println("type:" + fileDetail.getType());
-                break;
-            case REQUEST_VIDEO:
-                mImageUpload.setImageResource(R.drawable.ic_video_outlined);
-                setWidthHeight(null, null, mImageUpload);
-                fileDetail = getFileDetails(data.getData());
-                mFileName.setText(fileDetail.getName());
-                System.out.println("type:" + fileDetail.getType());
-                break;
+        if(requestKey.REQUEST_IMAGE == codeFile){
+            Picasso.with(UploadActivity.this).load(mFileUri).into(mImageUpload);
+        }else if(requestKey.REQUEST_PDF == codeFile){
+            mImageUpload.setImageResource(R.drawable.ic_picture_as_pdf_outlined);
+            setWidthHeight(null, null, mImageUpload);
+        }else if(requestKey.REQUEST_AUDIO == codeFile){
+            mImageUpload.setImageResource(R.drawable.ic_audio_outlined);
+            setWidthHeight(null, null, mImageUpload);
+        }else if(requestKey.REQUEST_VIDEO == codeFile){
+            mImageUpload.setImageResource(R.drawable.ic_video_outlined);
+            setWidthHeight(null, null, mImageUpload);
         }
+        FileDetail fileDetail = getFileDetails(data.getData());
+        mFileName.setText(fileDetail.getName());
     }
 
 
@@ -219,20 +197,14 @@ public class UploadActivity extends AppCompatActivity
 
         if (resultCode == RESULT_OK)
         {
-            switch (requestCode)
-            {
-                case REQUEST_IMAGE:
-                    setFileDetailsUI(REQUEST_IMAGE, data);
-                    break;
-                case REQUEST_PDF:
-                    setFileDetailsUI(REQUEST_PDF, data);
-                    break;
-                case REQUEST_AUDIO:
-                    setFileDetailsUI(REQUEST_AUDIO, data);
-                    break;
-                case REQUEST_VIDEO:
-                    setFileDetailsUI(requestCode, data);
-                    break;
+            if(requestKey.REQUEST_IMAGE == requestCode){
+                setFileDetailsUI(requestKey.REQUEST_IMAGE, data);
+            }else if(requestKey.REQUEST_PDF == requestCode){
+                setFileDetailsUI(requestKey.REQUEST_PDF, data);
+            }else if(requestKey.REQUEST_AUDIO == requestCode){
+                setFileDetailsUI(requestKey.REQUEST_AUDIO, data);
+            }else if(requestKey.REQUEST_VIDEO == requestCode){
+                setFileDetailsUI(requestKey.REQUEST_VIDEO, data);
             }
         }
     }
