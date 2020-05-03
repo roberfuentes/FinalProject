@@ -144,13 +144,11 @@ public class HomeFragment extends Fragment implements DataAdapter.OnFileListener
 
     private void setupData(){
         Query query = fStore.collection("data").document(userID).collection("userData");
-
         FirestoreRecyclerOptions<Data> options = new FirestoreRecyclerOptions.Builder<Data>().setLifecycleOwner(getActivity()).setQuery(query, Data.class).build();
 
-        adapter = new DataAdapter(options, getContext(), this, fStore, fAuth, fStorage);
-
+        adapter = new DataAdapter(options, getContext(),
+                this, fStore, fAuth, fStorage);
         recyclerView.setLayoutManager(new GridLayoutManager(getContext(), 2));
-
         recyclerView.setAdapter(adapter);
     }
     @Override

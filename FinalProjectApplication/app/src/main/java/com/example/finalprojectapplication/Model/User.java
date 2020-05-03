@@ -1,11 +1,7 @@
 package com.example.finalprojectapplication.Model;
 
-import android.os.Parcel;
-import android.os.Parcelable;
-
 public class User
 {
-
     String name;
     String email;
     String password;
@@ -17,8 +13,8 @@ public class User
     Boolean isGoogleSign;
 
     public User(){
-
     }
+
     public User(String name){
         this.name = name;
     }

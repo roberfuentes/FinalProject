@@ -44,12 +44,12 @@ public class DataAdapter extends FirestoreRecyclerAdapter<Data, DataAdapter.Data
 
     private Context mContext;
     private OnFileListener onFileListener;
-    FirebaseFirestore fStore;
-    FirebaseAuth fAuth;
-    FirebaseStorage fStorage;
+    private FirebaseFirestore fStore;
+    private FirebaseAuth fAuth;
+    private FirebaseStorage fStorage;
 
-    ArrayList<String> fileUrl = new ArrayList<>();
-    ArrayList<String> fileType = new ArrayList<>();
+    private ArrayList<String> fileUrl = new ArrayList<>();
+    private ArrayList<String> fileType = new ArrayList<>();
 
 
     public DataAdapter(@NonNull FirestoreRecyclerOptions<Data> options, Context context, OnFileListener onFileListener, FirebaseFirestore fStore, FirebaseAuth fAuth, FirebaseStorage fStorage)
@@ -76,9 +76,6 @@ public class DataAdapter extends FirestoreRecyclerAdapter<Data, DataAdapter.Data
         fileType.add(model.getType());
 
         setTypePicture(model.getType(), holder, model);
-
-        //Glide.with(mContext).load(model.getUri()).dontAnimate().into(holder.singleFile);
-
     }
 
     @NonNull
@@ -92,11 +89,11 @@ public class DataAdapter extends FirestoreRecyclerAdapter<Data, DataAdapter.Data
 
 
     public class DataHolder extends RecyclerView.ViewHolder implements View.OnClickListener, View.OnLongClickListener{
-        public TextView singleFileName;
-        public ImageView singleFile;
+        private TextView singleFileName;
+        private ImageView singleFile;
 
 
-        public DataHolder(View itemView)
+        private DataHolder(View itemView)
         {
             super(itemView);
 

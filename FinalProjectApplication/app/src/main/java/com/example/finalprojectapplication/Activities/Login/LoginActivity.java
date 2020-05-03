@@ -53,11 +53,11 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
     private final int RC_SIGN_IN = 1;
 
 
-    EditText mEtEmail, mEtPassword;
+    private EditText mEtEmail, mEtPassword;
 
-    Button mBtnRegisterEmail, mBtnRegisterGoogleSignUp;
-    Button mBtnLogin;
-    TextView mTvForgotPassowrd;
+    private Button mBtnRegisterEmail, mBtnRegisterGoogleSignUp;
+    private Button mBtnLogin;
+    private TextView mTvForgotPassowrd;
 
 
     public static GoogleSignInClient mGoogleSignIn;

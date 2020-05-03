@@ -6,7 +6,6 @@ import java.util.List;
 public class FriendRequest
 {
     String name;
-//    List<String> status;
     String status;
     String fromUid;
     String profilePictureUrl;

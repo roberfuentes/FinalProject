@@ -133,7 +133,6 @@ public class MainActivity extends AppCompatActivity
     }
 
     private void setupFragments(){
-
         fm.beginTransaction().add(R.id.fragment_container, homeFragment).commit();
         fm.beginTransaction().add(R.id.fragment_container, chatFragment).hide(chatFragment).commit();
         fm.beginTransaction().add(R.id.fragment_container, profileFragment).hide(profileFragment).commit();
